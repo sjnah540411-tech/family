@@ -1,1 +1,1002 @@
+         이미 호스팅된 이미지의 직접 URL(https://...)을 아래에 입력하세요
+        </div>
 
+        <!-- 사이트 기본 URL -->
+        <div id="host-base-group" class="form-group">
+          <label id="host-base-label">사이트 기본 URL</label>
+          <input type="url" id="inp-host-base" placeholder="https://사용자명.github.io/family-archive"
+            style="width:100%;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:var(--cream);">
+          <small style="color:var(--brown-light);font-size:0.72rem;margin-top:4px;display:block;">끝에 / 없이 입력</small>
+        </div>
+
+        <!-- 파일 경로 -->
+        <div id="host-path-group" class="form-group">
+          <label>이미지 파일 경로</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="color:var(--text-sub);font-size:0.82rem;white-space:nowrap;">/images/</span>
+            <input type="text" id="inp-host-path" placeholder="2025/singapore.jpg" oninput="previewHostImg()"
+              style="flex:1;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:var(--cream);">
+          </div>
+        </div>
+
+        <!-- 직접 URL (custom 모드) -->
+        <div id="host-direct-group" class="form-group" style="display:none;">
+          <label>이미지 직접 URL</label>
+          <input type="url" id="inp-host-direct" placeholder="https://..." oninput="previewHostImg()"
+            style="width:100%;padding:10px 14px;border:1.5px solid rgba(212,168,83,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:var(--cream);">
+        </div>
+
+        <!-- 미리보기 -->
+        <div id="host-preview" style="display:none;border-radius:10px;overflow:hidden;border:1px solid rgba(44,26,14,0.1);margin-bottom:4px;">
+          <img id="host-preview-img" src="" alt="미리보기" style="width:100%;max-height:200px;object-fit:cover;display:block;">
+          <div id="host-preview-fallback" style="display:none;padding:16px;text-align:center;color:var(--text-sub);font-size:0.82rem;">
+            <div style="font-size:1.8rem;">🌐</div>URL이 등록되었습니다
+          </div>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid rgba(44,26,14,0.08);margin:16px 0 14px;">
+
+      <!-- ③ 공통 메타정보 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>제목 <span style="font-size:0.7rem;color:var(--brown-light);margin-left:4px;">필수</span></label>
+          <input type="text" id="inp-title" placeholder="예: 싱가포르 가족여행">
+        </div>
+        <div class="form-group">
+          <label>날짜</label>
+          <input type="date" id="inp-date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>등장 인물 <small style="color:var(--brown-light)">(복수 선택)</small></label>
+          <select id="inp-person" multiple style="height:96px;">
+            <option value="나">나 (아버지)</option>
+            <option value="아내">아내</option>
+            <option value="아들">아들</option>
+            <option value="딸">딸</option>
+            <option value="며느리">며느리</option>
+            <option value="손녀">손녀</option>
+            <option value="친가">친가</option>
+            <option value="처가">처가</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>이벤트 분류</label>
+          <select id="inp-event">
+            <option value="travel">✈️ 가족여행</option>
+            <option value="wedding">💍 결혼식</option>
+            <option value="graduation">🎓 졸업식</option>
+            <option value="special">⭐ 특별 이벤트</option>
+            <option value="daily">☀️ 일상</option>
+            <option value="etc">기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>국가 · 지역</label>
+          <input type="text" id="inp-location" placeholder="예: 싱가포르, 제주도">
+        </div>
+        <div class="form-group">
+          <label>연대</label>
+          <select id="inp-decade">
+            <option value="before1954">1954년 이전</option>
+            <option value="1950s">1950년대</option>
+            <option value="1960s">1960년대</option>
+            <option value="1970s">1970년대</option>
+            <option value="1980s">1980년대</option>
+            <option value="1990s">1990년대</option>
+            <option value="2000s">2000년대</option>
+            <option value="2010s">2010년대</option>
+            <option value="2020s" selected>2020년대</option>
+            <option value="2030s">2030년대</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>설명 · 메모</label>
+        <textarea id="inp-memo" rows="3" placeholder="이 순간에 대한 이야기를 적어주세요..."></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="saveRecord()">💾 저장하기</button>
+      <p style="text-align:center;font-size:0.72rem;color:var(--brown-light);margin-top:8px;">
+        기록 메타정보는 브라우저에 저장됩니다 · 이미지는 각 서비스에서 직접 관리
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 도움말 모달 ═══════ -->
+<div id="help-overlay" onclick="closeHelp(event)" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,0.52);z-index:3000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--warm-white);border-radius:20px;max-width:500px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3);">
+    <div id="help-header" style="padding:20px 24px 16px;border-bottom:1px solid rgba(44,26,14,0.08);display:flex;align-items:center;justify-content:space-between;">
+      <h3 id="help-title" style="font-family:'Noto Serif KR',serif;font-size:1.1rem;"></h3>
+      <button onclick="document.getElementById('help-overlay').style.display='none'" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-sub);">✕</button>
+    </div>
+    <div id="help-body" style="padding:24px;"></div>
+  </div>
+</div>
+
+<style>
+/* 업로드 방식 카드 */
+.umode-card {
+  border:2px solid rgba(44,26,14,0.10);border-radius:14px;padding:16px 14px;
+  cursor:pointer;transition:var(--transition);text-align:center;background:var(--cream);
+}
+.umode-card:hover { border-color:var(--gold); transform:translateY(-2px); }
+.umode-card.active { border-color:var(--gold);background:#fffbf2;box-shadow:0 4px 16px rgba(212,168,83,0.18); }
+.umode-icon { font-size:1.8rem;margin-bottom:6px; }
+.umode-title { font-weight:700;font-size:0.9rem;color:var(--brown-deep);margin-bottom:4px; }
+.umode-desc { font-size:0.75rem;color:var(--text-sub);line-height:1.5;margin-bottom:8px; }
+.umode-badge { font-size:0.68rem;padding:3px 10px;border-radius:20px;display:inline-block; }
+
+/* 호스팅 타입 버튼 */
+.host-type-btn {
+  padding:7px 14px;border-radius:8px;border:1.5px solid rgba(44,26,14,0.12);
+  background:var(--cream);color:var(--text-sub);font-size:0.8rem;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:var(--transition);
+}
+.host-type-btn.active { background:var(--brown-deep);color:var(--gold-light);border-color:var(--brown-deep); }
+</style>
+
+<script>
+// ════════════════════════════════════════
+//  AUTH & PERMISSION SYSTEM
+// ════════════════════════════════════════
+
+// ── 스토리지 헬퍼 ──
+function getUsers(){ try{return JSON.parse(localStorage.getItem('fa_users')||'[]');}catch{return[];} }
+function saveUsers(u){ localStorage.setItem('fa_users', JSON.stringify(u)); }
+function getSession(){ try{return JSON.parse(sessionStorage.getItem('fa_session')||'null');}catch{return null;} }
+
+// ── 세션 가드: 로그인 안 된 경우 auth 페이지로 ──
+(function authGuard(){
+  // 관리자 초기 계정 시드 (최초 1회)
+  const users = getUsers();
+  if(!users.find(u=>u.id==='나')){
+    users.push({
+      id:'나', name:'나 (관리자·아버지)', role:'나', group:'direct',
+      pw: btoa('admin1234'),   // 초기 비밀번호 — 반드시 변경!
+      status:'approved', isAdmin:true,
+      canUpload:true, canPost:true,
+      joinedAt: new Date().toISOString()
+    });
+    saveUsers(users);
+  }
+  const sess = getSession();
+  if(!sess) { window.location.href = 'auth.html'; }
+})();
+
+// ── 현재 세션 유저 ──
+const SESSION = getSession() || {};
+
+// ── 권한 체크 ──
+function canUpload(){ return SESSION.isAdmin || SESSION.canUpload; }
+function canPost(){   return SESSION.isAdmin || SESSION.canPost;   }
+function isAdmin(){   return !!SESSION.isAdmin; }
+
+// ── 로그아웃 ──
+function logout(){
+  if(!confirm('로그아웃 하시겠습니까?')) return;
+  sessionStorage.removeItem('fa_session');
+  window.location.href = 'auth.html';
+}
+
+// ────────────────────────────────────────
+//  ADMIN PANEL
+// ────────────────────────────────────────
+function openAdminPanel(){
+  if(!isAdmin()){ alert('관리자 전용 기능입니다.'); return; }
+  document.getElementById('admin-panel-overlay').style.display='flex';
+  apTab('pending');
+}
+function closeAdminPanel(){
+  document.getElementById('admin-panel-overlay').style.display='none';
+}
+
+// 탭 스위치
+function apTab(tab){
+  document.querySelectorAll('.ap-tab').forEach(el=>{
+    el.style.borderBottomColor = 'transparent';
+    el.style.color = 'var(--text-sub)';
+    el.style.fontWeight = '400';
+  });
+  const idx = {pending:0,members:1,permissions:2,pw:3}[tab];
+  const tabs = document.querySelectorAll('.ap-tab');
+  if(tabs[idx]){
+    tabs[idx].style.borderBottomColor = 'var(--gold)';
+    tabs[idx].style.color = 'var(--brown-deep)';
+    tabs[idx].style.fontWeight = '600';
+  }
+  const body = document.getElementById('ap-body');
+  if(tab==='pending')     body.innerHTML = renderPendingTab();
+  if(tab==='members')     body.innerHTML = renderMembersTab();
+  if(tab==='permissions') body.innerHTML = renderPermissionsTab();
+  if(tab==='pw')          body.innerHTML = renderPwTab();
+
+  // 뱃지
+  const pending = getUsers().filter(u=>u.status==='pending');
+  const badge = document.getElementById('badge-pending');
+  badge.textContent = pending.length || '';
+  badge.style.display = pending.length ? 'inline' : 'none';
+}
+
+// ── 탭 1: 승인 대기 ──
+function renderPendingTab(){
+  const users = getUsers().filter(u=>u.status==='pending');
+  if(!users.length) return `<div style="text-align:center;padding:40px;color:var(--text-sub);">
+    <div style="font-size:2.5rem">✅</div><p style="margin-top:8px;">대기 중인 가입 신청이 없습니다</p></div>`;
+  return users.map(u=>`
+    <div style="background:var(--cream);border-radius:12px;padding:18px;margin-bottom:12px;border:1px solid rgba(44,26,14,0.08);">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--brown-light),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:white;flex-shrink:0;">👤</div>
+        <div style="flex:1;min-width:140px;">
+          <div style="font-weight:600;color:var(--brown-deep);">${u.name} <span style="background:rgba(212,168,83,0.2);color:#7a5c1e;font-size:0.7rem;padding:2px 8px;border-radius:20px;font-weight:400;">${u.role}</span></div>
+          <div style="font-size:0.78rem;color:var(--text-sub);margin-top:3px;">신청일: ${u.requestedAt ? new Date(u.requestedAt).toLocaleDateString('ko-KR') : '-'}</div>
+          ${u.memo ? `<div style="font-size:0.8rem;color:var(--brown-mid);margin-top:4px;">"${u.memo}"</div>` : ''}
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <button onclick="approveUser('${u.id}')" style="background:var(--sage);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:0.82rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">✅ 승인</button>
+          <button onclick="rejectUser('${u.id}')" style="background:var(--rust);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:0.82rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">❌ 거절</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── 탭 2: 구성원 목록 ──
+function renderMembersTab(){
+  const users = getUsers().filter(u=>u.status==='approved');
+  return users.map(u=>`
+    <div style="background:var(--cream);border-radius:12px;padding:16px;margin-bottom:10px;border:1px solid rgba(44,26,14,0.08);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,${u.isAdmin?'var(--gold),var(--rust)':'var(--brown-light),var(--gold-light)'});display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:white;flex-shrink:0;">${u.isAdmin?'👑':'👤'}</div>
+      <div style="flex:1;min-width:120px;">
+        <span style="font-weight:600;color:var(--brown-deep);">${u.name}</span>
+        <span style="background:${u.isAdmin?'rgba(212,168,83,0.25)':'rgba(122,140,110,0.15)'};color:${u.isAdmin?'#7a5c1e':'#4a6741'};font-size:0.7rem;padding:2px 8px;border-radius:20px;margin-left:6px;">${u.isAdmin?'관리자':u.role}</span>
+        <div style="font-size:0.75rem;color:var(--text-sub);margin-top:2px;">가입: ${u.joinedAt ? new Date(u.joinedAt).toLocaleDateString('ko-KR') : '-'}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <span style="padding:4px 10px;border-radius:20px;font-size:0.72rem;background:${u.canUpload?'rgba(122,140,110,0.15)':'rgba(44,26,14,0.07)'};color:${u.canUpload?'#4a6741':'var(--text-sub)'};">📸 업로드 ${u.canUpload?'O':'X'}</span>
+        <span style="padding:4px 10px;border-radius:20px;font-size:0.72rem;background:${u.canPost?'rgba(212,168,83,0.15)':'rgba(44,26,14,0.07)'};color:${u.canPost?'#7a5c1e':'var(--text-sub)'};">✏️ 글쓰기 ${u.canPost?'O':'X'}</span>
+      </div>
+      ${!u.isAdmin ? `<button onclick="removeUser('${u.id}')" style="background:none;border:1px solid var(--rust);color:var(--rust);border-radius:8px;padding:6px 12px;font-size:0.75rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;">탈퇴</button>` : ''}
+    </div>`).join('') || `<div style="text-align:center;padding:40px;color:var(--text-sub);">승인된 구성원이 없습니다</div>`;
+}
+
+// ── 탭 3: 권한 설정 ──
+function renderPermissionsTab(){
+  const users = getUsers().filter(u=>u.status==='approved' && !u.isAdmin);
+  if(!users.length) return `<div style="text-align:center;padding:40px;color:var(--text-sub);">권한을 설정할 구성원이 없습니다</div>`;
+  return `
+    <p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:16px;">각 구성원의 사진 업로드 · 글쓰기 권한을 개별 설정합니다.</p>
+    <div style="background:var(--cream);border-radius:10px;overflow:hidden;border:1px solid rgba(44,26,14,0.08);">
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+        <thead><tr style="background:rgba(44,26,14,0.05);">
+          <th style="padding:12px 16px;text-align:left;color:var(--text-sub);font-weight:500;">구성원</th>
+          <th style="padding:12px;text-align:center;color:var(--text-sub);font-weight:500;">📸 업로드</th>
+          <th style="padding:12px;text-align:center;color:var(--text-sub);font-weight:500;">✏️ 글쓰기</th>
+          <th style="padding:12px;text-align:center;color:var(--text-sub);font-weight:500;">저장</th>
+        </tr></thead>
+        <tbody>
+        ${users.map(u=>`
+          <tr style="border-top:1px solid rgba(44,26,14,0.06);">
+            <td style="padding:12px 16px;">
+              <span style="font-weight:500;">${u.name}</span>
+              <span style="font-size:0.72rem;color:var(--text-sub);margin-left:6px;">${u.role}</span>
+            </td>
+            <td style="padding:12px;text-align:center;">
+              <input type="checkbox" id="up-${u.id}" ${u.canUpload?'checked':''} style="width:18px;height:18px;cursor:pointer;accent-color:var(--sage);">
+            </td>
+            <td style="padding:12px;text-align:center;">
+              <input type="checkbox" id="po-${u.id}" ${u.canPost?'checked':''} style="width:18px;height:18px;cursor:pointer;accent-color:var(--gold);">
+            </td>
+            <td style="padding:12px;text-align:center;">
+              <button onclick="savePermission('${u.id}')" style="background:var(--brown-deep);color:var(--gold-light);border:none;border-radius:6px;padding:6px 14px;font-size:0.78rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">저장</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:16px;padding:12px 16px;background:rgba(212,168,83,0.08);border-radius:8px;font-size:0.8rem;color:var(--text-sub);">
+      💡 권한 변경은 다음 로그인 시부터 반영됩니다.
+    </div>`;
+}
+
+// ── 탭 4: 비밀번호 관리 ──
+function renderPwTab(){
+  const users = getUsers().filter(u=>u.status==='approved');
+  return `
+    <p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:16px;">관리자가 구성원 비밀번호를 초기화합니다. (본인 확인 후 새 비밀번호를 직접 설정하도록 안내하세요)</p>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">구성원 선택</label>
+      <select id="pw-select" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
+        ${users.map(u=>`<option value="${u.id}">${u.name} (${u.role})</option>`).join('')}
+      </select>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">새 임시 비밀번호</label>
+      <input type="text" id="pw-new" placeholder="임시 비밀번호 입력" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
+    </div>
+    <button onclick="resetPw()" style="width:100%;padding:12px;background:var(--brown-deep);color:var(--gold-light);border:none;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;cursor:pointer;">🔑 비밀번호 초기화</button>
+    <hr style="border:none;border-top:1px solid rgba(44,26,14,0.08);margin:24px 0;">
+    <p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:12px;"><strong>내 비밀번호 변경</strong></p>
+    <div style="margin-bottom:10px;">
+      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">현재 비밀번호</label>
+      <input type="password" id="my-pw-old" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">새 비밀번호</label>
+      <input type="password" id="my-pw-new" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
+    </div>
+    <button onclick="changeMyPw()" style="width:100%;padding:12px;background:var(--brown-mid);color:#fff;border:none;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;cursor:pointer;">✅ 내 비밀번호 변경</button>`;
+}
+
+// ── 승인 ──
+function approveUser(id){
+  const users = getUsers();
+  const u = users.find(u=>u.id===id);
+  if(!u) return;
+  u.status = 'approved';
+  u.canUpload = true;
+  u.canPost = true;
+  u.joinedAt = new Date().toISOString();
+  saveUsers(users);
+  apTab('pending');
+  showToast(`✅ "${u.name}" 님의 가입을 승인했습니다`);
+}
+
+// ── 거절 ──
+function rejectUser(id){
+  if(!confirm('이 신청을 거절하시겠습니까?')) return;
+  const users = getUsers();
+  const u = users.find(u=>u.id===id);
+  if(!u) return;
+  u.status = 'rejected';
+  saveUsers(users);
+  apTab('pending');
+  showToast(`❌ "${u.name}" 님의 가입이 거절되었습니다`);
+}
+
+// ── 탈퇴 처리 ──
+function removeUser(id){
+  if(!confirm('이 구성원을 탈퇴 처리하시겠습니까?')) return;
+  const users = getUsers().filter(u=>u.id!==id);
+  saveUsers(users);
+  apTab('members');
+  showToast('구성원이 탈퇴 처리되었습니다');
+}
+
+// ── 권한 저장 ──
+function savePermission(id){
+  const users = getUsers();
+  const u = users.find(u=>u.id===id);
+  if(!u) return;
+  u.canUpload = document.getElementById('up-'+id)?.checked || false;
+  u.canPost   = document.getElementById('po-'+id)?.checked || false;
+  saveUsers(users);
+  showToast(`✅ "${u.name}" 권한이 저장되었습니다`);
+}
+
+// ── 비밀번호 초기화 ──
+function resetPw(){
+  const id = document.getElementById('pw-select')?.value;
+  const pw = document.getElementById('pw-new')?.value;
+  if(!id || !pw) { showToast('구성원과 새 비밀번호를 입력해주세요', true); return; }
+  if(pw.length < 4) { showToast('비밀번호는 4자 이상이어야 합니다', true); return; }
+  const users = getUsers();
+  const u = users.find(u=>u.id===id);
+  if(!u) return;
+  u.pw = btoa(pw);
+  saveUsers(users);
+  document.getElementById('pw-new').value = '';
+  showToast(`✅ "${u.name}" 비밀번호가 초기화되었습니다`);
+}
+
+// ── 내 비밀번호 변경 ──
+function changeMyPw(){
+  const oldPw = document.getElementById('my-pw-old')?.value;
+  const newPw = document.getElementById('my-pw-new')?.value;
+  if(!oldPw || !newPw) { showToast('현재/새 비밀번호를 모두 입력해주세요', true); return; }
+  const users = getUsers();
+  const u = users.find(u=>u.id===SESSION.id);
+  if(!u || u.pw !== btoa(oldPw)) { showToast('현재 비밀번호가 맞지 않습니다', true); return; }
+  if(newPw.length < 6) { showToast('새 비밀번호는 6자 이상이어야 합니다', true); return; }
+  u.pw = btoa(newPw);
+  saveUsers(users);
+  document.getElementById('my-pw-old').value='';
+  document.getElementById('my-pw-new').value='';
+  showToast('✅ 비밀번호가 변경되었습니다');
+}
+
+// ── 토스트 알림 ──
+function showToast(msg, isError=false){
+  let t = document.getElementById('toast-msg');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'toast-msg';
+    t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:24px;font-size:0.88rem;font-family:Noto Sans KR,sans-serif;z-index:9999;transition:opacity 0.4s;box-shadow:0 8px 24px rgba(0,0,0,0.2);white-space:nowrap;';
+    document.body.appendChild(t);
+  }
+  t.style.background = isError ? 'var(--rust)' : 'var(--brown-deep)';
+  t.style.color = isError ? '#fff' : 'var(--gold-light)';
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.style.opacity='0', 3000);
+}
+
+// ════════ DATA ════════
+const FAMILY = {
+  direct: [
+    { id:'나', name:'나 (아버지)', role:'직계', emoji:'👨', type:'direct' },
+    { id:'아내', name:'아내', role:'직계', emoji:'👩', type:'direct' },
+    { id:'아들', name:'아들', role:'직계', emoji:'👦', type:'direct' },
+    { id:'딸', name:'딸', role:'직계', emoji:'👧', type:'direct' },
+    { id:'며느리', name:'며느리', role:'직계', emoji:'👰', type:'direct' },
+    { id:'손녀', name:'손녀', role:'직계', emoji:'👶', type:'direct' },
+  ],
+  paternal: [
+    { id:'장남', name:'장남 (나)', role:'친가 1남', emoji:'👨', type:'paternal' },
+    { id:'차남', name:'차남', role:'친가 2남', emoji:'👨', type:'paternal' },
+    { id:'삼남', name:'삼남', role:'친가 3남', emoji:'👨', type:'paternal' },
+    { id:'사남', name:'사남', role:'친가 4남', emoji:'👨', type:'paternal' },
+    { id:'오남', name:'오남', role:'친가 5남', emoji:'👨', type:'paternal' },
+    { id:'육남', name:'육남', role:'친가 6남', emoji:'👨', type:'paternal' },
+  ],
+  maternal: [
+    { id:'장녀', name:'장녀', role:'처가 1녀', emoji:'👩', type:'maternal' },
+    { id:'차녀', name:'차녀 (아내)', role:'처가 2녀', emoji:'👩', type:'maternal' },
+    { id:'삼녀', name:'삼녀', role:'처가 3녀', emoji:'👩', type:'maternal' },
+    { id:'사녀', name:'사녀', role:'처가 4녀', emoji:'👩', type:'maternal' },
+    { id:'오녀', name:'오녀', role:'처가 5녀', emoji:'👩', type:'maternal' },
+  ],
+};
+
+const DECADES = [
+  { id:'before1954', label:'1954년 이전', count:0, max:20 },
+  { id:'1950s', label:'1950년대', count:0, max:20 },
+  { id:'1960s', label:'1960년대', count:0, max:20 },
+  { id:'1970s', label:'1970년대', count:0, max:20 },
+  { id:'1980s', label:'1980년대', count:0, max:20 },
+  { id:'1990s', label:'1990년대', count:0, max:20 },
+  { id:'2000s', label:'2000년대', count:0, max:20 },
+  { id:'2010s', label:'2010년대', count:0, max:20 },
+  { id:'2020s', label:'2020년대', count:0, max:20 },
+  { id:'2030s', label:'2030년대', count:0, max:20 },
+];
+
+const EVENTS = [
+  { id:'travel', label:'가족여행', icon:'✈️', cls:'travel' },
+  { id:'wedding', label:'결혼식', icon:'💍', cls:'wedding' },
+  { id:'graduation', label:'졸업식', icon:'🎓', cls:'graduation' },
+  { id:'special', label:'특별 이벤트', icon:'⭐', cls:'special' },
+  { id:'daily', label:'일상', icon:'☀️', cls:'travel' },
+];
+
+const LOCATIONS = [
+  { id:'korea', flag:'🇰🇷', name:'대한민국', sub:'서울, 제주, 부산 등' },
+  { id:'japan', flag:'🇯🇵', name:'일본', sub:'도쿄, 오사카 등' },
+  { id:'singapore', flag:'🇸🇬', name:'싱가포르', sub:'' },
+  { id:'usa', flag:'🇺🇸', name:'미국', sub:'' },
+  { id:'europe', flag:'🌍', name:'유럽', sub:'' },
+  { id:'china', flag:'🇨🇳', name:'중국', sub:'' },
+];
+
+// localStorage 기반 간이 DB
+function getRecords() {
+  try { return JSON.parse(localStorage.getItem('fa_records') || '[]'); } catch { return []; }
+}
+function saveRecords(r) { localStorage.setItem('fa_records', JSON.stringify(r)); }
+
+// ════════ RENDER HELPERS ════════
+function renderFamilyCard(m) {
+  return `<div class="family-card ${m.type}" onclick="showPeople('${m.id}')">
+    <div class="avatar">${m.emoji}</div>
+    <div class="name">${m.name}</div>
+    <div class="role">${m.role}</div>
+  </div>`;
+}
+function renderPhotoCard(r) {
+  const tags = [r.person, r.decade, r.event, r.location].filter(Boolean);
+  const thumb = r.imgUrl
+    ? `<img src="${r.imgUrl}" alt="${r.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" onerror="this.style.display='none'">`
+    : '';
+  const clickAction = r.openUrl ? `onclick="window.open('${r.openUrl}','_blank')"` : '';
+  const authorBadge = r.authorName
+    ? `<span style="font-size:0.68rem;color:var(--brown-light);">by ${r.authorName}</span>` : '';
+  const modeBadge = r.uploadMode === 'drive'
+    ? `<div style="position:absolute;top:8px;right:8px;background:rgba(26,115,232,0.85);color:#fff;border-radius:6px;padding:3px 8px;font-size:0.65rem;">📁 Drive</div>`
+    : r.uploadMode === 'host'
+    ? `<div style="position:absolute;top:8px;right:8px;background:rgba(0,150,130,0.85);color:#fff;border-radius:6px;padding:3px 8px;font-size:0.65rem;">🌐 ${r.hostType === 'github' ? 'GitHub' : r.hostType === 'netlify' ? 'Netlify' : 'Web'}</div>`
+    : '';
+  return `<div class="photo-card" ${clickAction} style="${r.openUrl?'cursor:pointer':''}">
+    <div class="photo-thumb" style="position:relative;">
+      ${thumb}
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:${r.imgUrl?'0':'1'};">🖼️</div>
+      ${modeBadge}
+    </div>
+    <div class="photo-info">
+      <h4>${r.title}</h4>
+      <div class="meta" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>${r.date||''} ${r.location ? '· '+r.location : ''}</span>
+        ${authorBadge}
+      </div>
+      <div class="photo-tags">${tags.map(t=>`<span class="tag-chip">${t}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+function renderEventItem(e) {
+  const cat = EVENTS.find(x=>x.id===e.event)||EVENTS[0];
+  return `<div class="event-item">
+    <div class="event-icon ${cat.cls}">${cat.icon}</div>
+    <div class="event-body">
+      <h4>${e.title}</h4>
+      <p>${e.location||''} ${e.person ? '· '+e.person : ''}</p>
+    </div>
+    <div class="event-date">${e.date||''}</div>
+  </div>`;
+}
+
+// ════════ INIT ════════
+function init() {
+  // Splash
+  setTimeout(()=>{ document.getElementById('splash').classList.add('hidden'); }, 1800);
+
+  // Direct family cards
+  document.getElementById('direct-family-cards').innerHTML = FAMILY.direct.map(renderFamilyCard).join('');
+
+  // Paternal / maternal inline list
+  document.getElementById('paternal-list').innerHTML = FAMILY.paternal.map(m=>
+    `<span style="background:rgba(107,63,42,0.1);padding:4px 10px;border-radius:16px;font-size:0.78rem;cursor:pointer">${m.name}</span>`).join('');
+  document.getElementById('maternal-list').innerHTML = FAMILY.maternal.map(m=>
+    `<span style="background:rgba(122,140,110,0.1);padding:4px 10px;border-radius:16px;font-size:0.78rem;cursor:pointer">${m.name}</span>`).join('');
+
+  // Paternal cards page
+  document.getElementById('paternal-cards').innerHTML = FAMILY.paternal.map(renderFamilyCard).join('');
+  document.getElementById('maternal-cards').innerHTML = FAMILY.maternal.map(renderFamilyCard).join('');
+
+  // Decade grid
+  document.getElementById('decade-grid').innerHTML = DECADES.map(d=>
+    `<div class="decade-card" onclick="showDecade('${d.id}')">
+      <div class="year">${d.label}</div>
+      <div class="count">${d.count}개 기록</div>
+      <div class="bar"><div class="bar-fill" style="width:${(d.count/d.max*100)||5}%"></div></div>
+    </div>`).join('');
+
+  // Event filters
+  document.getElementById('event-filters').innerHTML = 
+    `<button class="filter-btn active" onclick="filterEvents('all',this)">전체</button>` +
+    EVENTS.map(e=>`<button class="filter-btn" onclick="filterEvents('${e.id}',this)">${e.icon} ${e.label}</button>`).join('');
+
+  // Gallery filters
+  const allPeople = [...FAMILY.direct, ...FAMILY.paternal, ...FAMILY.maternal];
+  document.getElementById('gallery-filters').innerHTML =
+    `<button class="filter-btn active" onclick="filterGallery('all',this)">전체</button>` +
+    allPeople.map(m=>`<button class="filter-btn" onclick="filterGallery('${m.id}',this)">${m.name}</button>`).join('');
+
+  // People tabs
+  document.getElementById('people-tabs').innerHTML =
+    `<button class="people-tab direct active" onclick="filterPeopleTab('direct',this)">직계가족</button>` +
+    `<button class="people-tab paternal" onclick="filterPeopleTab('paternal',this)">🌳 친가</button>` +
+    `<button class="people-tab maternal" onclick="filterPeopleTab('maternal',this)">🌿 처가</button>`;
+
+  // Locations
+  document.getElementById('location-chips').innerHTML = LOCATIONS.map(l=>
+    `<div class="location-chip" onclick="showPlace('${l.id}')">
+      <span class="flag">${l.flag}</span>
+      <span>${l.name}</span>
+      ${l.sub?`<small style="color:var(--text-sub)">${l.sub}</small>`:''}
+    </div>`).join('');
+
+  // Stats
+  refreshStats();
+  renderRecentEvents();
+  renderEventList();
+  renderGallery();
+}
+
+function refreshStats() {
+  const records = getRecords();
+  document.getElementById('total-photos').textContent = records.length;
+  document.getElementById('total-events').textContent = records.filter(r=>r.event).length;
+  const places = [...new Set(records.map(r=>r.location).filter(Boolean))];
+  document.getElementById('total-places').textContent = places.length || LOCATIONS.length;
+}
+
+function renderRecentEvents() {
+  const records = getRecords();
+  const el = document.getElementById('recent-events');
+  if (records.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">📭</div><h3>아직 기록이 없습니다</h3><p>"기록 추가" 버튼으로 첫 기록을 남겨보세요</p></div>`;
+  } else {
+    el.innerHTML = records.slice(-5).reverse().map(renderEventItem).join('');
+  }
+}
+
+function renderEventList(filter='all') {
+  const records = getRecords();
+  const filtered = filter === 'all' ? records : records.filter(r => r.event === filter);
+  const el = document.getElementById('event-list');
+  el.innerHTML = filtered.length
+    ? filtered.map(renderEventItem).join('')
+    : `<div class="empty-state"><div class="icon">📋</div><h3>이벤트 기록이 없습니다</h3><p>기록을 추가해보세요</p></div>`;
+}
+
+function renderGallery(filter='all') {
+  const records = getRecords();
+  const filtered = filter === 'all' ? records : records.filter(r => r.person === filter);
+  const el = document.getElementById('photo-grid');
+  el.innerHTML = filtered.length
+    ? filtered.map(renderPhotoCard).join('')
+    : `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🖼️</div><h3>사진이 없습니다</h3><p>첫 사진을 추가해보세요</p></div>`;
+}
+
+// ════════ NAVIGATION ════════
+let currentPage = 'dashboard';
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('bc-current').textContent = {
+    dashboard:'대시보드', gallery:'전체 갤러리', people:'인물별',
+    paternal:'친가', maternal:'처가', timeline:'시대별',
+    events:'이벤트별', places:'지역별', admin:'관리자'
+  }[id] || id;
+  currentPage = id;
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+function showPeople(person) {
+  showPage('people');
+  filterGalleryDirect(person);
+}
+function showDecade(dec) {
+  showPage('timeline');
+}
+function showEvent(evt) {
+  showPage('events');
+  filterEvents(evt, null);
+}
+function showPlace(loc) {
+  showPage('places');
+}
+
+// ════════ FILTERS ════════
+function filterEvents(type, btn) {
+  if (btn) {
+    document.querySelectorAll('#event-filters .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderEventList(type);
+}
+function filterGallery(person, btn) {
+  if (btn) {
+    document.querySelectorAll('#gallery-filters .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderGallery(person);
+}
+function filterGalleryDirect(person) {
+  renderGallery(person);
+}
+function filterPeopleTab(type, btn) {
+  document.querySelectorAll('.people-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const members = FAMILY[type] || [];
+  document.getElementById('people-grid').innerHTML = members.length
+    ? members.map(m=>`<div class="photo-card" style="text-align:center;padding:24px">
+        <div style="font-size:3rem">${m.emoji}</div>
+        <div style="margin-top:8px;font-weight:500">${m.name}</div>
+        <div style="font-size:0.78rem;color:var(--text-sub)">${m.role}</div>
+      </div>`).join('')
+    : '';
+}
+
+// ════════ SEARCH ════════
+function searchRecords(query) {
+  if (!query.trim()) { renderGallery(); return; }
+  const q = query.toLowerCase();
+  const records = getRecords().filter(r =>
+    (r.title||'').toLowerCase().includes(q) ||
+    (r.person||'').toLowerCase().includes(q) ||
+    (r.location||'').toLowerCase().includes(q) ||
+    (r.event||'').toLowerCase().includes(q)
+  );
+  showPage('gallery');
+  document.getElementById('photo-grid').innerHTML = records.length
+    ? records.map(renderPhotoCard).join('')
+    : `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>"${query}" 검색 결과 없음</h3></div>`;
+}
+
+// ════════ UPLOAD MODE STATE ════════
+let currentUploadMode = 'drive';   // 'drive' | 'host'
+let currentHostType   = 'github';  // 'github' | 'netlify' | 'custom'
+
+function setUploadMode(mode) {
+  currentUploadMode = mode;
+  // 카드 active 상태
+  document.querySelectorAll('.umode-card').forEach(el => el.classList.remove('active'));
+  const modeCard = document.getElementById('umode-' + mode);
+  if (modeCard) modeCard.classList.add('active');
+  // 패널 표시/숨김 — display 속성을 직접 강제 지정
+  const drivePanel = document.getElementById('panel-drive');
+  const hostPanel  = document.getElementById('panel-host');
+  if (drivePanel) drivePanel.style.cssText = 'display:' + (mode === 'drive' ? 'block' : 'none') + ' !important';
+  if (hostPanel)  hostPanel.style.cssText  = 'display:' + (mode === 'host'  ? 'block' : 'none') + ' !important';
+}
+
+function setHostType(type, btn) {
+  currentHostType = type;
+  document.querySelectorAll('.host-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.host-info-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('host-info-' + type).style.display = 'block';
+  const isCustom = type === 'custom';
+  document.getElementById('host-base-group').style.display  = isCustom ? 'none' : 'block';
+  document.getElementById('host-path-group').style.display  = isCustom ? 'none' : 'block';
+  document.getElementById('host-direct-group').style.display = isCustom ? 'block' : 'none';
+  if (type === 'github') {
+    document.getElementById('host-base-label').textContent = 'GitHub Pages 사이트 URL';
+    document.getElementById('inp-host-base').placeholder   = 'https://사용자명.github.io/family-archive';
+  } else if (type === 'netlify') {
+    document.getElementById('host-base-label').textContent = 'Netlify 사이트 URL';
+    document.getElementById('inp-host-base').placeholder   = 'https://내사이트.netlify.app';
+  }
+  previewHostImg();
+}
+
+// ════════ GOOGLE DRIVE 유틸 ════════
+function driveShareToImg(url) {
+  if (!url) return null;
+  let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800`;
+  m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800`;
+  return null;
+}
+function driveShareToOpen(url) {
+  if (!url) return url;
+  const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/file/d/${m[1]}/view`;
+  return url;
+}
+
+function previewDriveLink(url) {
+  const box      = document.getElementById('drive-preview');
+  const img      = document.getElementById('drive-preview-img');
+  const fallback = document.getElementById('drive-preview-fallback');
+  if (!url || url.length < 10) { box.style.display = 'none'; return; }
+  const imgUrl = driveShareToImg(url);
+  box.style.display = 'block';
+  if (imgUrl) {
+    img.src = imgUrl; img.style.display = 'block'; fallback.style.display = 'none';
+    img.onerror = () => { img.style.display = 'none'; fallback.style.display = 'block'; };
+  } else {
+    img.style.display = 'none'; fallback.style.display = 'block';
+  }
+}
+
+// ════════ 웹 호스팅 유틸 ════════
+function getHostImgUrl() {
+  if (currentHostType === 'custom') {
+    return document.getElementById('inp-host-direct')?.value.trim() || '';
+  }
+  const base = (document.getElementById('inp-host-base')?.value.trim() || '').replace(/\/$/, '');
+  const path = (document.getElementById('inp-host-path')?.value.trim() || '').replace(/^\//, '');
+  if (!base || !path) return '';
+  return `${base}/images/${path}`;
+}
+
+function previewHostImg() {
+  const url     = getHostImgUrl();
+  const box     = document.getElementById('host-preview');
+  const img     = document.getElementById('host-preview-img');
+  const fallback= document.getElementById('host-preview-fallback');
+  if (!url) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  img.src = url; img.style.display = 'block'; fallback.style.display = 'none';
+  img.onerror = () => { img.style.display = 'none'; fallback.style.display = 'block'; };
+}
+
+// ════════ 도움말 모달 ════════
+const HELP_CONTENT = {
+  drive: {
+    title: '📁 Google Drive 공유 링크 만들기',
+    color: '#1a73e8',
+    steps: [
+      { t: 'Google Drive 앱 열기', d: 'drive.google.com 또는 모바일 Drive 앱에 접속합니다' },
+      { t: '사진 파일 선택', d: '파일을 길게 탭(모바일) 또는 우클릭(PC)합니다' },
+      { t: '"공유" → 권한 변경', d: '<b style="color:#1a73e8">링크가 있는 모든 사용자</b> → 뷰어로 설정합니다' },
+      { t: '"링크 복사" 후 붙여넣기', d: '복사한 링크를 업로드 폼에 붙여넣으세요' },
+    ],
+    tip: '링크 형식: <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">https://drive.google.com/file/d/<b>파일ID</b>/view?usp=sharing</code>',
+  },
+  github: {
+    title: '⬛ GitHub Pages 설정 방법',
+    color: '#24292e',
+    steps: [
+      { t: 'GitHub 계정 만들기', d: '<a href="https://github.com" target="_blank" style="color:#1a73e8;">github.com</a>에서 무료 계정 가입' },
+      { t: '저장소(Repository) 생성', d: '저장소 이름: <b>family-archive</b> (또는 원하는 이름) · Public으로 설정' },
+      { t: 'images 폴더에 사진 업로드', d: '저장소 안에 <b>images/</b> 폴더 생성 후 사진 파일을 업로드합니다' },
+      { t: 'GitHub Pages 활성화', d: '저장소 Settings → Pages → Source: main 브랜치 선택 → Save' },
+      { t: '사이트 URL 확인 후 입력', d: '<b>https://사용자명.github.io/family-archive</b> 형태의 URL이 발급됩니다' },
+    ],
+    tip: '이미지 경로 예시: <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">images/2025/singapore.jpg</code>',
+  },
+  netlify: {
+    title: '🟦 Netlify Drop 사용 방법',
+    color: '#00ad9f',
+    steps: [
+      { t: 'Netlify 접속', d: '<a href="https://app.netlify.com/drop" target="_blank" style="color:#00ad9f;">app.netlify.com/drop</a> 페이지로 이동합니다' },
+      { t: '폴더 드래그 앤 드롭', d: 'PC에서 <b>images/</b> 폴더(또는 전체 사이트 폴더)를 드래그하면 즉시 배포됩니다' },
+      { t: '자동 URL 발급', d: '<b>https://랜덤이름.netlify.app</b> 형태의 URL이 발급됩니다 (무료)' },
+      { t: '커스텀 도메인 연결 (선택)', d: 'Netlify 대시보드에서 구매한 도메인을 연결할 수 있습니다' },
+      { t: '사이트 URL 입력', d: '발급된 URL을 업로드 폼의 "Netlify 사이트 URL"에 입력하세요' },
+    ],
+    tip: '이미지 폴더 구조: <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">images/연도/파일명.jpg</code> 권장',
+  },
+};
+
+function openHelpModal(type) {
+  const h = HELP_CONTENT[type]; if (!h) return;
+  document.getElementById('help-title').textContent = h.title;
+  document.getElementById('help-body').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+      ${h.steps.map((s,i)=>`
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:${h.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;">${i+1}</div>
+          <div>
+            <div style="font-weight:600;font-size:0.88rem;margin-bottom:3px;">${s.t}</div>
+            <div style="font-size:0.8rem;color:var(--text-sub);line-height:1.6;">${s.d}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="padding:12px 16px;background:rgba(212,168,83,0.1);border-radius:8px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
+      💡 ${h.tip}
+    </div>`;
+  document.getElementById('help-overlay').style.display = 'flex';
+}
+function closeHelp(e) {
+  if (e.target === document.getElementById('help-overlay'))
+    document.getElementById('help-overlay').style.display = 'none';
+}
+
+// ════════ MODAL ════════
+function openUpload() {
+  if (!canUpload()) {
+    showToast('🔒 업로드 권한이 없습니다. 관리자에게 문의하세요.', true);
+    return;
+  }
+  // 폼 초기화
+  ['inp-gdrive','inp-title','inp-location','inp-memo','inp-host-base','inp-host-path','inp-host-direct'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('inp-date').value  = new Date().toISOString().slice(0,10);
+  document.getElementById('inp-event').value = 'travel';
+  document.getElementById('inp-decade').value= '2020s';
+  // 미리보기 숨기기
+  ['drive-preview','host-preview'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
+  // ★ 패널 초기화 — Drive 모드로 강제 리셋
+  currentUploadMode = 'drive';
+  currentHostType   = 'github';
+  const drivePanel = document.getElementById('panel-drive');
+  const hostPanel  = document.getElementById('panel-host');
+  if (drivePanel) { drivePanel.style.cssText = 'display:block !important'; }
+  if (hostPanel)  { hostPanel.style.cssText  = 'display:none !important'; }
+  document.querySelectorAll('.umode-card').forEach(el => el.classList.remove('active'));
+  const driveCard = document.getElementById('umode-drive');
+  if (driveCard) driveCard.classList.add('active');
+  // 모달 열기
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeUpload() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeUpload();
+}
+
+function saveRecord() {
+  const title   = document.getElementById('inp-title')?.value.trim() || '';
+  const date    = document.getElementById('inp-date')?.value || '';
+  const persons = [...(document.getElementById('inp-person')?.selectedOptions||[])].map(o=>o.value);
+  const event   = document.getElementById('inp-event')?.value || '';
+  const location= document.getElementById('inp-location')?.value.trim() || '';
+  const decade  = document.getElementById('inp-decade')?.value || '';
+  const memo    = document.getElementById('inp-memo')?.value.trim() || '';
+
+  if (!title) { showToast('제목을 입력해주세요', true); return; }
+
+  let imgUrl = '', openUrl = '', uploadMode = currentUploadMode;
+
+  if (currentUploadMode === 'drive') {
+    const driveUrl = document.getElementById('inp-gdrive')?.value.trim() || '';
+    if (!driveUrl) { showToast('Google Drive 링크를 입력해주세요', true); return; }
+    imgUrl  = driveShareToImg(driveUrl) || '';
+    openUrl = driveShareToOpen(driveUrl);
+  } else {
+    imgUrl  = getHostImgUrl();
+    openUrl = imgUrl;
+    if (!imgUrl) { showToast('이미지 URL을 입력해주세요', true); return; }
+  }
+
+  const record = {
+    id: Date.now(), title, date,
+    person: persons.join(', '), event, location, decade, memo,
+    imgUrl, openUrl, uploadMode,
+    hostType: currentUploadMode === 'host' ? currentHostType : null,
+    author:     SESSION.id   || '관리자',
+    authorName: SESSION.name || SESSION.id || '관리자',
+    created: new Date().toISOString(),
+  };
+
+  const records = getRecords();
+  records.push(record);
+  saveRecords(records);
+  refreshStats(); renderRecentEvents(); renderEventList(); renderGallery();
+  closeUpload();
+  showToast('✅ 기록이 저장되었습니다!');
+}
+
+// ════════ SIDEBAR TOGGLE ════════
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ════════ START ════════
+init();
+
+// ── 상단바 유저 영역 렌더 ──
+(function renderTopbarUser(){
+  const el = document.getElementById('topbar-user');
+  if(!el) return;
+  const roleLabel = SESSION.isAdmin ? '👑 관리자' : `👤 ${SESSION.name||SESSION.id}`;
+  const uploadBtn = canUpload()
+    ? `<button class="topbar-btn" onclick="openUpload()">+ 기록 추가</button>`
+    : `<span style="font-size:0.78rem;color:var(--text-sub);padding:8px 12px;background:var(--cream);border-radius:8px;">열람 전용</span>`;
+  const adminBtn = isAdmin()
+    ? `<button class="topbar-btn" style="background:var(--gold);color:var(--brown-deep);" onclick="openAdminPanel()">👑 관리</button>`
+    : '';
+  el.innerHTML = `
+    <span style="font-size:0.82rem;color:var(--text-sub);padding:6px 12px;background:var(--cream);border-radius:20px;">${roleLabel}</span>
+    ${uploadBtn}
+    ${adminBtn}
+    <button class="topbar-btn" style="background:transparent;color:var(--text-sub);border:1px solid rgba(44,26,14,0.15);" onclick="logout()">로그아웃</button>`;
+
+  // 사이드바 '기록 추가' 항목도 권한에 따라 표시
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    if(el.getAttribute('onclick')==="openUpload()"){
+      if(!canUpload()) el.style.opacity='0.35';
+    }
+  });
+})();
+</script>
+
+<!-- ═══════ ADMIN PANEL MODAL ═══════ -->
+<div id="admin-panel-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,0.55);backdrop-filter:blur(6px);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--warm-white);border-radius:20px;width:100%;max-width:720px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,0.35);">
+    <!-- header -->
+    <div style="padding:24px 28px 16px;border-bottom:1px solid rgba(44,26,14,0.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <h3 style="font-family:'Noto Serif KR',serif;font-size:1.3rem;color:var(--brown-deep);">👑 관리자 패널</h3>
+        <p style="font-size:0.78rem;color:var(--text-sub);margin-top:3px;">가족 구성원 가입 승인 및 권한 관리</p>
+      </div>
+      <button onclick="closeAdminPanel()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-sub);padding:4px;">✕</button>
+    </div>
+    <!-- tabs -->
+    <div style="display:flex;border-bottom:1px solid rgba(44,26,14,0.08);flex-shrink:0;">
+      <button class="ap-tab active" onclick="apTab('pending')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">⏳ 승인 대기 <span id="badge-pending" style="background:var(--rust);color:#fff;border-radius:20px;padding:2px 7px;font-size:0.7rem;margin-left:4px;"></span></button>
+      <button class="ap-tab" onclick="apTab('members')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">✅ 승인된 구성원</button>
+      <button class="ap-tab" onclick="apTab('permissions')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">🔐 권한 설정</button>
+      <button class="ap-tab" onclick="apTab('pw')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">🔑 비밀번호</button>
+    </div>
+    <!-- body -->
+    <div style="padding:24px;overflow-y:auto;flex:1;" id="ap-body"></div>
+  </div>
+</div>
+
+</body>
+</html>
