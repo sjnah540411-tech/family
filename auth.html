@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리가족 아카이브 — 로그인</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+:root {
+  --cream:#f5f0e8; --warm-white:#faf8f4;
+  --brown-deep:#2c1a0e; --brown-mid:#6b3f2a; --brown-light:#c4956a;
+  --gold:#d4a853; --gold-light:#e8c98a; --sage:#7a8c6e; --rust:#b05c3a;
+  --text-main:#2c1a0e; --text-sub:#6b5a4e;
+  --radius:12px; --transition:0.3s cubic-bezier(0.4,0,0.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--brown-deep);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-wrap{width:100%;max-width:440px;}
+.login-logo{text-align:center;margin-bottom:32px;}
+.login-logo h1{font-family:'Noto Serif KR',serif;color:var(--gold-light);font-size:2rem;letter-spacing:0.1em;}
+.login-logo p{color:var(--brown-light);font-size:0.82rem;margin-top:6px;letter-spacing:0.08em;}
+.card{background:var(--warm-white);border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.4);}
+.card-tabs{display:flex;}
+.card-tab{flex:1;padding:16px;text-align:center;font-size:0.88rem;cursor:pointer;background:var(--cream);color:var(--text-sub);border:none;font-family:'Noto Sans KR',sans-serif;transition:var(--transition);}
+.card-tab.active{background:var(--warm-white);color:var(--brown-deep);font-weight:600;border-bottom:2px solid var(--gold);}
+.card-body{padding:32px;}
+.panel{display:none;} .panel.active{display:block;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;font-weight:500;}
+.form-group input,.form-group select{
+  width:100%;padding:12px 16px;
+  border:1.5px solid rgba(44,26,14,0.12);border-radius:10px;
+  font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;color:var(--text-main);
+  background:var(--cream);outline:none;transition:var(--transition);}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold);background:#fff;}
+.btn-main{width:100%;padding:14px;background:var(--brown-deep);color:var(--gold-light);
+  border:none;border-radius:10px;font-family:'Noto Sans KR',sans-serif;
+  font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:8px;letter-spacing:0.05em;}
+.btn-main:hover{background:var(--brown-mid);}
+.alert{padding:12px 16px;border-radius:8px;font-size:0.83rem;margin-bottom:16px;display:none;}
+.alert.error{background:rgba(176,92,58,0.12);color:var(--rust);border:1px solid rgba(176,92,58,0.25);}
+.alert.success{background:rgba(122,140,110,0.12);color:#4a6741;border:1px solid rgba(122,140,110,0.3);}
+.alert.info{background:rgba(212,168,83,0.12);color:#7a5c1e;border:1px solid rgba(212,168,83,0.3);}
+.divider{border:none;border-top:1px solid rgba(44,26,14,0.08);margin:20px 0;}
+.pending-info{background:var(--cream);border-radius:10px;padding:16px;font-size:0.82rem;color:var(--text-sub);line-height:1.7;text-align:center;}
+.pending-info strong{color:var(--brown-mid);}
+.role-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;}
+.role-badge.admin{background:rgba(212,168,83,0.2);color:#7a5c1e;}
+.role-badge.member{background:rgba(122,140,110,0.15);color:#4a6741;}
+.role-badge.pending{background:rgba(44,26,14,0.08);color:var(--text-sub);}
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-logo">
+    <h1>우리가족 아카이브</h1>
+    <p>소중한 우리 가족의 기록 공간</p>
+  </div>
+  <div class="card">
+    <div class="card-tabs">
+      <button class="card-tab active" onclick="switchTab('login')">로그인</button>
+      <button class="card-tab" onclick="switchTab('register')">가입 신청</button>
+    </div>
+    <div class="card-body">
+
+      <!-- ── 로그인 ── -->
+      <div class="panel active" id="panel-login">
+        <div class="alert error" id="login-error"></div>
+        <div class="form-group">
+          <label>아이디 (가족 이름)</label>
+          <input type="text" id="login-id" placeholder="예: 아들, 딸, 아내..." autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" id="login-pw" placeholder="비밀번호를 입력하세요" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="btn-main" onclick="doLogin()">로그인</button>
+        <hr class="divider">
+        <div class="pending-info">
+          처음 방문하셨나요? <strong>가입 신청</strong> 탭에서 신청 후<br>
+          관리자(아버지)의 승인을 기다려 주세요 🌸
+        </div>
+      </div>
+
+      <!-- ── 가입 신청 ── -->
+      <div class="panel" id="panel-register">
+        <div class="alert error" id="reg-error"></div>
+        <div class="alert success" id="reg-success"></div>
+        <div class="form-group">
+          <label>가족 관계 선택</label>
+          <select id="reg-role">
+            <option value="">— 선택하세요 —</option>
+            <option value="아내">아내</option>
+            <option value="아들">아들</option>
+            <option value="딸">딸</option>
+            <option value="며느리">며느리</option>
+            <option value="손녀">손녀</option>
+            <option value="친가">친가 형제</option>
+            <option value="처가">처가 자매</option>
+            <option value="기타">기타 가족</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>이름 (아이디로 사용)</label>
+          <input type="text" id="reg-id" placeholder="실명 또는 호칭">
+        </div>
+        <div class="form-group">
+          <label>비밀번호 설정</label>
+          <input type="password" id="reg-pw" placeholder="6자 이상">
+        </div>
+        <div class="form-group">
+          <label>비밀번호 확인</label>
+          <input type="password" id="reg-pw2" placeholder="동일하게 입력">
+        </div>
+        <div class="form-group">
+          <label>한 마디 (관리자에게 전달)</label>
+          <input type="text" id="reg-msg" placeholder="예: 큰아들이에요 😊">
+        </div>
+        <button class="btn-main" onclick="doRegister()">가입 신청하기</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+// ── 초기 관리자 계정 시드 ──
+(function seedAdmin(){
+  const users = getUsers();
+  if(!users.find(u=>u.id==='나')){
+    users.push({
+      id:'나', name:'아버지 (관리자)', role:'나', group:'direct',
+      pw: btoa('admin1234'),   // ← 최초 비밀번호: admin1234  (반드시 변경)
+      status:'approved', isAdmin:true,
+      joinedAt: new Date().toISOString()
+    });
+    saveUsers(users);
+  }
+})();
+
+function getUsers(){ try{return JSON.parse(localStorage.getItem('fa_users')||'[]');}catch{return[];} }
+function saveUsers(u){ localStorage.setItem('fa_users', JSON.stringify(u)); }
+
+function switchTab(t){
+  document.querySelectorAll('.card-tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='login'?0:1)));
+  document.getElementById('panel-login').classList.toggle('active', t==='login');
+  document.getElementById('panel-register').classList.toggle('active', t==='register');
+}
+
+function showAlert(id, msg, type='error'){
+  const el=document.getElementById(id);
+  el.textContent=msg; el.className=`alert ${type}`; el.style.display='block';
+  setTimeout(()=>el.style.display='none', 4000);
+}
+
+function doLogin(){
+  const id=document.getElementById('login-id').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  if(!id||!pw){showAlert('login-error','아이디와 비밀번호를 입력하세요.');return;}
+  const users=getUsers();
+  const user=users.find(u=>u.id===id && u.pw===btoa(pw));
+  if(!user){showAlert('login-error','아이디 또는 비밀번호가 맞지 않습니다.');return;}
+  if(user.status==='pending'){
+    showAlert('login-error','아직 관리자 승인 대기 중입니다. 잠시만 기다려 주세요 🙏','info');return;
+  }
+  if(user.status==='rejected'){
+    showAlert('login-error','가입이 거절되었습니다. 관리자에게 문의하세요.');return;
+  }
+  // 세션 저장
+  sessionStorage.setItem('fa_session', JSON.stringify({id:user.id, name:user.name, role:user.role, isAdmin:user.isAdmin, status:user.status}));
+  window.location.href='index.html';
+}
+
+function doRegister(){
+  const role=document.getElementById('reg-role').value;
+  const id=document.getElementById('reg-id').value.trim();
+  const pw=document.getElementById('reg-pw').value;
+  const pw2=document.getElementById('reg-pw2').value;
+  const msg=document.getElementById('reg-msg').value.trim();
+  if(!role){showAlert('reg-error','가족 관계를 선택해주세요.');return;}
+  if(!id){showAlert('reg-error','이름을 입력해주세요.');return;}
+  if(pw.length<6){showAlert('reg-error','비밀번호는 6자 이상이어야 합니다.');return;}
+  if(pw!==pw2){showAlert('reg-error','비밀번호가 일치하지 않습니다.');return;}
+  const users=getUsers();
+  if(users.find(u=>u.id===id)){showAlert('reg-error','이미 사용 중인 이름입니다.');return;}
+  const groupMap={아내:'direct',아들:'direct',딸:'direct',며느리:'direct',손녀:'direct',친가:'paternal',처가:'maternal',기타:'other'};
+  users.push({
+    id, name:id, role, group:groupMap[role]||'other',
+    pw:btoa(pw), status:'pending', isAdmin:false,
+    memo:msg, requestedAt:new Date().toISOString()
+  });
+  saveUsers(users);
+  showAlert('reg-success', `"${id}" 님의 가입 신청이 완료되었습니다.\n관리자 승인 후 로그인하실 수 있어요 🌸`, 'success');
+  document.getElementById('reg-role').value='';
+  document.getElementById('reg-id').value='';
+  document.getElementById('reg-pw').value='';
+  document.getElementById('reg-pw2').value='';
+  document.getElementById('reg-msg').value='';
+}
+</script>
+</body>
+</html>
