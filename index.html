@@ -1,46 +1,934 @@
-         이미 호스팅된 이미지의 직접 URL(https://...)을 아래에 입력하세요
-        </div>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리가족 아카이브</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 
-        <!-- 사이트 기본 URL -->
-        <div id="host-base-group" class="form-group">
-          <label id="host-base-label">사이트 기본 URL</label>
-          <input type="url" id="inp-host-base" placeholder="https://사용자명.github.io/family-archive"
-            style="width:100%;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:var(--cream);">
-          <small style="color:var(--brown-light);font-size:0.72rem;margin-top:4px;display:block;">끝에 / 없이 입력</small>
-        </div>
+:root {
+  --cream: #f5f0e8;
+  --warm-white: #faf8f4;
+  --brown-deep: #2c1a0e;
+  --brown-mid: #6b3f2a;
+  --brown-light: #c4956a;
+  --gold: #d4a853;
+  --gold-light: #e8c98a;
+  --sage: #7a8c6e;
+  --rust: #b05c3a;
+  --text-main: #2c1a0e;
+  --text-sub: #6b5a4e;
+  --shadow: rgba(44,26,14,0.12);
+  --radius: 12px;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
 
-        <!-- 파일 경로 -->
-        <div id="host-path-group" class="form-group">
-          <label>이미지 파일 경로</label>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span style="color:var(--text-sub);font-size:0.82rem;white-space:nowrap;">/images/</span>
-            <input type="text" id="inp-host-path" placeholder="2025/singapore.jpg" oninput="previewHostImg()"
-              style="flex:1;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:var(--cream);">
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--cream);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ───────── SPLASH SCREEN ───────── */
+#splash {
+  position: fixed; inset: 0;
+  background: var(--brown-deep);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px;
+  z-index: 9999;
+  transition: opacity 0.8s ease, visibility 0.8s;
+}
+#splash.hidden { opacity:0; visibility:hidden; }
+#splash h1 {
+  font-family: 'Noto Serif KR', serif;
+  color: var(--gold-light);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  letter-spacing: 0.15em;
+  animation: fadeUp 1s ease forwards;
+}
+#splash p { color: var(--brown-light); font-size: 1rem; letter-spacing: 0.1em; animation: fadeUp 1s ease 0.3s both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+/* ───────── LAYOUT ───────── */
+#app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* ───────── SIDEBAR ───────── */
+#sidebar {
+  background: var(--brown-deep);
+  padding: 0;
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--brown-mid) transparent;
+}
+.sidebar-logo {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid rgba(212,168,83,0.2);
+}
+.sidebar-logo h2 {
+  font-family: 'Noto Serif KR', serif;
+  color: var(--gold-light);
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+.sidebar-logo p { color: var(--brown-light); font-size: 0.75rem; margin-top: 4px; letter-spacing: 0.05em; }
+
+.nav-section { padding: 16px 0 8px; }
+.nav-section-title {
+  color: var(--gold);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0 24px 8px;
+  font-weight: 500;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 24px;
+  color: rgba(245,240,232,0.7);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.88rem;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+.nav-item:hover { color: var(--gold-light); background: rgba(212,168,83,0.06); }
+.nav-item.active {
+  color: var(--gold-light);
+  border-left-color: var(--gold);
+  background: rgba(212,168,83,0.10);
+}
+.nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+.nav-item .badge {
+  margin-left: auto;
+  background: var(--rust);
+  color: #fff;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 20px;
+}
+
+.nav-sub { padding-left: 20px; }
+.nav-sub .nav-item { font-size: 0.82rem; padding: 8px 24px 8px 16px; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(212,168,83,0.15);
+  font-size: 0.72rem;
+  color: var(--brown-light);
+  line-height: 1.6;
+}
+
+/* ───────── MAIN CONTENT ───────── */
+#main {
+  display: flex; flex-direction: column;
+  background: var(--warm-white);
+  overflow: hidden;
+}
+
+/* ───────── TOP BAR ───────── */
+#topbar {
+  background: var(--warm-white);
+  border-bottom: 1px solid rgba(44,26,14,0.08);
+  padding: 16px 32px;
+  display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.breadcrumb { color: var(--text-sub); font-size: 0.82rem; }
+.breadcrumb span { color: var(--brown-light); margin: 0 6px; }
+.breadcrumb b { color: var(--text-main); font-weight: 500; }
+
+#search-box {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--cream);
+  border: 1px solid rgba(44,26,14,0.12);
+  border-radius: 24px;
+  padding: 8px 16px;
+  min-width: 220px;
+}
+#search-box input {
+  border: none; background: transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem; color: var(--text-main);
+  outline: none; width: 100%;
+}
+#search-box input::placeholder { color: var(--brown-light); }
+
+.topbar-btn {
+  background: var(--brown-deep); color: var(--gold-light);
+  border: none; border-radius: 8px;
+  padding: 9px 16px; font-size: 0.82rem;
+  cursor: pointer; transition: var(--transition);
+  font-family: 'Noto Sans KR', sans-serif;
+  white-space: nowrap;
+}
+.topbar-btn:hover { background: var(--brown-mid); }
+
+/* ───────── PAGE PANELS ───────── */
+.page { display: none; padding: 32px; flex: 1; animation: pageIn 0.4s ease; }
+.page.active { display: block; }
+@keyframes pageIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+/* ───────── PAGE HEADER ───────── */
+.page-header { margin-bottom: 28px; }
+.page-header h2 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--brown-deep);
+  line-height: 1.3;
+}
+.page-header p { color: var(--text-sub); font-size: 0.88rem; margin-top: 6px; }
+
+/* ───────── DASHBOARD STATS ───────── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  background: var(--cream);
+  border: 1px solid rgba(44,26,14,0.08);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow); }
+.stat-card .num { font-family: 'Noto Serif KR', serif; font-size: 2rem; color: var(--brown-mid); font-weight: 700; }
+.stat-card .label { font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; }
+.stat-card .icon { font-size: 1.5rem; margin-bottom: 8px; }
+
+/* ───────── SECTION TITLE ───────── */
+.section-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.1rem; color: var(--brown-deep);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--gold-light);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ───────── FAMILY TREE PREVIEW ───────── */
+.family-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.family-card {
+  background: var(--cream);
+  border-radius: var(--radius);
+  padding: 18px 12px;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.family-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.family-card.paternal { border-left: 4px solid var(--brown-mid); }
+.family-card.maternal { border-left: 4px solid var(--sage); }
+.family-card.direct { border-left: 4px solid var(--gold); }
+.family-card .avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brown-light), var(--gold));
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  color: white;
+}
+.family-card .name { font-size: 0.85rem; font-weight: 500; color: var(--text-main); }
+.family-card .role { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+
+/* ───────── TIMELINE ───────── */
+.decade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 12px; }
+.decade-card {
+  background: var(--cream);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid rgba(44,26,14,0.08);
+  position: relative; overflow: hidden;
+}
+.decade-card::before {
+  content: '';
+  position: absolute; top:0; left:0; right:0; height:4px;
+  background: linear-gradient(90deg, var(--brown-mid), var(--gold));
+}
+.decade-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow); }
+.decade-card .year { font-family: 'Noto Serif KR', serif; font-size: 1.4rem; color: var(--brown-deep); font-weight: 700; }
+.decade-card .count { font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; }
+.decade-card .bar {
+  margin-top: 12px; height: 4px; background: rgba(44,26,14,0.08); border-radius: 2px;
+}
+.decade-card .bar-fill { height: 100%; border-radius: 2px; background: var(--gold); transition: width 1s ease; }
+
+/* ───────── FILTER BAR ───────── */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--cream);
+  border-radius: var(--radius);
+}
+.filter-btn {
+  background: white; border: 1px solid rgba(44,26,14,0.12);
+  border-radius: 20px; padding: 6px 14px;
+  font-size: 0.8rem; color: var(--text-sub);
+  cursor: pointer; transition: var(--transition);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: var(--brown-deep); color: var(--gold-light); border-color: var(--brown-deep);
+}
+
+/* ───────── PHOTO GRID ───────── */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.photo-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--cream);
+  border: 1px solid rgba(44,26,14,0.08);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.photo-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px var(--shadow); }
+.photo-thumb {
+  width: 100%; aspect-ratio: 4/3;
+  background: linear-gradient(135deg, var(--brown-light) 0%, var(--gold-light) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; color: rgba(255,255,255,0.7);
+  position: relative;
+}
+.photo-thumb img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+.photo-info { padding: 12px; }
+.photo-info h4 { font-size: 0.88rem; color: var(--text-main); margin-bottom: 4px; }
+.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
+.photo-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+.tag-chip {
+  background: rgba(212,168,83,0.15);
+  color: var(--brown-mid);
+  font-size: 0.7rem; padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* ───────── MAP PLACEHOLDER ───────── */
+.map-container {
+  background: var(--cream);
+  border-radius: var(--radius);
+  border: 1px solid rgba(44,26,14,0.08);
+  height: 360px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px;
+  color: var(--text-sub);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+.map-container .icon { font-size: 3rem; }
+
+.location-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.location-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--cream);
+  border: 1px solid rgba(44,26,14,0.10);
+  border-radius: 20px; padding: 8px 16px;
+  font-size: 0.82rem; cursor: pointer;
+  transition: var(--transition);
+}
+.location-chip:hover { background: var(--brown-deep); color: var(--gold-light); }
+.location-chip .flag { font-size: 1.1rem; }
+
+/* ───────── EVENTS ───────── */
+.event-list { display: flex; flex-direction: column; gap: 12px; }
+.event-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  background: var(--cream);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(44,26,14,0.08);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.event-item:hover { box-shadow: 0 4px 16px var(--shadow); transform: translateX(4px); }
+.event-icon {
+  width: 48px; height: 48px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.event-icon.travel { background: rgba(122,140,110,0.15); }
+.event-icon.wedding { background: rgba(212,168,83,0.15); }
+.event-icon.graduation { background: rgba(107,63,42,0.10); }
+.event-icon.special { background: rgba(176,92,58,0.12); }
+.event-body h4 { font-size: 0.92rem; color: var(--text-main); margin-bottom: 4px; }
+.event-body p { font-size: 0.8rem; color: var(--text-sub); line-height: 1.5; }
+.event-date { margin-left: auto; font-size: 0.75rem; color: var(--brown-light); white-space: nowrap; }
+
+/* ───────── PEOPLE PAGE ───────── */
+.people-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.people-tab {
+  padding: 8px 20px; border-radius: 8px;
+  font-size: 0.85rem; cursor: pointer;
+  transition: var(--transition);
+  border: 2px solid transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--cream); color: var(--text-sub);
+}
+.people-tab.active { background: var(--brown-deep); color: var(--gold-light); }
+.people-tab.paternal { border-color: var(--brown-mid); }
+.people-tab.maternal { border-color: var(--sage); }
+.people-tab.direct { border-color: var(--gold); }
+
+/* ───────── ADMIN PANEL ───────── */
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px; }
+.admin-card {
+  background: var(--cream);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid rgba(44,26,14,0.08);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.admin-card:hover { box-shadow: 0 8px 24px var(--shadow); transform: translateY(-2px); }
+.admin-card h4 { font-size: 0.95rem; color: var(--brown-deep); margin-bottom: 8px; }
+.admin-card p { font-size: 0.8rem; color: var(--text-sub); line-height: 1.5; }
+.admin-card .icon { font-size: 2rem; margin-bottom: 12px; }
+
+/* ───────── MODAL ───────── */
+#modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(44,26,14,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+#modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--warm-white);
+  border-radius: 16px;
+  max-width: 560px; width: 100%;
+  max-height: 80vh; overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(44,26,14,0.3);
+  animation: modalIn 0.3s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:none} }
+.modal-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid rgba(44,26,14,0.08);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { font-family: 'Noto Serif KR', serif; font-size: 1.2rem; }
+.modal-close {
+  background: none; border: none; font-size: 1.4rem;
+  cursor: pointer; color: var(--text-sub);
+  transition: var(--transition); padding: 4px;
+}
+.modal-close:hover { color: var(--text-main); }
+.modal-body { padding: 24px; }
+
+/* ───────── UPLOAD FORM ───────── */
+.upload-zone {
+  border: 2px dashed rgba(44,26,14,0.2);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 16px;
+}
+.upload-zone:hover { border-color: var(--gold); background: rgba(212,168,83,0.04); }
+.upload-zone .icon { font-size: 2.5rem; margin-bottom: 8px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 0.82rem; color: var(--text-sub); margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(44,26,14,0.12);
+  border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem; color: var(--text-main);
+  background: var(--cream);
+  outline: none; transition: var(--transition);
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--gold);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-primary {
+  width: 100%; padding: 12px;
+  background: var(--brown-deep); color: var(--gold-light);
+  border: none; border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.92rem; font-weight: 500;
+  cursor: pointer; transition: var(--transition);
+  margin-top: 8px;
+}
+.btn-primary:hover { background: var(--brown-mid); }
+
+/* ───────── HAMBURGER (mobile) ───────── */
+#hamburger {
+  display: none; position: fixed; top: 16px; left: 16px; z-index: 2000;
+  background: var(--brown-deep); border: none; border-radius: 8px;
+  padding: 10px 12px; cursor: pointer; color: var(--gold-light); font-size: 1.2rem;
+}
+
+/* ───────── RESPONSIVE ───────── */
+@media (max-width: 768px) {
+  #app { grid-template-columns: 1fr; }
+  #sidebar {
+    position: fixed; inset: 0 auto 0 0; z-index: 1500;
+    width: 260px; transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  #sidebar.open { transform: none; }
+  #hamburger { display: block; }
+  #main { padding-top: 0; }
+  .page { padding: 20px 16px; }
+  #topbar { padding: 12px 16px; padding-left: 56px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/* ───────── EMPTY STATE ───────── */
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  color: var(--text-sub);
+}
+.empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state h3 { font-size: 1rem; margin-bottom: 6px; color: var(--text-main); }
+.empty-state p { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <h1>우리가족 아카이브</h1>
+  <p>1954년부터 미래까지, 우리 가족의 모든 기록</p>
+</div>
+
+<!-- HAMBURGER -->
+<button id="hamburger" onclick="toggleSidebar()">☰</button>
+
+<div id="app">
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <h2>우리가족<br>아카이브</h2>
+    <p>Family Archive · Since 1954</p>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="icon">🏠</span> 대시보드
+    </div>
+    <div class="nav-item" onclick="showPage('gallery')">
+      <span class="icon">🖼️</span> 전체 갤러리
+      <span class="badge">NEW</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">👨‍👩‍👧‍👦 인물별</div>
+    <div class="nav-item" onclick="showPage('people')">
+      <span class="icon">👤</span> 직계가족
+    </div>
+    <div class="nav-sub">
+      <div class="nav-item" onclick="showPeople('나')">└ 나 (아버지)</div>
+      <div class="nav-item" onclick="showPeople('아내')">└ 아내</div>
+      <div class="nav-item" onclick="showPeople('아들')">└ 아들</div>
+      <div class="nav-item" onclick="showPeople('딸')">└ 딸</div>
+      <div class="nav-item" onclick="showPeople('며느리')">└ 며느리</div>
+      <div class="nav-item" onclick="showPeople('손녀')">└ 손녀</div>
+    </div>
+    <div class="nav-item" onclick="showPage('paternal')">
+      <span class="icon">🌳</span> 친가 (6형제)
+    </div>
+    <div class="nav-item" onclick="showPage('maternal')">
+      <span class="icon">🌿</span> 처가 (5자매)
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">📅 시대별</div>
+    <div class="nav-item" onclick="showPage('timeline')">
+      <span class="icon">⏳</span> 연대 타임라인
+    </div>
+    <div class="nav-sub">
+      <div class="nav-item" onclick="showDecade('before1954')">└ 1954년 이전</div>
+      <div class="nav-item" onclick="showDecade('1950s')">└ 1950년대</div>
+      <div class="nav-item" onclick="showDecade('1960s')">└ 1960년대</div>
+      <div class="nav-item" onclick="showDecade('1970s')">└ 1970년대</div>
+      <div class="nav-item" onclick="showDecade('1980s')">└ 1980년대</div>
+      <div class="nav-item" onclick="showDecade('1990s')">└ 1990년대</div>
+      <div class="nav-item" onclick="showDecade('2000s')">└ 2000년대</div>
+      <div class="nav-item" onclick="showDecade('2010s')">└ 2010년대</div>
+      <div class="nav-item" onclick="showDecade('2020s')">└ 2020년대</div>
+      <div class="nav-item" onclick="showDecade('2030s')">└ 2030년대</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">🎉 이벤트별</div>
+    <div class="nav-item" onclick="showPage('events')">
+      <span class="icon">📋</span> 전체 이벤트
+    </div>
+    <div class="nav-sub">
+      <div class="nav-item" onclick="showEvent('travel')">└ ✈️ 가족여행</div>
+      <div class="nav-item" onclick="showEvent('wedding')">└ 💍 결혼식</div>
+      <div class="nav-item" onclick="showEvent('graduation')">└ 🎓 졸업식</div>
+      <div class="nav-item" onclick="showEvent('special')">└ ⭐ 특별 이벤트</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">🌍 지역별</div>
+    <div class="nav-item" onclick="showPage('places')">
+      <span class="icon">📍</span> 국가 · 지역
+    </div>
+    <div class="nav-sub">
+      <div class="nav-item" onclick="showPlace('korea')">└ 🇰🇷 대한민국</div>
+      <div class="nav-item" onclick="showPlace('asia')">└ 🌏 아시아</div>
+      <div class="nav-item" onclick="showPlace('world')">└ 🌎 세계</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">⚙️ 관리</div>
+    <div class="nav-item" onclick="openUpload()">
+      <span class="icon">📤</span> 기록 추가
+    </div>
+    <div class="nav-item" onclick="showPage('admin')">
+      <span class="icon">🔧</span> 관리자
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <p>직계가족 6명<br>친가 6형제 · 처가 5자매<br>© 2026 우리가족 아카이브</p>
+  </div>
+</nav>
+
+<!-- ═══════ MAIN ═══════ -->
+<div id="main">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="breadcrumb" id="breadcrumb">
+      🏠 <span>›</span> <b id="bc-current">대시보드</b>
+    </div>
+    <div id="search-box">
+      <span>🔍</span>
+      <input type="text" placeholder="이름, 날짜, 장소 검색..." oninput="searchRecords(this.value)">
+    </div>
+    <div id="topbar-user" style="display:flex;align-items:center;gap:8px;flex-shrink:0;"></div>
+  </div>
+
+  <!-- ── 대시보드 ── -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h2>우리 가족의 발자취 🌸</h2>
+      <p>1954년 이전부터 현재까지, 소중한 순간들을 기록합니다</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" onclick="showPage('gallery')">
+        <div class="icon">🖼️</div>
+        <div class="num" id="total-photos">0</div>
+        <div class="label">전체 사진 · 영상</div>
+      </div>
+      <div class="stat-card" onclick="showPage('people')">
+        <div class="icon">👨‍👩‍👧‍👦</div>
+        <div class="num">17</div>
+        <div class="label">등록 가족</div>
+      </div>
+      <div class="stat-card" onclick="showPage('events')">
+        <div class="icon">🎉</div>
+        <div class="num" id="total-events">0</div>
+        <div class="label">이벤트 기록</div>
+      </div>
+      <div class="stat-card" onclick="showPage('places')">
+        <div class="icon">🌍</div>
+        <div class="num" id="total-places">0</div>
+        <div class="label">방문 국가 · 지역</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">📅</div>
+        <div class="num">10</div>
+        <div class="label">기록 연대</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">🏡</div>
+        <div class="num">3</div>
+        <div class="label">가족 분류</div>
+      </div>
+    </div>
+
+    <div class="section-title">👨‍👩‍👧‍👦 직계가족</div>
+    <div class="family-preview" id="direct-family-cards"></div>
+
+    <div class="section-title">🌳 친가 · 처가</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+      <div style="background:var(--cream);border-radius:var(--radius);padding:20px;border-left:4px solid var(--brown-mid)">
+        <div style="font-family:'Noto Serif KR',serif;font-weight:600;margin-bottom:12px;color:var(--brown-deep)">🌳 친가 — 6형제</div>
+        <div id="paternal-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+      <div style="background:var(--cream);border-radius:var(--radius);padding:20px;border-left:4px solid var(--sage)">
+        <div style="font-family:'Noto Serif KR',serif;font-weight:600;margin-bottom:12px;color:var(--brown-deep)">🌿 처가 — 5자매</div>
+        <div id="maternal-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+    </div>
+
+    <div class="section-title">🕐 최근 기록</div>
+    <div class="event-list" id="recent-events"></div>
+  </div>
+
+  <!-- ── 갤러리 ── -->
+  <div class="page" id="page-gallery">
+    <div class="page-header">
+      <h2>전체 갤러리 🖼️</h2>
+      <p>모든 사진과 영상 기록</p>
+    </div>
+    <div class="filter-bar" id="gallery-filters"></div>
+    <div class="photo-grid" id="photo-grid"></div>
+  </div>
+
+  <!-- ── 인물별 ── -->
+  <div class="page" id="page-people">
+    <div class="page-header">
+      <h2>인물별 기록 👤</h2>
+      <p>가족 구성원별 사진과 이야기</p>
+    </div>
+    <div class="people-tabs" id="people-tabs"></div>
+    <div class="photo-grid" id="people-grid"></div>
+  </div>
+
+  <!-- ── 친가 ── -->
+  <div class="page" id="page-paternal">
+    <div class="page-header">
+      <h2>친가 기록 🌳</h2>
+      <p>6형제 가족의 이야기</p>
+    </div>
+    <div class="family-preview" id="paternal-cards"></div>
+    <div class="section-title">사진 기록</div>
+    <div class="photo-grid" id="paternal-grid"></div>
+  </div>
+
+  <!-- ── 처가 ── -->
+  <div class="page" id="page-maternal">
+    <div class="page-header">
+      <h2>처가 기록 🌿</h2>
+      <p>5자매 가족의 이야기</p>
+    </div>
+    <div class="family-preview" id="maternal-cards"></div>
+    <div class="section-title">사진 기록</div>
+    <div class="photo-grid" id="maternal-grid"></div>
+  </div>
+
+  <!-- ── 타임라인 ── -->
+  <div class="page" id="page-timeline">
+    <div class="page-header">
+      <h2>시대별 타임라인 📅</h2>
+      <p>연대순으로 보는 우리 가족의 역사</p>
+    </div>
+    <div class="decade-grid" id="decade-grid"></div>
+  </div>
+
+  <!-- ── 이벤트 ── -->
+  <div class="page" id="page-events">
+    <div class="page-header">
+      <h2>이벤트별 기록 🎉</h2>
+      <p>여행, 결혼, 졸업, 특별한 순간들</p>
+    </div>
+    <div class="filter-bar" id="event-filters"></div>
+    <div class="event-list" id="event-list"></div>
+  </div>
+
+  <!-- ── 지역별 ── -->
+  <div class="page" id="page-places">
+    <div class="page-header">
+      <h2>국가 · 지역별 기록 🌍</h2>
+      <p>우리 가족이 다녀온 모든 곳</p>
+    </div>
+    <div class="map-container">
+      <div class="icon">🗺️</div>
+      <p>지도 연동 예정 (Google Maps / Kakao Maps)</p>
+      <small style="color:var(--brown-light)">관리자 설정에서 API 키를 입력하세요</small>
+    </div>
+    <div class="section-title">방문 국가 · 지역</div>
+    <div class="location-chips" id="location-chips"></div>
+  </div>
+
+  <!-- ── 관리자 ── -->
+  <div class="page" id="page-admin">
+    <div class="page-header">
+      <h2>관리자 설정 ⚙️</h2>
+      <p>아카이브 구조 관리 및 데이터 설정</p>
+    </div>
+    <div class="admin-grid">
+      <div class="admin-card" onclick="openUpload()">
+        <div class="icon">📤</div>
+        <h4>기록 추가</h4>
+        <p>사진, 영상, 문서를 새로 등록합니다</p>
+      </div>
+      <div class="admin-card">
+        <div class="icon">👨‍👩‍👧‍👦</div>
+        <h4>가족 구성원 관리</h4>
+        <p>직계/친가/처가 구성원을 추가·편집합니다</p>
+      </div>
+      <div class="admin-card">
+        <div class="icon">🏷️</div>
+        <h4>태그 · 카테고리 관리</h4>
+        <p>분류 체계를 확장하거나 수정합니다</p>
+      </div>
+      <div class="admin-card">
+        <div class="icon">📅</div>
+        <h4>연대 설정</h4>
+        <p>시대 구분 및 연도 범위를 조정합니다</p>
+      </div>
+      <div class="admin-card">
+        <div class="icon">🌍</div>
+        <h4>지역 관리</h4>
+        <p>국가 · 도시 · 지역 분류를 관리합니다</p>
+      </div>
+      <div class="admin-card">
+        <div class="icon">💾</div>
+        <h4>데이터 백업 · 내보내기</h4>
+        <p>전체 아카이브를 JSON / ZIP으로 저장합니다</p>
+      </div>
+      <div class="admin-card">
+        <div class="icon">🗺️</div>
+        <h4>지도 API 연동</h4>
+        <p>Google Maps 또는 Kakao Maps API를 설정합니다</p>
+      </div>
+      <div class="admin-card">
+        <div class="icon">🔒</div>
+        <h4>공개 · 비공개 설정</h4>
+        <p>기록별 공개 범위를 설정합니다</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═══════ UPLOAD MODAL ═══════ -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="modal-header">
+      <h3>📤 새 기록 추가</h3>
+      <button class="modal-close" onclick="closeUpload()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- ① 방식 탭 버튼 -->
+      <div style="display:flex;gap:0;border:2px solid rgba(44,26,14,0.12);border-radius:12px;overflow:hidden;margin-bottom:18px;">
+        <button id="tab-btn-drive" onclick="setUploadMode('drive')"
+          style="flex:1;padding:13px 8px;border:none;background:var(--brown-deep);color:var(--gold-light);font-family:'Noto Sans KR',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:0.2s;">
+          📁 Google Drive
+        </button>
+        <button id="tab-btn-host" onclick="setUploadMode('host')"
+          style="flex:1;padding:13px 8px;border:none;background:var(--cream);color:var(--text-sub);font-family:'Noto Sans KR',sans-serif;font-size:0.88rem;cursor:pointer;transition:0.2s;border-left:2px solid rgba(44,26,14,0.12);">
+          🌐 웹 호스팅 URL
+        </button>
+      </div>
+
+      <!-- ② Google Drive 패널 -->
+      <div id="panel-drive">
+        <div style="background:rgba(66,133,244,0.07);border:1px solid rgba(66,133,244,0.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--text-sub);line-height:1.9;">
+          <b style="color:#1a73e8;">📋 Drive 공유 링크 만들기</b><br>
+          Drive 앱 → 사진 길게 탭 → <b>공유</b> → <b>링크가 있는 모든 사용자</b> → <b>링크 복사</b>
+          <button onclick="openHelpModal('drive')" style="margin-left:6px;background:rgba(66,133,244,0.12);color:#1a73e8;border:none;border-radius:5px;padding:2px 9px;font-size:0.72rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">자세히 ▶</button>
+        </div>
+        <div class="form-group">
+          <label>📎 Google Drive 공유 링크 <span style="float:right;font-size:0.7rem;color:var(--rust);">필수</span></label>
+          <div style="display:flex;gap:8px;">
+            <input type="url" id="inp-gdrive" placeholder="https://drive.google.com/file/d/..."
+              oninput="previewDriveLink(this.value)"
+              style="flex:1;padding:10px 14px;border:1.5px solid rgba(66,133,244,0.35);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
+            <button onclick="previewDriveLink(document.getElementById('inp-gdrive').value)"
+              style="background:#1a73e8;color:#fff;border:none;border-radius:10px;padding:10px 13px;cursor:pointer;font-size:0.82rem;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;">미리보기</button>
+          </div>
+          <div id="drive-preview" style="margin-top:10px;display:none;border-radius:10px;overflow:hidden;border:1px solid rgba(44,26,14,0.1);">
+            <img id="drive-preview-img" src="" alt="미리보기" style="width:100%;max-height:200px;object-fit:cover;display:block;">
+            <div id="drive-preview-fallback" style="display:none;padding:16px;text-align:center;color:var(--text-sub);font-size:0.82rem;">
+              <div style="font-size:1.8rem;">🔗</div>Drive 링크 등록됨<br><small>공개 설정에 따라 미리보기가 제한될 수 있습니다</small>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- 직접 URL (custom 모드) -->
-        <div id="host-direct-group" class="form-group" style="display:none;">
+      <!-- ③ 웹 호스팅 패널 (초기 숨김) -->
+      <div id="panel-host" style="display:none;">
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button id="htype-github" onclick="setHostType('github')"
+            style="flex:1;padding:10px 6px;border:2px solid var(--brown-deep);border-radius:10px;background:var(--brown-deep);color:var(--gold-light);font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;cursor:pointer;">⬛ GitHub Pages</button>
+          <button id="htype-netlify" onclick="setHostType('netlify')"
+            style="flex:1;padding:10px 6px;border:2px solid rgba(44,26,14,0.15);border-radius:10px;background:var(--cream);color:var(--text-sub);font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;cursor:pointer;">🟦 Netlify</button>
+          <button id="htype-custom" onclick="setHostType('custom')"
+            style="flex:1;padding:10px 6px;border:2px solid rgba(44,26,14,0.15);border-radius:10px;background:var(--cream);color:var(--text-sub);font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;cursor:pointer;">🔗 직접 URL</button>
+        </div>
+        <div id="host-info-github" style="background:rgba(0,0,0,0.04);border-radius:8px;padding:11px 13px;margin-bottom:12px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
+          <b>⬛ GitHub Pages:</b> 저장소 images/ 폴더에 사진 업로드 후 URL 입력<br>
+          <code style="font-size:0.72rem;">https://사용자명.github.io/저장소명/images/파일명.jpg</code>
+          <button onclick="openHelpModal('github')" style="margin-left:6px;background:rgba(0,0,0,0.07);color:#333;border:none;border-radius:4px;padding:2px 8px;font-size:0.7rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">설정방법 ▶</button>
+        </div>
+        <div id="host-info-netlify" style="display:none;background:rgba(0,150,150,0.05);border-radius:8px;padding:11px 13px;margin-bottom:12px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
+          <b>🟦 Netlify:</b> app.netlify.com/drop 에 폴더 드래그 → URL 자동 발급<br>
+          <code style="font-size:0.72rem;">https://랜덤이름.netlify.app/images/파일명.jpg</code>
+          <button onclick="openHelpModal('netlify')" style="margin-left:6px;background:rgba(0,150,150,0.1);color:#007a7a;border:none;border-radius:4px;padding:2px 8px;font-size:0.7rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">설정방법 ▶</button>
+        </div>
+        <div id="host-info-custom" style="display:none;background:rgba(212,168,83,0.07);border-radius:8px;padding:11px 13px;margin-bottom:12px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
+          <b>🔗 직접 URL:</b> 이미 호스팅된 이미지의 전체 URL을 입력하세요
+        </div>
+        <!-- github/netlify: 기본URL + 경로 -->
+        <div id="host-url-group">
+          <div class="form-group">
+            <label id="host-base-label">사이트 기본 URL</label>
+            <input type="url" id="inp-host-base" placeholder="https://사용자명.github.io/family-archive"
+              style="width:100%;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
+            <small style="color:var(--brown-light);font-size:0.72rem;">끝에 / 없이 입력</small>
+          </div>
+          <div class="form-group">
+            <label>이미지 파일 경로</label>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span style="color:var(--text-sub);font-size:0.82rem;white-space:nowrap;flex-shrink:0;">/images/</span>
+              <input type="text" id="inp-host-path" placeholder="2025/singapore.jpg" oninput="previewHostImg()"
+                style="flex:1;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
+            </div>
+          </div>
+        </div>
+        <!-- custom: 직접 URL -->
+        <div id="host-direct-group" style="display:none;" class="form-group">
           <label>이미지 직접 URL</label>
           <input type="url" id="inp-host-direct" placeholder="https://..." oninput="previewHostImg()"
-            style="width:100%;padding:10px 14px;border:1.5px solid rgba(212,168,83,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:var(--cream);">
+            style="width:100%;padding:10px 14px;border:1.5px solid rgba(212,168,83,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
         </div>
-
-        <!-- 미리보기 -->
         <div id="host-preview" style="display:none;border-radius:10px;overflow:hidden;border:1px solid rgba(44,26,14,0.1);margin-bottom:4px;">
-          <img id="host-preview-img" src="" alt="미리보기" style="width:100%;max-height:200px;object-fit:cover;display:block;">
-          <div id="host-preview-fallback" style="display:none;padding:16px;text-align:center;color:var(--text-sub);font-size:0.82rem;">
-            <div style="font-size:1.8rem;">🌐</div>URL이 등록되었습니다
+          <img id="host-preview-img" src="" style="width:100%;max-height:180px;object-fit:cover;display:block;">
+          <div id="host-preview-fallback" style="display:none;padding:14px;text-align:center;color:var(--text-sub);font-size:0.82rem;">
+            <div style="font-size:1.6rem;">🌐</div>URL 등록됨
           </div>
         </div>
       </div>
 
       <hr style="border:none;border-top:1px solid rgba(44,26,14,0.08);margin:16px 0 14px;">
 
-      <!-- ③ 공통 메타정보 -->
+      <!-- ④ 공통 메타정보 -->
       <div class="form-row">
         <div class="form-group">
-          <label>제목 <span style="font-size:0.7rem;color:var(--brown-light);margin-left:4px;">필수</span></label>
+          <label>제목 <span style="float:right;font-size:0.7rem;color:var(--rust);">필수</span></label>
           <input type="text" id="inp-title" placeholder="예: 싱가포르 가족여행">
         </div>
         <div class="form-group">
@@ -710,38 +1598,58 @@ function searchRecords(query) {
 }
 
 // ════════ UPLOAD MODE STATE ════════
-let currentUploadMode = 'drive';   // 'drive' | 'host'
-let currentHostType   = 'github';  // 'github' | 'netlify' | 'custom'
+let currentUploadMode = 'drive';
+let currentHostType   = 'github';
 
 function setUploadMode(mode) {
   currentUploadMode = mode;
-  // 카드 active 상태
-  document.querySelectorAll('.umode-card').forEach(el => el.classList.remove('active'));
-  const modeCard = document.getElementById('umode-' + mode);
-  if (modeCard) modeCard.classList.add('active');
-  // 패널 표시/숨김 — display 속성을 직접 강제 지정
   const drivePanel = document.getElementById('panel-drive');
   const hostPanel  = document.getElementById('panel-host');
-  if (drivePanel) drivePanel.style.cssText = 'display:' + (mode === 'drive' ? 'block' : 'none') + ' !important';
-  if (hostPanel)  hostPanel.style.cssText  = 'display:' + (mode === 'host'  ? 'block' : 'none') + ' !important';
+  const driveBtn   = document.getElementById('tab-btn-drive');
+  const hostBtn    = document.getElementById('tab-btn-host');
+  if (mode === 'drive') {
+    drivePanel.style.display = 'block';
+    hostPanel.style.display  = 'none';
+    driveBtn.style.background = 'var(--brown-deep)';
+    driveBtn.style.color      = 'var(--gold-light)';
+    driveBtn.style.fontWeight = '600';
+    hostBtn.style.background  = 'var(--cream)';
+    hostBtn.style.color       = 'var(--text-sub)';
+    hostBtn.style.fontWeight  = '400';
+  } else {
+    drivePanel.style.display = 'none';
+    hostPanel.style.display  = 'block';
+    hostBtn.style.background  = 'var(--brown-deep)';
+    hostBtn.style.color       = 'var(--gold-light)';
+    hostBtn.style.fontWeight  = '600';
+    driveBtn.style.background = 'var(--cream)';
+    driveBtn.style.color      = 'var(--text-sub)';
+    driveBtn.style.fontWeight = '400';
+  }
 }
 
-function setHostType(type, btn) {
+function setHostType(type) {
   currentHostType = type;
-  document.querySelectorAll('.host-type-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.host-info-panel').forEach(p => p.style.display = 'none');
-  document.getElementById('host-info-' + type).style.display = 'block';
+  ['github','netlify','custom'].forEach(t => {
+    const btn  = document.getElementById('htype-' + t);
+    const info = document.getElementById('host-info-' + t);
+    if (btn) {
+      btn.style.background   = t === type ? 'var(--brown-deep)' : 'var(--cream)';
+      btn.style.color        = t === type ? 'var(--gold-light)' : 'var(--text-sub)';
+      btn.style.borderColor  = t === type ? 'var(--brown-deep)' : 'rgba(44,26,14,0.15)';
+    }
+    if (info) info.style.display = t === type ? 'block' : 'none';
+  });
   const isCustom = type === 'custom';
-  document.getElementById('host-base-group').style.display  = isCustom ? 'none' : 'block';
-  document.getElementById('host-path-group').style.display  = isCustom ? 'none' : 'block';
+  document.getElementById('host-url-group').style.display    = isCustom ? 'none'  : 'block';
   document.getElementById('host-direct-group').style.display = isCustom ? 'block' : 'none';
-  if (type === 'github') {
-    document.getElementById('host-base-label').textContent = 'GitHub Pages 사이트 URL';
-    document.getElementById('inp-host-base').placeholder   = 'https://사용자명.github.io/family-archive';
-  } else if (type === 'netlify') {
-    document.getElementById('host-base-label').textContent = 'Netlify 사이트 URL';
-    document.getElementById('inp-host-base').placeholder   = 'https://내사이트.netlify.app';
+  if (!isCustom) {
+    document.getElementById('host-base-label').textContent =
+      type === 'github' ? 'GitHub Pages 사이트 URL' : 'Netlify 사이트 URL';
+    document.getElementById('inp-host-base').placeholder =
+      type === 'github'
+        ? 'https://사용자명.github.io/family-archive'
+        : 'https://내사이트.netlify.app';
   }
   previewHostImg();
 }
@@ -868,27 +1776,25 @@ function openUpload() {
     showToast('🔒 업로드 권한이 없습니다. 관리자에게 문의하세요.', true);
     return;
   }
-  // 폼 초기화
-  ['inp-gdrive','inp-title','inp-location','inp-memo','inp-host-base','inp-host-path','inp-host-direct'].forEach(id => {
+  // 폼 전체 초기화
+  ['inp-gdrive','inp-title','inp-location','inp-memo',
+   'inp-host-base','inp-host-path','inp-host-direct'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  document.getElementById('inp-date').value  = new Date().toISOString().slice(0,10);
-  document.getElementById('inp-event').value = 'travel';
-  document.getElementById('inp-decade').value= '2020s';
+  const dateEl = document.getElementById('inp-date');
+  if (dateEl) dateEl.value = new Date().toISOString().slice(0,10);
+  const eventEl = document.getElementById('inp-event');
+  if (eventEl) eventEl.value = 'travel';
+  const decadeEl = document.getElementById('inp-decade');
+  if (decadeEl) decadeEl.value = '2020s';
   // 미리보기 숨기기
   ['drive-preview','host-preview'].forEach(id => {
     const el = document.getElementById(id); if (el) el.style.display = 'none';
   });
-  // ★ 패널 초기화 — Drive 모드로 강제 리셋
+  // Drive 탭으로 초기화
   currentUploadMode = 'drive';
   currentHostType   = 'github';
-  const drivePanel = document.getElementById('panel-drive');
-  const hostPanel  = document.getElementById('panel-host');
-  if (drivePanel) { drivePanel.style.cssText = 'display:block !important'; }
-  if (hostPanel)  { hostPanel.style.cssText  = 'display:none !important'; }
-  document.querySelectorAll('.umode-card').forEach(el => el.classList.remove('active'));
-  const driveCard = document.getElementById('umode-drive');
-  if (driveCard) driveCard.classList.add('active');
+  setUploadMode('drive');
   // 모달 열기
   document.getElementById('modal-overlay').classList.add('open');
 }
