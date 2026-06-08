@@ -104,14 +104,6 @@ body {
   background: rgba(212,168,83,0.10);
 }
 .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
-.nav-item .badge {
-  margin-left: auto;
-  background: var(--rust);
-  color: #fff;
-  font-size: 0.6rem;
-  padding: 2px 6px;
-  border-radius: 20px;
-}
 
 .nav-sub { padding-left: 20px; }
 .nav-sub .nav-item { font-size: 0.82rem; padding: 8px 24px 8px 16px; }
@@ -321,33 +313,6 @@ body {
   border-radius: 12px;
 }
 
-/* ───────── MAP PLACEHOLDER ───────── */
-.map-container {
-  background: var(--cream);
-  border-radius: var(--radius);
-  border: 1px solid rgba(44,26,14,0.08);
-  height: 360px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 12px;
-  color: var(--text-sub);
-  font-size: 0.9rem;
-  margin-bottom: 24px;
-}
-.map-container .icon { font-size: 3rem; }
-
-.location-chips { display: flex; flex-wrap: wrap; gap: 10px; }
-.location-chip {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--cream);
-  border: 1px solid rgba(44,26,14,0.10);
-  border-radius: 20px; padding: 8px 16px;
-  font-size: 0.82rem; cursor: pointer;
-  transition: var(--transition);
-}
-.location-chip:hover { background: var(--brown-deep); color: var(--gold-light); }
-.location-chip .flag { font-size: 1.1rem; }
-
 /* ───────── EVENTS ───────── */
 .event-list { display: flex; flex-direction: column; gap: 12px; }
 .event-item {
@@ -410,22 +375,25 @@ body {
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: none; align-items: center; justify-content: center;
-  padding: 20px;
+  padding: 16px; /* 모바일 대응 축소 */
 }
 #modal-overlay.open { display: flex; }
 .modal-box {
   background: var(--warm-white);
   border-radius: 16px;
   max-width: 560px; width: 100%;
-  max-height: 80vh; overflow-y: auto;
+  max-height: 85vh; /* 높이 제한 */
+  display: flex;
+  flex-direction: column; /* 분리 스크롤을 위한 핵심 */
   box-shadow: 0 24px 60px rgba(44,26,14,0.3);
   animation: modalIn 0.3s ease;
 }
 @keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:none} }
 .modal-header {
-  padding: 24px 24px 16px;
+  padding: 20px 24px 16px;
   border-bottom: 1px solid rgba(44,26,14,0.08);
   display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; /* 헤더 고정 */
 }
 .modal-header h3 { font-family: 'Noto Serif KR', serif; font-size: 1.2rem; }
 .modal-close {
@@ -434,21 +402,13 @@ body {
   transition: var(--transition); padding: 4px;
 }
 .modal-close:hover { color: var(--text-main); }
-.modal-body { padding: 24px; }
+.modal-body { 
+  padding: 24px; 
+  overflow-y: auto; /* 내용물 스크롤 */
+  -webkit-overflow-scrolling: touch; 
+}
 
 /* ───────── UPLOAD FORM ───────── */
-.upload-zone {
-  border: 2px dashed rgba(44,26,14,0.2);
-  border-radius: var(--radius);
-  padding: 40px;
-  text-align: center;
-  color: var(--text-sub);
-  cursor: pointer;
-  transition: var(--transition);
-  margin-bottom: 16px;
-}
-.upload-zone:hover { border-color: var(--gold); background: rgba(212,168,83,0.04); }
-.upload-zone .icon { font-size: 2.5rem; margin-bottom: 8px; }
 .form-group { margin-bottom: 14px; }
 .form-group label { display: block; font-size: 0.82rem; color: var(--text-sub); margin-bottom: 6px; }
 .form-group input, .form-group select, .form-group textarea {
@@ -458,7 +418,7 @@ body {
   border-radius: 8px;
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 0.88rem; color: var(--text-main);
-  background: var(--cream);
+  background: #fff;
   outline: none; transition: var(--transition);
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
@@ -511,18 +471,15 @@ body {
 </head>
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <h1>우리가족 아카이브</h1>
   <p>1954년부터 미래까지, 우리 가족의 모든 기록</p>
 </div>
 
-<!-- HAMBURGER -->
 <button id="hamburger" onclick="toggleSidebar()">☰</button>
 
 <div id="app">
 
-<!-- ═══════ SIDEBAR ═══════ -->
 <nav id="sidebar">
   <div class="sidebar-logo">
     <h2>우리가족<br>아카이브</h2>
@@ -536,7 +493,6 @@ body {
     </div>
     <div class="nav-item" onclick="showPage('gallery')">
       <span class="icon">🖼️</span> 전체 갤러리
-      <span class="badge">NEW</span>
     </div>
   </div>
 
@@ -566,42 +522,12 @@ body {
     <div class="nav-item" onclick="showPage('timeline')">
       <span class="icon">⏳</span> 연대 타임라인
     </div>
-    <div class="nav-sub">
-      <div class="nav-item" onclick="showDecade('before1954')">└ 1954년 이전</div>
-      <div class="nav-item" onclick="showDecade('1950s')">└ 1950년대</div>
-      <div class="nav-item" onclick="showDecade('1960s')">└ 1960년대</div>
-      <div class="nav-item" onclick="showDecade('1970s')">└ 1970년대</div>
-      <div class="nav-item" onclick="showDecade('1980s')">└ 1980년대</div>
-      <div class="nav-item" onclick="showDecade('1990s')">└ 1990년대</div>
-      <div class="nav-item" onclick="showDecade('2000s')">└ 2000년대</div>
-      <div class="nav-item" onclick="showDecade('2010s')">└ 2010년대</div>
-      <div class="nav-item" onclick="showDecade('2020s')">└ 2020년대</div>
-      <div class="nav-item" onclick="showDecade('2030s')">└ 2030년대</div>
-    </div>
   </div>
 
   <div class="nav-section">
     <div class="nav-section-title">🎉 이벤트별</div>
     <div class="nav-item" onclick="showPage('events')">
       <span class="icon">📋</span> 전체 이벤트
-    </div>
-    <div class="nav-sub">
-      <div class="nav-item" onclick="showEvent('travel')">└ ✈️ 가족여행</div>
-      <div class="nav-item" onclick="showEvent('wedding')">└ 💍 결혼식</div>
-      <div class="nav-item" onclick="showEvent('graduation')">└ 🎓 졸업식</div>
-      <div class="nav-item" onclick="showEvent('special')">└ ⭐ 특별 이벤트</div>
-    </div>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-section-title">🌍 지역별</div>
-    <div class="nav-item" onclick="showPage('places')">
-      <span class="icon">📍</span> 국가 · 지역
-    </div>
-    <div class="nav-sub">
-      <div class="nav-item" onclick="showPlace('korea')">└ 🇰🇷 대한민국</div>
-      <div class="nav-item" onclick="showPlace('asia')">└ 🌏 아시아</div>
-      <div class="nav-item" onclick="showPlace('world')">└ 🌎 세계</div>
     </div>
   </div>
 
@@ -610,9 +536,6 @@ body {
     <div class="nav-item" onclick="openUpload()">
       <span class="icon">📤</span> 기록 추가
     </div>
-    <div class="nav-item" onclick="showPage('admin')">
-      <span class="icon">🔧</span> 관리자
-    </div>
   </div>
 
   <div class="sidebar-footer">
@@ -620,22 +543,19 @@ body {
   </div>
 </nav>
 
-<!-- ═══════ MAIN ═══════ -->
 <div id="main">
 
-  <!-- TOP BAR -->
   <div id="topbar">
     <div class="breadcrumb" id="breadcrumb">
       🏠 <span>›</span> <b id="bc-current">대시보드</b>
     </div>
     <div id="search-box">
       <span>🔍</span>
-      <input type="text" placeholder="이름, 날짜, 장소 검색..." oninput="searchRecords(this.value)">
+      <input type="text" placeholder="이름, 날짜 검색..." oninput="searchRecords(this.value)">
     </div>
     <div id="topbar-user" style="display:flex;align-items:center;gap:8px;flex-shrink:0;"></div>
   </div>
 
-  <!-- ── 대시보드 ── -->
   <div class="page active" id="page-dashboard">
     <div class="page-header">
       <h2>우리 가족의 발자취 🌸</h2>
@@ -658,43 +578,15 @@ body {
         <div class="num" id="total-events">0</div>
         <div class="label">이벤트 기록</div>
       </div>
-      <div class="stat-card" onclick="showPage('places')">
-        <div class="icon">🌍</div>
-        <div class="num" id="total-places">0</div>
-        <div class="label">방문 국가 · 지역</div>
-      </div>
-      <div class="stat-card">
-        <div class="icon">📅</div>
-        <div class="num">10</div>
-        <div class="label">기록 연대</div>
-      </div>
-      <div class="stat-card">
-        <div class="icon">🏡</div>
-        <div class="num">3</div>
-        <div class="label">가족 분류</div>
-      </div>
     </div>
 
     <div class="section-title">👨‍👩‍👧‍👦 직계가족</div>
     <div class="family-preview" id="direct-family-cards"></div>
 
-    <div class="section-title">🌳 친가 · 처가</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
-      <div style="background:var(--cream);border-radius:var(--radius);padding:20px;border-left:4px solid var(--brown-mid)">
-        <div style="font-family:'Noto Serif KR',serif;font-weight:600;margin-bottom:12px;color:var(--brown-deep)">🌳 친가 — 6형제</div>
-        <div id="paternal-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
-      </div>
-      <div style="background:var(--cream);border-radius:var(--radius);padding:20px;border-left:4px solid var(--sage)">
-        <div style="font-family:'Noto Serif KR',serif;font-weight:600;margin-bottom:12px;color:var(--brown-deep)">🌿 처가 — 5자매</div>
-        <div id="maternal-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
-      </div>
-    </div>
-
     <div class="section-title">🕐 최근 기록</div>
     <div class="event-list" id="recent-events"></div>
   </div>
 
-  <!-- ── 갤러리 ── -->
   <div class="page" id="page-gallery">
     <div class="page-header">
       <h2>전체 갤러리 🖼️</h2>
@@ -704,7 +596,6 @@ body {
     <div class="photo-grid" id="photo-grid"></div>
   </div>
 
-  <!-- ── 인물별 ── -->
   <div class="page" id="page-people">
     <div class="page-header">
       <h2>인물별 기록 👤</h2>
@@ -714,124 +605,20 @@ body {
     <div class="photo-grid" id="people-grid"></div>
   </div>
 
-  <!-- ── 친가 ── -->
-  <div class="page" id="page-paternal">
-    <div class="page-header">
-      <h2>친가 기록 🌳</h2>
-      <p>6형제 가족의 이야기</p>
-    </div>
-    <div class="family-preview" id="paternal-cards"></div>
-    <div class="section-title">사진 기록</div>
-    <div class="photo-grid" id="paternal-grid"></div>
-  </div>
+  <div class="page" id="page-paternal"><div class="page-header"><h2>친가 기록 🌳</h2></div><div class="photo-grid" id="paternal-grid"></div></div>
+  <div class="page" id="page-maternal"><div class="page-header"><h2>처가 기록 🌿</h2></div><div class="photo-grid" id="maternal-grid"></div></div>
+  <div class="page" id="page-timeline"><div class="page-header"><h2>시대별 타임라인 📅</h2></div><div class="decade-grid" id="decade-grid"></div></div>
+  <div class="page" id="page-events"><div class="page-header"><h2>이벤트별 기록 🎉</h2></div><div class="filter-bar" id="event-filters"></div><div class="event-list" id="event-list"></div></div>
 
-  <!-- ── 처가 ── -->
-  <div class="page" id="page-maternal">
-    <div class="page-header">
-      <h2>처가 기록 🌿</h2>
-      <p>5자매 가족의 이야기</p>
-    </div>
-    <div class="family-preview" id="maternal-cards"></div>
-    <div class="section-title">사진 기록</div>
-    <div class="photo-grid" id="maternal-grid"></div>
-  </div>
-
-  <!-- ── 타임라인 ── -->
-  <div class="page" id="page-timeline">
-    <div class="page-header">
-      <h2>시대별 타임라인 📅</h2>
-      <p>연대순으로 보는 우리 가족의 역사</p>
-    </div>
-    <div class="decade-grid" id="decade-grid"></div>
-  </div>
-
-  <!-- ── 이벤트 ── -->
-  <div class="page" id="page-events">
-    <div class="page-header">
-      <h2>이벤트별 기록 🎉</h2>
-      <p>여행, 결혼, 졸업, 특별한 순간들</p>
-    </div>
-    <div class="filter-bar" id="event-filters"></div>
-    <div class="event-list" id="event-list"></div>
-  </div>
-
-  <!-- ── 지역별 ── -->
-  <div class="page" id="page-places">
-    <div class="page-header">
-      <h2>국가 · 지역별 기록 🌍</h2>
-      <p>우리 가족이 다녀온 모든 곳</p>
-    </div>
-    <div class="map-container">
-      <div class="icon">🗺️</div>
-      <p>지도 연동 예정 (Google Maps / Kakao Maps)</p>
-      <small style="color:var(--brown-light)">관리자 설정에서 API 키를 입력하세요</small>
-    </div>
-    <div class="section-title">방문 국가 · 지역</div>
-    <div class="location-chips" id="location-chips"></div>
-  </div>
-
-  <!-- ── 관리자 ── -->
-  <div class="page" id="page-admin">
-    <div class="page-header">
-      <h2>관리자 설정 ⚙️</h2>
-      <p>아카이브 구조 관리 및 데이터 설정</p>
-    </div>
-    <div class="admin-grid">
-      <div class="admin-card" onclick="openUpload()">
-        <div class="icon">📤</div>
-        <h4>기록 추가</h4>
-        <p>사진, 영상, 문서를 새로 등록합니다</p>
-      </div>
-      <div class="admin-card">
-        <div class="icon">👨‍👩‍👧‍👦</div>
-        <h4>가족 구성원 관리</h4>
-        <p>직계/친가/처가 구성원을 추가·편집합니다</p>
-      </div>
-      <div class="admin-card">
-        <div class="icon">🏷️</div>
-        <h4>태그 · 카테고리 관리</h4>
-        <p>분류 체계를 확장하거나 수정합니다</p>
-      </div>
-      <div class="admin-card">
-        <div class="icon">📅</div>
-        <h4>연대 설정</h4>
-        <p>시대 구분 및 연도 범위를 조정합니다</p>
-      </div>
-      <div class="admin-card">
-        <div class="icon">🌍</div>
-        <h4>지역 관리</h4>
-        <p>국가 · 도시 · 지역 분류를 관리합니다</p>
-      </div>
-      <div class="admin-card">
-        <div class="icon">💾</div>
-        <h4>데이터 백업 · 내보내기</h4>
-        <p>전체 아카이브를 JSON / ZIP으로 저장합니다</p>
-      </div>
-      <div class="admin-card">
-        <div class="icon">🗺️</div>
-        <h4>지도 API 연동</h4>
-        <p>Google Maps 또는 Kakao Maps API를 설정합니다</p>
-      </div>
-      <div class="admin-card">
-        <div class="icon">🔒</div>
-        <h4>공개 · 비공개 설정</h4>
-        <p>기록별 공개 범위를 설정합니다</p>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /main -->
-</div><!-- /app -->
-
-<!-- ═══════ UPLOAD MODAL ═══════ -->
-<div id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal-box" style="max-width:600px;">
+</div></div><div id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box" style="max-width:560px;">
     <div class="modal-header">
-      <h3>📤 새 기록 추가</h3>
+      <h3>📤 새 사진 추가</h3>
       <button class="modal-close" onclick="closeUpload()">✕</button>
     </div>
     <div class="modal-body">
-<div class="form-group" style="background: rgba(212,168,83,0.1); padding: 30px 20px; border-radius: 12px; text-align: center; margin-bottom: 24px; border: 2px dashed rgba(212,168,83,0.5);">
+      
+      <div class="form-group" style="background: rgba(212,168,83,0.1); padding: 30px 20px; border-radius: 12px; text-align: center; margin-bottom: 24px; border: 2px dashed rgba(212,168,83,0.5);">
         <label style="display: block; font-size: 1.1rem; color: var(--brown-deep); font-weight: 600; cursor: pointer;">
           <div style="font-size: 2.5rem; margin-bottom: 10px;">📸</div>
           여기를 눌러 스마트폰 사진첩에서 사진 선택
@@ -841,100 +628,7 @@ body {
       </div>
 
       <hr style="border:none;border-top:1px solid rgba(44,26,14,0.08);margin:16px 0 14px;">
-      <!-- ① 방식 탭 버튼 -->
-      <div style="display:flex;gap:0;border:2px solid rgba(44,26,14,0.12);border-radius:12px;overflow:hidden;margin-bottom:18px;">
-        <button id="tab-btn-drive" onclick="setUploadMode('drive')"
-          style="flex:1;padding:13px 8px;border:none;background:var(--brown-deep);color:var(--gold-light);font-family:'Noto Sans KR',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:0.2s;">
-          📁 Google Drive
-        </button>
-        <button id="tab-btn-host" onclick="setUploadMode('host')"
-          style="flex:1;padding:13px 8px;border:none;background:var(--cream);color:var(--text-sub);font-family:'Noto Sans KR',sans-serif;font-size:0.88rem;cursor:pointer;transition:0.2s;border-left:2px solid rgba(44,26,14,0.12);">
-          🌐 웹 호스팅 URL
-        </button>
-      </div>
 
-      <!-- ② Google Drive 패널 -->
-      <div id="panel-drive">
-        <div style="background:rgba(66,133,244,0.07);border:1px solid rgba(66,133,244,0.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--text-sub);line-height:1.9;">
-          <b style="color:#1a73e8;">📋 Drive 공유 링크 만들기</b><br>
-          Drive 앱 → 사진 길게 탭 → <b>공유</b> → <b>링크가 있는 모든 사용자</b> → <b>링크 복사</b>
-          <button onclick="openHelpModal('drive')" style="margin-left:6px;background:rgba(66,133,244,0.12);color:#1a73e8;border:none;border-radius:5px;padding:2px 9px;font-size:0.72rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">자세히 ▶</button>
-        </div>
-        <div class="form-group">
-          <label>📎 Google Drive 공유 링크 <span style="float:right;font-size:0.7rem;color:var(--rust);">필수</span></label>
-          <div style="display:flex;gap:8px;">
-            <input type="url" id="inp-gdrive" placeholder="https://drive.google.com/file/d/..."
-              oninput="previewDriveLink(this.value)"
-              style="flex:1;padding:10px 14px;border:1.5px solid rgba(66,133,244,0.35);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
-            <button onclick="previewDriveLink(document.getElementById('inp-gdrive').value)"
-              style="background:#1a73e8;color:#fff;border:none;border-radius:10px;padding:10px 13px;cursor:pointer;font-size:0.82rem;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;">미리보기</button>
-          </div>
-          <div id="drive-preview" style="margin-top:10px;display:none;border-radius:10px;overflow:hidden;border:1px solid rgba(44,26,14,0.1);">
-            <img id="drive-preview-img" src="" alt="미리보기" style="width:100%;max-height:200px;object-fit:cover;display:block;">
-            <div id="drive-preview-fallback" style="display:none;padding:16px;text-align:center;color:var(--text-sub);font-size:0.82rem;">
-              <div style="font-size:1.8rem;">🔗</div>Drive 링크 등록됨<br><small>공개 설정에 따라 미리보기가 제한될 수 있습니다</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ③ 웹 호스팅 패널 (초기 숨김) -->
-      <div id="panel-host" style="display:none;">
-        <div style="display:flex;gap:8px;margin-bottom:14px;">
-          <button id="htype-github" onclick="setHostType('github')"
-            style="flex:1;padding:10px 6px;border:2px solid var(--brown-deep);border-radius:10px;background:var(--brown-deep);color:var(--gold-light);font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;cursor:pointer;">⬛ GitHub Pages</button>
-          <button id="htype-netlify" onclick="setHostType('netlify')"
-            style="flex:1;padding:10px 6px;border:2px solid rgba(44,26,14,0.15);border-radius:10px;background:var(--cream);color:var(--text-sub);font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;cursor:pointer;">🟦 Netlify</button>
-          <button id="htype-custom" onclick="setHostType('custom')"
-            style="flex:1;padding:10px 6px;border:2px solid rgba(44,26,14,0.15);border-radius:10px;background:var(--cream);color:var(--text-sub);font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;cursor:pointer;">🔗 직접 URL</button>
-        </div>
-        <div id="host-info-github" style="background:rgba(0,0,0,0.04);border-radius:8px;padding:11px 13px;margin-bottom:12px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
-          <b>⬛ GitHub Pages:</b> 저장소 images/ 폴더에 사진 업로드 후 URL 입력<br>
-          <code style="font-size:0.72rem;">https://사용자명.github.io/저장소명/images/파일명.jpg</code>
-          <button onclick="openHelpModal('github')" style="margin-left:6px;background:rgba(0,0,0,0.07);color:#333;border:none;border-radius:4px;padding:2px 8px;font-size:0.7rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">설정방법 ▶</button>
-        </div>
-        <div id="host-info-netlify" style="display:none;background:rgba(0,150,150,0.05);border-radius:8px;padding:11px 13px;margin-bottom:12px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
-          <b>🟦 Netlify:</b> app.netlify.com/drop 에 폴더 드래그 → URL 자동 발급<br>
-          <code style="font-size:0.72rem;">https://랜덤이름.netlify.app/images/파일명.jpg</code>
-          <button onclick="openHelpModal('netlify')" style="margin-left:6px;background:rgba(0,150,150,0.1);color:#007a7a;border:none;border-radius:4px;padding:2px 8px;font-size:0.7rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">설정방법 ▶</button>
-        </div>
-        <div id="host-info-custom" style="display:none;background:rgba(212,168,83,0.07);border-radius:8px;padding:11px 13px;margin-bottom:12px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
-          <b>🔗 직접 URL:</b> 이미 호스팅된 이미지의 전체 URL을 입력하세요
-        </div>
-        <!-- github/netlify: 기본URL + 경로 -->
-        <div id="host-url-group">
-          <div class="form-group">
-            <label id="host-base-label">사이트 기본 URL</label>
-            <input type="url" id="inp-host-base" placeholder="https://사용자명.github.io/family-archive"
-              style="width:100%;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
-            <small style="color:var(--brown-light);font-size:0.72rem;">끝에 / 없이 입력</small>
-          </div>
-          <div class="form-group">
-            <label>이미지 파일 경로</label>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <span style="color:var(--text-sub);font-size:0.82rem;white-space:nowrap;flex-shrink:0;">/images/</span>
-              <input type="text" id="inp-host-path" placeholder="2025/singapore.jpg" oninput="previewHostImg()"
-                style="flex:1;padding:10px 14px;border:1.5px solid rgba(122,140,110,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
-            </div>
-          </div>
-        </div>
-        <!-- custom: 직접 URL -->
-        <div id="host-direct-group" style="display:none;" class="form-group">
-          <label>이미지 직접 URL</label>
-          <input type="url" id="inp-host-direct" placeholder="https://..." oninput="previewHostImg()"
-            style="width:100%;padding:10px 14px;border:1.5px solid rgba(212,168,83,0.3);border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:0.84rem;outline:none;background:#fff;">
-        </div>
-        <div id="host-preview" style="display:none;border-radius:10px;overflow:hidden;border:1px solid rgba(44,26,14,0.1);margin-bottom:4px;">
-          <img id="host-preview-img" src="" style="width:100%;max-height:180px;object-fit:cover;display:block;">
-          <div id="host-preview-fallback" style="display:none;padding:14px;text-align:center;color:var(--text-sub);font-size:0.82rem;">
-            <div style="font-size:1.6rem;">🌐</div>URL 등록됨
-          </div>
-        </div>
-      </div>
-
-      <hr style="border:none;border-top:1px solid rgba(44,26,14,0.08);margin:16px 0 14px;">
-
-      <!-- ④ 공통 메타정보 -->
       <div class="form-row">
         <div class="form-group">
           <label>제목 <span style="float:right;font-size:0.7rem;color:var(--rust);">필수</span></label>
@@ -967,28 +661,6 @@ body {
             <option value="graduation">🎓 졸업식</option>
             <option value="special">⭐ 특별 이벤트</option>
             <option value="daily">☀️ 일상</option>
-            <option value="etc">기타</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>국가 · 지역</label>
-          <input type="text" id="inp-location" placeholder="예: 싱가포르, 제주도">
-        </div>
-        <div class="form-group">
-          <label>연대</label>
-          <select id="inp-decade">
-            <option value="before1954">1954년 이전</option>
-            <option value="1950s">1950년대</option>
-            <option value="1960s">1960년대</option>
-            <option value="1970s">1970년대</option>
-            <option value="1980s">1980년대</option>
-            <option value="1990s">1990년대</option>
-            <option value="2000s">2000년대</option>
-            <option value="2010s">2010년대</option>
-            <option value="2020s" selected>2020년대</option>
-            <option value="2030s">2030년대</option>
           </select>
         </div>
       </div>
@@ -997,54 +669,23 @@ body {
         <textarea id="inp-memo" rows="3" placeholder="이 순간에 대한 이야기를 적어주세요..."></textarea>
       </div>
 
-      <button class="btn-primary" onclick="saveRecord()">💾 저장하기</button>
+      <button class="btn-primary" onclick="saveRecord()">💾 클라우드에 사진 저장하기</button>
       <p style="text-align:center;font-size:0.72rem;color:var(--brown-light);margin-top:8px;">
-        기록 메타정보는 브라우저에 저장됩니다 · 이미지는 각 서비스에서 직접 관리
+        저장 버튼을 누르면 파이어베이스 안전 창고로 업로드됩니다.
       </p>
     </div>
   </div>
 </div>
 
-<!-- ═══════ 도움말 모달 ═══════ -->
-<div id="help-overlay" onclick="closeHelp(event)" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,0.52);z-index:3000;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:var(--warm-white);border-radius:20px;max-width:500px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3);">
-    <div id="help-header" style="padding:20px 24px 16px;border-bottom:1px solid rgba(44,26,14,0.08);display:flex;align-items:center;justify-content:space-between;">
-      <h3 id="help-title" style="font-family:'Noto Serif KR',serif;font-size:1.1rem;"></h3>
-      <button onclick="document.getElementById('help-overlay').style.display='none'" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-sub);">✕</button>
-    </div>
-    <div id="help-body" style="padding:24px;"></div>
-  </div>
-</div>
 
-<style>
-/* 업로드 방식 카드 */
-.umode-card {
-  border:2px solid rgba(44,26,14,0.10);border-radius:14px;padding:16px 14px;
-  cursor:pointer;transition:var(--transition);text-align:center;background:var(--cream);
-}
-.umode-card:hover { border-color:var(--gold); transform:translateY(-2px); }
-.umode-card.active { border-color:var(--gold);background:#fffbf2;box-shadow:0 4px 16px rgba(212,168,83,0.18); }
-.umode-icon { font-size:1.8rem;margin-bottom:6px; }
-.umode-title { font-weight:700;font-size:0.9rem;color:var(--brown-deep);margin-bottom:4px; }
-.umode-desc { font-size:0.75rem;color:var(--text-sub);line-height:1.5;margin-bottom:8px; }
-.umode-badge { font-size:0.68rem;padding:3px 10px;border-radius:20px;display:inline-block; }
-
-/* 호스팅 타입 버튼 */
-.host-type-btn {
-  padding:7px 14px;border-radius:8px;border:1.5px solid rgba(44,26,14,0.12);
-  background:var(--cream);color:var(--text-sub);font-size:0.8rem;cursor:pointer;
-  font-family:'Noto Sans KR',sans-serif;transition:var(--transition);
-}
-.host-type-btn.active { background:var(--brown-deep);color:var(--gold-light);border-color:var(--brown-deep); }
-</style>
-<!-- 구글 파이어베이스 시스템(SDK) 불러오기 -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
 <script>
-// ▼ 2. 여기에 복사해 둔 암호와 파이어베이스 시작 코드를 넣습니다 ▼
+// ▼▼ 2. 여기에 복사해 둔 암호와 파이어베이스 시작 코드를 넣습니다 ▼▼
 const firebaseConfig = {
-  apiKey: "선생님의_API_키",       // 복사하신 내용으로 덮어쓰세요!
+  apiKey: "선생님의_API_키",       // 반드시 복사하신 내용으로 덮어쓰세요!
   authDomain: "선생님의_도메인",
   projectId: "선생님의_프로젝트ID",
   storageBucket: "...",
@@ -1058,20 +699,17 @@ firebase.initializeApp(firebaseConfig);
 // 사용할 도구(데이터베이스와 사진 저장소) 정의하기
 const db = firebase.firestore();
 const storage = firebase.storage();
-</script>
-// ════════════════════════════════════════
-//  AUTH & PERMISSION SYSTEM
-// ════════════════════════════════════════
+// ▲▲ ---------------------------------------------------- ▲▲
 
-// ── 스토리지 헬퍼 ──
+
+// ════════ AUTH & PERMISSION SYSTEM ════════
 function getUsers(){ try{return JSON.parse(localStorage.getItem('fa_users')||'[]');}catch{return[];} }
 function saveUsers(u){ localStorage.setItem('fa_users', JSON.stringify(u)); }
 function getSession(){ try{return JSON.parse(sessionStorage.getItem('fa_session')||'null');}catch{return null;} }
 
-// ── 세션 가드: 무조건 관리자 자동 로그인 ──
+// ── 무조건 관리자 자동 로그인 ──
 (function authGuard(){
   const users = getUsers();
-  // 관리자 계정 확인 및 생성
   let adminUser = users.find(u => u.id === '나');
   if(!adminUser){
     adminUser = {
@@ -1082,253 +720,14 @@ function getSession(){ try{return JSON.parse(sessionStorage.getItem('fa_session'
     users.push(adminUser);
     saveUsers(users);
   }
-  // 브라우저에 접속하자마자 무조건 관리자 세션 발급
   sessionStorage.setItem('fa_session', JSON.stringify(adminUser));
 })();
 
 const SESSION = getSession() || {};
-  if(!sess) { window.location.href = 'auth.html'; }
-})();
 
-// ── 현재 세션 유저 ──
-const SESSION = getSession() || {};
-
-// ── 권한 체크 ──
 function canUpload(){ return SESSION.isAdmin || SESSION.canUpload; }
 function canPost(){   return SESSION.isAdmin || SESSION.canPost;   }
 function isAdmin(){   return !!SESSION.isAdmin; }
-
-// ── 로그아웃 ──
-function logout(){
-  if(!confirm('로그아웃 하시겠습니까?')) return;
-  sessionStorage.removeItem('fa_session');
-  window.location.href = 'auth.html';
-}
-
-// ────────────────────────────────────────
-//  ADMIN PANEL
-// ────────────────────────────────────────
-function openAdminPanel(){
-  if(!isAdmin()){ alert('관리자 전용 기능입니다.'); return; }
-  document.getElementById('admin-panel-overlay').style.display='flex';
-  apTab('pending');
-}
-function closeAdminPanel(){
-  document.getElementById('admin-panel-overlay').style.display='none';
-}
-
-// 탭 스위치
-function apTab(tab){
-  document.querySelectorAll('.ap-tab').forEach(el=>{
-    el.style.borderBottomColor = 'transparent';
-    el.style.color = 'var(--text-sub)';
-    el.style.fontWeight = '400';
-  });
-  const idx = {pending:0,members:1,permissions:2,pw:3}[tab];
-  const tabs = document.querySelectorAll('.ap-tab');
-  if(tabs[idx]){
-    tabs[idx].style.borderBottomColor = 'var(--gold)';
-    tabs[idx].style.color = 'var(--brown-deep)';
-    tabs[idx].style.fontWeight = '600';
-  }
-  const body = document.getElementById('ap-body');
-  if(tab==='pending')     body.innerHTML = renderPendingTab();
-  if(tab==='members')     body.innerHTML = renderMembersTab();
-  if(tab==='permissions') body.innerHTML = renderPermissionsTab();
-  if(tab==='pw')          body.innerHTML = renderPwTab();
-
-  // 뱃지
-  const pending = getUsers().filter(u=>u.status==='pending');
-  const badge = document.getElementById('badge-pending');
-  badge.textContent = pending.length || '';
-  badge.style.display = pending.length ? 'inline' : 'none';
-}
-
-// ── 탭 1: 승인 대기 ──
-function renderPendingTab(){
-  const users = getUsers().filter(u=>u.status==='pending');
-  if(!users.length) return `<div style="text-align:center;padding:40px;color:var(--text-sub);">
-    <div style="font-size:2.5rem">✅</div><p style="margin-top:8px;">대기 중인 가입 신청이 없습니다</p></div>`;
-  return users.map(u=>`
-    <div style="background:var(--cream);border-radius:12px;padding:18px;margin-bottom:12px;border:1px solid rgba(44,26,14,0.08);">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--brown-light),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:white;flex-shrink:0;">👤</div>
-        <div style="flex:1;min-width:140px;">
-          <div style="font-weight:600;color:var(--brown-deep);">${u.name} <span style="background:rgba(212,168,83,0.2);color:#7a5c1e;font-size:0.7rem;padding:2px 8px;border-radius:20px;font-weight:400;">${u.role}</span></div>
-          <div style="font-size:0.78rem;color:var(--text-sub);margin-top:3px;">신청일: ${u.requestedAt ? new Date(u.requestedAt).toLocaleDateString('ko-KR') : '-'}</div>
-          ${u.memo ? `<div style="font-size:0.8rem;color:var(--brown-mid);margin-top:4px;">"${u.memo}"</div>` : ''}
-        </div>
-        <div style="display:flex;gap:8px;flex-shrink:0;">
-          <button onclick="approveUser('${u.id}')" style="background:var(--sage);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:0.82rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">✅ 승인</button>
-          <button onclick="rejectUser('${u.id}')" style="background:var(--rust);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:0.82rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">❌ 거절</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-// ── 탭 2: 구성원 목록 ──
-function renderMembersTab(){
-  const users = getUsers().filter(u=>u.status==='approved');
-  return users.map(u=>`
-    <div style="background:var(--cream);border-radius:12px;padding:16px;margin-bottom:10px;border:1px solid rgba(44,26,14,0.08);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,${u.isAdmin?'var(--gold),var(--rust)':'var(--brown-light),var(--gold-light)'});display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:white;flex-shrink:0;">${u.isAdmin?'👑':'👤'}</div>
-      <div style="flex:1;min-width:120px;">
-        <span style="font-weight:600;color:var(--brown-deep);">${u.name}</span>
-        <span style="background:${u.isAdmin?'rgba(212,168,83,0.25)':'rgba(122,140,110,0.15)'};color:${u.isAdmin?'#7a5c1e':'#4a6741'};font-size:0.7rem;padding:2px 8px;border-radius:20px;margin-left:6px;">${u.isAdmin?'관리자':u.role}</span>
-        <div style="font-size:0.75rem;color:var(--text-sub);margin-top:2px;">가입: ${u.joinedAt ? new Date(u.joinedAt).toLocaleDateString('ko-KR') : '-'}</div>
-      </div>
-      <div style="display:flex;gap:6px;flex-shrink:0;">
-        <span style="padding:4px 10px;border-radius:20px;font-size:0.72rem;background:${u.canUpload?'rgba(122,140,110,0.15)':'rgba(44,26,14,0.07)'};color:${u.canUpload?'#4a6741':'var(--text-sub)'};">📸 업로드 ${u.canUpload?'O':'X'}</span>
-        <span style="padding:4px 10px;border-radius:20px;font-size:0.72rem;background:${u.canPost?'rgba(212,168,83,0.15)':'rgba(44,26,14,0.07)'};color:${u.canPost?'#7a5c1e':'var(--text-sub)'};">✏️ 글쓰기 ${u.canPost?'O':'X'}</span>
-      </div>
-      ${!u.isAdmin ? `<button onclick="removeUser('${u.id}')" style="background:none;border:1px solid var(--rust);color:var(--rust);border-radius:8px;padding:6px 12px;font-size:0.75rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;flex-shrink:0;">탈퇴</button>` : ''}
-    </div>`).join('') || `<div style="text-align:center;padding:40px;color:var(--text-sub);">승인된 구성원이 없습니다</div>`;
-}
-
-// ── 탭 3: 권한 설정 ──
-function renderPermissionsTab(){
-  const users = getUsers().filter(u=>u.status==='approved' && !u.isAdmin);
-  if(!users.length) return `<div style="text-align:center;padding:40px;color:var(--text-sub);">권한을 설정할 구성원이 없습니다</div>`;
-  return `
-    <p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:16px;">각 구성원의 사진 업로드 · 글쓰기 권한을 개별 설정합니다.</p>
-    <div style="background:var(--cream);border-radius:10px;overflow:hidden;border:1px solid rgba(44,26,14,0.08);">
-      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
-        <thead><tr style="background:rgba(44,26,14,0.05);">
-          <th style="padding:12px 16px;text-align:left;color:var(--text-sub);font-weight:500;">구성원</th>
-          <th style="padding:12px;text-align:center;color:var(--text-sub);font-weight:500;">📸 업로드</th>
-          <th style="padding:12px;text-align:center;color:var(--text-sub);font-weight:500;">✏️ 글쓰기</th>
-          <th style="padding:12px;text-align:center;color:var(--text-sub);font-weight:500;">저장</th>
-        </tr></thead>
-        <tbody>
-        ${users.map(u=>`
-          <tr style="border-top:1px solid rgba(44,26,14,0.06);">
-            <td style="padding:12px 16px;">
-              <span style="font-weight:500;">${u.name}</span>
-              <span style="font-size:0.72rem;color:var(--text-sub);margin-left:6px;">${u.role}</span>
-            </td>
-            <td style="padding:12px;text-align:center;">
-              <input type="checkbox" id="up-${u.id}" ${u.canUpload?'checked':''} style="width:18px;height:18px;cursor:pointer;accent-color:var(--sage);">
-            </td>
-            <td style="padding:12px;text-align:center;">
-              <input type="checkbox" id="po-${u.id}" ${u.canPost?'checked':''} style="width:18px;height:18px;cursor:pointer;accent-color:var(--gold);">
-            </td>
-            <td style="padding:12px;text-align:center;">
-              <button onclick="savePermission('${u.id}')" style="background:var(--brown-deep);color:var(--gold-light);border:none;border-radius:6px;padding:6px 14px;font-size:0.78rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">저장</button>
-            </td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div style="margin-top:16px;padding:12px 16px;background:rgba(212,168,83,0.08);border-radius:8px;font-size:0.8rem;color:var(--text-sub);">
-      💡 권한 변경은 다음 로그인 시부터 반영됩니다.
-    </div>`;
-}
-
-// ── 탭 4: 비밀번호 관리 ──
-function renderPwTab(){
-  const users = getUsers().filter(u=>u.status==='approved');
-  return `
-    <p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:16px;">관리자가 구성원 비밀번호를 초기화합니다. (본인 확인 후 새 비밀번호를 직접 설정하도록 안내하세요)</p>
-    <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">구성원 선택</label>
-      <select id="pw-select" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
-        ${users.map(u=>`<option value="${u.id}">${u.name} (${u.role})</option>`).join('')}
-      </select>
-    </div>
-    <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">새 임시 비밀번호</label>
-      <input type="text" id="pw-new" placeholder="임시 비밀번호 입력" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
-    </div>
-    <button onclick="resetPw()" style="width:100%;padding:12px;background:var(--brown-deep);color:var(--gold-light);border:none;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;cursor:pointer;">🔑 비밀번호 초기화</button>
-    <hr style="border:none;border-top:1px solid rgba(44,26,14,0.08);margin:24px 0;">
-    <p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:12px;"><strong>내 비밀번호 변경</strong></p>
-    <div style="margin-bottom:10px;">
-      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">현재 비밀번호</label>
-      <input type="password" id="my-pw-old" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
-    </div>
-    <div style="margin-bottom:10px;">
-      <label style="display:block;font-size:0.8rem;color:var(--text-sub);margin-bottom:6px;">새 비밀번호</label>
-      <input type="password" id="my-pw-new" style="width:100%;padding:10px 14px;border:1.5px solid rgba(44,26,14,0.12);border-radius:8px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);font-size:0.88rem;outline:none;">
-    </div>
-    <button onclick="changeMyPw()" style="width:100%;padding:12px;background:var(--brown-mid);color:#fff;border:none;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;cursor:pointer;">✅ 내 비밀번호 변경</button>`;
-}
-
-// ── 승인 ──
-function approveUser(id){
-  const users = getUsers();
-  const u = users.find(u=>u.id===id);
-  if(!u) return;
-  u.status = 'approved';
-  u.canUpload = true;
-  u.canPost = true;
-  u.joinedAt = new Date().toISOString();
-  saveUsers(users);
-  apTab('pending');
-  showToast(`✅ "${u.name}" 님의 가입을 승인했습니다`);
-}
-
-// ── 거절 ──
-function rejectUser(id){
-  if(!confirm('이 신청을 거절하시겠습니까?')) return;
-  const users = getUsers();
-  const u = users.find(u=>u.id===id);
-  if(!u) return;
-  u.status = 'rejected';
-  saveUsers(users);
-  apTab('pending');
-  showToast(`❌ "${u.name}" 님의 가입이 거절되었습니다`);
-}
-
-// ── 탈퇴 처리 ──
-function removeUser(id){
-  if(!confirm('이 구성원을 탈퇴 처리하시겠습니까?')) return;
-  const users = getUsers().filter(u=>u.id!==id);
-  saveUsers(users);
-  apTab('members');
-  showToast('구성원이 탈퇴 처리되었습니다');
-}
-
-// ── 권한 저장 ──
-function savePermission(id){
-  const users = getUsers();
-  const u = users.find(u=>u.id===id);
-  if(!u) return;
-  u.canUpload = document.getElementById('up-'+id)?.checked || false;
-  u.canPost   = document.getElementById('po-'+id)?.checked || false;
-  saveUsers(users);
-  showToast(`✅ "${u.name}" 권한이 저장되었습니다`);
-}
-
-// ── 비밀번호 초기화 ──
-function resetPw(){
-  const id = document.getElementById('pw-select')?.value;
-  const pw = document.getElementById('pw-new')?.value;
-  if(!id || !pw) { showToast('구성원과 새 비밀번호를 입력해주세요', true); return; }
-  if(pw.length < 4) { showToast('비밀번호는 4자 이상이어야 합니다', true); return; }
-  const users = getUsers();
-  const u = users.find(u=>u.id===id);
-  if(!u) return;
-  u.pw = btoa(pw);
-  saveUsers(users);
-  document.getElementById('pw-new').value = '';
-  showToast(`✅ "${u.name}" 비밀번호가 초기화되었습니다`);
-}
-
-// ── 내 비밀번호 변경 ──
-function changeMyPw(){
-  const oldPw = document.getElementById('my-pw-old')?.value;
-  const newPw = document.getElementById('my-pw-new')?.value;
-  if(!oldPw || !newPw) { showToast('현재/새 비밀번호를 모두 입력해주세요', true); return; }
-  const users = getUsers();
-  const u = users.find(u=>u.id===SESSION.id);
-  if(!u || u.pw !== btoa(oldPw)) { showToast('현재 비밀번호가 맞지 않습니다', true); return; }
-  if(newPw.length < 6) { showToast('새 비밀번호는 6자 이상이어야 합니다', true); return; }
-  u.pw = btoa(newPw);
-  saveUsers(users);
-  document.getElementById('my-pw-old').value='';
-  document.getElementById('my-pw-new').value='';
-  showToast('✅ 비밀번호가 변경되었습니다');
-}
 
 // ── 토스트 알림 ──
 function showToast(msg, isError=false){
@@ -1359,30 +758,15 @@ const FAMILY = {
   ],
   paternal: [
     { id:'장남', name:'장남 (나)', role:'친가 1남', emoji:'👨', type:'paternal' },
-    { id:'차남', name:'차남', role:'친가 2남', emoji:'👨', type:'paternal' },
-    { id:'삼남', name:'삼남', role:'친가 3남', emoji:'👨', type:'paternal' },
-    { id:'사남', name:'사남', role:'친가 4남', emoji:'👨', type:'paternal' },
-    { id:'오남', name:'오남', role:'친가 5남', emoji:'👨', type:'paternal' },
-    { id:'육남', name:'육남', role:'친가 6남', emoji:'👨', type:'paternal' },
+    { id:'차남', name:'차남', role:'친가 2남', emoji:'👨', type:'paternal' }
   ],
   maternal: [
     { id:'장녀', name:'장녀', role:'처가 1녀', emoji:'👩', type:'maternal' },
-    { id:'차녀', name:'차녀 (아내)', role:'처가 2녀', emoji:'👩', type:'maternal' },
-    { id:'삼녀', name:'삼녀', role:'처가 3녀', emoji:'👩', type:'maternal' },
-    { id:'사녀', name:'사녀', role:'처가 4녀', emoji:'👩', type:'maternal' },
-    { id:'오녀', name:'오녀', role:'처가 5녀', emoji:'👩', type:'maternal' },
+    { id:'차녀', name:'차녀 (아내)', role:'처가 2녀', emoji:'👩', type:'maternal' }
   ],
 };
 
 const DECADES = [
-  { id:'before1954', label:'1954년 이전', count:0, max:20 },
-  { id:'1950s', label:'1950년대', count:0, max:20 },
-  { id:'1960s', label:'1960년대', count:0, max:20 },
-  { id:'1970s', label:'1970년대', count:0, max:20 },
-  { id:'1980s', label:'1980년대', count:0, max:20 },
-  { id:'1990s', label:'1990년대', count:0, max:20 },
-  { id:'2000s', label:'2000년대', count:0, max:20 },
-  { id:'2010s', label:'2010년대', count:0, max:20 },
   { id:'2020s', label:'2020년대', count:0, max:20 },
   { id:'2030s', label:'2030년대', count:0, max:20 },
 ];
@@ -1395,16 +779,7 @@ const EVENTS = [
   { id:'daily', label:'일상', icon:'☀️', cls:'travel' },
 ];
 
-const LOCATIONS = [
-  { id:'korea', flag:'🇰🇷', name:'대한민국', sub:'서울, 제주, 부산 등' },
-  { id:'japan', flag:'🇯🇵', name:'일본', sub:'도쿄, 오사카 등' },
-  { id:'singapore', flag:'🇸🇬', name:'싱가포르', sub:'' },
-  { id:'usa', flag:'🇺🇸', name:'미국', sub:'' },
-  { id:'europe', flag:'🌍', name:'유럽', sub:'' },
-  { id:'china', flag:'🇨🇳', name:'중국', sub:'' },
-];
-
-// localStorage 기반 간이 DB
+// localStorage 기반 간이 DB (화면 표시용)
 function getRecords() {
   try { return JSON.parse(localStorage.getItem('fa_records') || '[]'); } catch { return []; }
 }
@@ -1423,25 +798,15 @@ function renderPhotoCard(r) {
   const thumb = r.imgUrl
     ? `<img src="${r.imgUrl}" alt="${r.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" onerror="this.style.display='none'">`
     : '';
-  const clickAction = r.openUrl ? `onclick="window.open('${r.openUrl}','_blank')"` : '';
-  const authorBadge = r.authorName
-    ? `<span style="font-size:0.68rem;color:var(--brown-light);">by ${r.authorName}</span>` : '';
-  const modeBadge = r.uploadMode === 'drive'
-    ? `<div style="position:absolute;top:8px;right:8px;background:rgba(26,115,232,0.85);color:#fff;border-radius:6px;padding:3px 8px;font-size:0.65rem;">📁 Drive</div>`
-    : r.uploadMode === 'host'
-    ? `<div style="position:absolute;top:8px;right:8px;background:rgba(0,150,130,0.85);color:#fff;border-radius:6px;padding:3px 8px;font-size:0.65rem;">🌐 ${r.hostType === 'github' ? 'GitHub' : r.hostType === 'netlify' ? 'Netlify' : 'Web'}</div>`
-    : '';
-  return `<div class="photo-card" ${clickAction} style="${r.openUrl?'cursor:pointer':''}">
+  return `<div class="photo-card">
     <div class="photo-thumb" style="position:relative;">
       ${thumb}
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:${r.imgUrl?'0':'1'};">🖼️</div>
-      ${modeBadge}
     </div>
     <div class="photo-info">
       <h4>${r.title}</h4>
       <div class="meta" style="display:flex;justify-content:space-between;align-items:center;">
-        <span>${r.date||''} ${r.location ? '· '+r.location : ''}</span>
-        ${authorBadge}
+        <span>${r.date||''}</span>
       </div>
       <div class="photo-tags">${tags.map(t=>`<span class="tag-chip">${t}</span>`).join('')}</div>
     </div>
@@ -1453,7 +818,7 @@ function renderEventItem(e) {
     <div class="event-icon ${cat.cls}">${cat.icon}</div>
     <div class="event-body">
       <h4>${e.title}</h4>
-      <p>${e.location||''} ${e.person ? '· '+e.person : ''}</p>
+      <p>${e.person ? e.person : ''}</p>
     </div>
     <div class="event-date">${e.date||''}</div>
   </div>`;
@@ -1461,30 +826,9 @@ function renderEventItem(e) {
 
 // ════════ INIT ════════
 function init() {
-  // Splash
   setTimeout(()=>{ document.getElementById('splash').classList.add('hidden'); }, 1800);
-
-  // Direct family cards
   document.getElementById('direct-family-cards').innerHTML = FAMILY.direct.map(renderFamilyCard).join('');
-
-  // Paternal / maternal inline list
-  document.getElementById('paternal-list').innerHTML = FAMILY.paternal.map(m=>
-    `<span style="background:rgba(107,63,42,0.1);padding:4px 10px;border-radius:16px;font-size:0.78rem;cursor:pointer">${m.name}</span>`).join('');
-  document.getElementById('maternal-list').innerHTML = FAMILY.maternal.map(m=>
-    `<span style="background:rgba(122,140,110,0.1);padding:4px 10px;border-radius:16px;font-size:0.78rem;cursor:pointer">${m.name}</span>`).join('');
-
-  // Paternal cards page
-  document.getElementById('paternal-cards').innerHTML = FAMILY.paternal.map(renderFamilyCard).join('');
-  document.getElementById('maternal-cards').innerHTML = FAMILY.maternal.map(renderFamilyCard).join('');
-
-  // Decade grid
-  document.getElementById('decade-grid').innerHTML = DECADES.map(d=>
-    `<div class="decade-card" onclick="showDecade('${d.id}')">
-      <div class="year">${d.label}</div>
-      <div class="count">${d.count}개 기록</div>
-      <div class="bar"><div class="bar-fill" style="width:${(d.count/d.max*100)||5}%"></div></div>
-    </div>`).join('');
-
+  
   // Event filters
   document.getElementById('event-filters').innerHTML = 
     `<button class="filter-btn active" onclick="filterEvents('all',this)">전체</button>` +
@@ -1496,21 +840,6 @@ function init() {
     `<button class="filter-btn active" onclick="filterGallery('all',this)">전체</button>` +
     allPeople.map(m=>`<button class="filter-btn" onclick="filterGallery('${m.id}',this)">${m.name}</button>`).join('');
 
-  // People tabs
-  document.getElementById('people-tabs').innerHTML =
-    `<button class="people-tab direct active" onclick="filterPeopleTab('direct',this)">직계가족</button>` +
-    `<button class="people-tab paternal" onclick="filterPeopleTab('paternal',this)">🌳 친가</button>` +
-    `<button class="people-tab maternal" onclick="filterPeopleTab('maternal',this)">🌿 처가</button>`;
-
-  // Locations
-  document.getElementById('location-chips').innerHTML = LOCATIONS.map(l=>
-    `<div class="location-chip" onclick="showPlace('${l.id}')">
-      <span class="flag">${l.flag}</span>
-      <span>${l.name}</span>
-      ${l.sub?`<small style="color:var(--text-sub)">${l.sub}</small>`:''}
-    </div>`).join('');
-
-  // Stats
   refreshStats();
   renderRecentEvents();
   renderEventList();
@@ -1521,8 +850,6 @@ function refreshStats() {
   const records = getRecords();
   document.getElementById('total-photos').textContent = records.length;
   document.getElementById('total-events').textContent = records.filter(r=>r.event).length;
-  const places = [...new Set(records.map(r=>r.location).filter(Boolean))];
-  document.getElementById('total-places').textContent = places.length || LOCATIONS.length;
 }
 
 function renderRecentEvents() {
@@ -1541,16 +868,16 @@ function renderEventList(filter='all') {
   const el = document.getElementById('event-list');
   el.innerHTML = filtered.length
     ? filtered.map(renderEventItem).join('')
-    : `<div class="empty-state"><div class="icon">📋</div><h3>이벤트 기록이 없습니다</h3><p>기록을 추가해보세요</p></div>`;
+    : `<div class="empty-state"><div class="icon">📋</div><h3>이벤트 기록이 없습니다</h3></div>`;
 }
 
 function renderGallery(filter='all') {
   const records = getRecords();
-  const filtered = filter === 'all' ? records : records.filter(r => r.person === filter);
+  const filtered = filter === 'all' ? records : records.filter(r => r.person && r.person.includes(filter));
   const el = document.getElementById('photo-grid');
   el.innerHTML = filtered.length
     ? filtered.map(renderPhotoCard).join('')
-    : `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🖼️</div><h3>사진이 없습니다</h3><p>첫 사진을 추가해보세요</p></div>`;
+    : `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🖼️</div><h3>사진이 없습니다</h3></div>`;
 }
 
 // ════════ NAVIGATION ════════
@@ -1559,31 +886,14 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  document.getElementById('bc-current').textContent = {
-    dashboard:'대시보드', gallery:'전체 갤러리', people:'인물별',
-    paternal:'친가', maternal:'처가', timeline:'시대별',
-    events:'이벤트별', places:'지역별', admin:'관리자'
-  }[id] || id;
+  document.getElementById('bc-current').textContent = id;
   currentPage = id;
   if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
 }
+function showPeople(person) { showPage('people'); filterGalleryDirect(person); }
+function showDecade(dec) { showPage('timeline'); }
+function showEvent(evt) { showPage('events'); filterEvents(evt, null); }
 
-function showPeople(person) {
-  showPage('people');
-  filterGalleryDirect(person);
-}
-function showDecade(dec) {
-  showPage('timeline');
-}
-function showEvent(evt) {
-  showPage('events');
-  filterEvents(evt, null);
-}
-function showPlace(loc) {
-  showPage('places');
-}
-
-// ════════ FILTERS ════════
 function filterEvents(type, btn) {
   if (btn) {
     document.querySelectorAll('#event-filters .filter-btn').forEach(b=>b.classList.remove('active'));
@@ -1598,31 +908,14 @@ function filterGallery(person, btn) {
   }
   renderGallery(person);
 }
-function filterGalleryDirect(person) {
-  renderGallery(person);
-}
-function filterPeopleTab(type, btn) {
-  document.querySelectorAll('.people-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const members = FAMILY[type] || [];
-  document.getElementById('people-grid').innerHTML = members.length
-    ? members.map(m=>`<div class="photo-card" style="text-align:center;padding:24px">
-        <div style="font-size:3rem">${m.emoji}</div>
-        <div style="margin-top:8px;font-weight:500">${m.name}</div>
-        <div style="font-size:0.78rem;color:var(--text-sub)">${m.role}</div>
-      </div>`).join('')
-    : '';
-}
+function filterGalleryDirect(person) { renderGallery(person); }
 
-// ════════ SEARCH ════════
 function searchRecords(query) {
   if (!query.trim()) { renderGallery(); return; }
   const q = query.toLowerCase();
   const records = getRecords().filter(r =>
     (r.title||'').toLowerCase().includes(q) ||
-    (r.person||'').toLowerCase().includes(q) ||
-    (r.location||'').toLowerCase().includes(q) ||
-    (r.event||'').toLowerCase().includes(q)
+    (r.person||'').toLowerCase().includes(q)
   );
   showPage('gallery');
   document.getElementById('photo-grid').innerHTML = records.length
@@ -1630,93 +923,24 @@ function searchRecords(query) {
     : `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>"${query}" 검색 결과 없음</h3></div>`;
 }
 
-// ════════ UPLOAD MODE STATE ════════
-let currentUploadMode = 'drive';
-let currentHostType   = 'github';
 
-function setUploadMode(mode) {
-  currentUploadMode = mode;
-  const drivePanel = document.getElementById('panel-drive');
-  const hostPanel  = document.getElementById('panel-host');
-  const driveBtn   = document.getElementById('tab-btn-drive');
-  const hostBtn    = document.getElementById('tab-btn-host');
-  if (mode === 'drive') {
-    drivePanel.style.display = 'block';
-    hostPanel.style.display  = 'none';
-    driveBtn.style.background = 'var(--brown-deep)';
-    driveBtn.style.color      = 'var(--gold-light)';
-    driveBtn.style.fontWeight = '600';
-    hostBtn.style.background  = 'var(--cream)';
-    hostBtn.style.color       = 'var(--text-sub)';
-    hostBtn.style.fontWeight  = '400';
-  } else {
-    drivePanel.style.display = 'none';
-    hostPanel.style.display  = 'block';
-    hostBtn.style.background  = 'var(--brown-deep)';
-    hostBtn.style.color       = 'var(--gold-light)';
-    hostBtn.style.fontWeight  = '600';
-    driveBtn.style.background = 'var(--cream)';
-    driveBtn.style.color      = 'var(--text-sub)';
-    driveBtn.style.fontWeight = '400';
-  }
-}
-
-function setHostType(type) {
-  currentHostType = type;
-  ['github','netlify','custom'].forEach(t => {
-    const btn  = document.getElementById('htype-' + t);
-    const info = document.getElementById('host-info-' + t);
-    if (btn) {
-      btn.style.background   = t === type ? 'var(--brown-deep)' : 'var(--cream)';
-      btn.style.color        = t === type ? 'var(--gold-light)' : 'var(--text-sub)';
-      btn.style.borderColor  = t === type ? 'var(--brown-deep)' : 'rgba(44,26,14,0.15)';
-    }
-    if (info) info.style.display = t === type ? 'block' : 'none';
+// ════════ MODAL & UPLOAD ════════
+function openUpload() {
+  ['inp-title','inp-memo'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
   });
-  const isCustom = type === 'custom';
-  document.getElementById('host-url-group').style.display    = isCustom ? 'none'  : 'block';
-  document.getElementById('host-direct-group').style.display = isCustom ? 'block' : 'none';
-  if (!isCustom) {
-    document.getElementById('host-base-label').textContent =
-      type === 'github' ? 'GitHub Pages 사이트 URL' : 'Netlify 사이트 URL';
-    document.getElementById('inp-host-base').placeholder =
-      type === 'github'
-        ? 'https://사용자명.github.io/family-archive'
-        : 'https://내사이트.netlify.app';
-  }
-  previewHostImg();
+  const dateEl = document.getElementById('inp-date');
+  if (dateEl) dateEl.value = new Date().toISOString().slice(0,10);
+  
+  document.getElementById('file-preview-name').textContent = "선택된 사진이 없습니다.";
+  document.getElementById('file-preview-name').style.color = "var(--text-sub)";
+  document.getElementById('inp-file').value = "";
+  
+  document.getElementById('modal-overlay').classList.add('open');
 }
+function closeUpload() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModal(e) { if (e.target === document.getElementById('modal-overlay')) closeUpload(); }
 
-// ════════ GOOGLE DRIVE 유틸 ════════
-function driveShareToImg(url) {
-  if (!url) return null;
-  let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800`;
-  m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800`;
-  return null;
-}
-function driveShareToOpen(url) {
-  if (!url) return url;
-  const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (m) return `https://drive.google.com/file/d/${m[1]}/view`;
-  return url;
-}
-
-function previewDriveLink(url) {
-  const box      = document.getElementById('drive-preview');
-  const img      = document.getElementById('drive-preview-img');
-  const fallback = document.getElementById('drive-preview-fallback');
-  if (!url || url.length < 10) { box.style.display = 'none'; return; }
-  const imgUrl = driveShareToImg(url);
-  box.style.display = 'block';
-  if (imgUrl) {
-    img.src = imgUrl; img.style.display = 'block'; fallback.style.display = 'none';
-    img.onerror = () => { img.style.display = 'none'; fallback.style.display = 'block'; };
-  } else {
-    img.style.display = 'none'; fallback.style.display = 'block';
-  }
-}
 // 선택한 사진 파일 이름 화면에 표시하기
 function previewSelectedFile(input) {
   const nameBox = document.getElementById('file-preview-name');
@@ -1728,136 +952,17 @@ function previewSelectedFile(input) {
     nameBox.style.color = "var(--text-sub)";
   }
 }
-// ════════ 웹 호스팅 유틸 ════════
-function getHostImgUrl() {
-  if (currentHostType === 'custom') {
-    return document.getElementById('inp-host-direct')?.value.trim() || '';
-  }
-  const base = (document.getElementById('inp-host-base')?.value.trim() || '').replace(/\/$/, '');
-  const path = (document.getElementById('inp-host-path')?.value.trim() || '').replace(/^\//, '');
-  if (!base || !path) return '';
-  return `${base}/images/${path}`;
-}
 
-function previewHostImg() {
-  const url     = getHostImgUrl();
-  const box     = document.getElementById('host-preview');
-  const img     = document.getElementById('host-preview-img');
-  const fallback= document.getElementById('host-preview-fallback');
-  if (!url) { box.style.display = 'none'; return; }
-  box.style.display = 'block';
-  img.src = url; img.style.display = 'block'; fallback.style.display = 'none';
-  img.onerror = () => { img.style.display = 'none'; fallback.style.display = 'block'; };
-}
-
-// ════════ 도움말 모달 ════════
-const HELP_CONTENT = {
-  drive: {
-    title: '📁 Google Drive 공유 링크 만들기',
-    color: '#1a73e8',
-    steps: [
-      { t: 'Google Drive 앱 열기', d: 'drive.google.com 또는 모바일 Drive 앱에 접속합니다' },
-      { t: '사진 파일 선택', d: '파일을 길게 탭(모바일) 또는 우클릭(PC)합니다' },
-      { t: '"공유" → 권한 변경', d: '<b style="color:#1a73e8">링크가 있는 모든 사용자</b> → 뷰어로 설정합니다' },
-      { t: '"링크 복사" 후 붙여넣기', d: '복사한 링크를 업로드 폼에 붙여넣으세요' },
-    ],
-    tip: '링크 형식: <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">https://drive.google.com/file/d/<b>파일ID</b>/view?usp=sharing</code>',
-  },
-  github: {
-    title: '⬛ GitHub Pages 설정 방법',
-    color: '#24292e',
-    steps: [
-      { t: 'GitHub 계정 만들기', d: '<a href="https://github.com" target="_blank" style="color:#1a73e8;">github.com</a>에서 무료 계정 가입' },
-      { t: '저장소(Repository) 생성', d: '저장소 이름: <b>family-archive</b> (또는 원하는 이름) · Public으로 설정' },
-      { t: 'images 폴더에 사진 업로드', d: '저장소 안에 <b>images/</b> 폴더 생성 후 사진 파일을 업로드합니다' },
-      { t: 'GitHub Pages 활성화', d: '저장소 Settings → Pages → Source: main 브랜치 선택 → Save' },
-      { t: '사이트 URL 확인 후 입력', d: '<b>https://사용자명.github.io/family-archive</b> 형태의 URL이 발급됩니다' },
-    ],
-    tip: '이미지 경로 예시: <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">images/2025/singapore.jpg</code>',
-  },
-  netlify: {
-    title: '🟦 Netlify Drop 사용 방법',
-    color: '#00ad9f',
-    steps: [
-      { t: 'Netlify 접속', d: '<a href="https://app.netlify.com/drop" target="_blank" style="color:#00ad9f;">app.netlify.com/drop</a> 페이지로 이동합니다' },
-      { t: '폴더 드래그 앤 드롭', d: 'PC에서 <b>images/</b> 폴더(또는 전체 사이트 폴더)를 드래그하면 즉시 배포됩니다' },
-      { t: '자동 URL 발급', d: '<b>https://랜덤이름.netlify.app</b> 형태의 URL이 발급됩니다 (무료)' },
-      { t: '커스텀 도메인 연결 (선택)', d: 'Netlify 대시보드에서 구매한 도메인을 연결할 수 있습니다' },
-      { t: '사이트 URL 입력', d: '발급된 URL을 업로드 폼의 "Netlify 사이트 URL"에 입력하세요' },
-    ],
-    tip: '이미지 폴더 구조: <code style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">images/연도/파일명.jpg</code> 권장',
-  },
-};
-
-function openHelpModal(type) {
-  const h = HELP_CONTENT[type]; if (!h) return;
-  document.getElementById('help-title').textContent = h.title;
-  document.getElementById('help-body').innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
-      ${h.steps.map((s,i)=>`
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:28px;height:28px;border-radius:50%;background:${h.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;">${i+1}</div>
-          <div>
-            <div style="font-weight:600;font-size:0.88rem;margin-bottom:3px;">${s.t}</div>
-            <div style="font-size:0.8rem;color:var(--text-sub);line-height:1.6;">${s.d}</div>
-          </div>
-        </div>`).join('')}
-    </div>
-    <div style="padding:12px 16px;background:rgba(212,168,83,0.1);border-radius:8px;font-size:0.78rem;color:var(--text-sub);line-height:1.7;">
-      💡 ${h.tip}
-    </div>`;
-  document.getElementById('help-overlay').style.display = 'flex';
-}
-function closeHelp(e) {
-  if (e.target === document.getElementById('help-overlay'))
-    document.getElementById('help-overlay').style.display = 'none';
-}
-
-// ════════ MODAL ════════
-function openUpload() {
-  if (!canUpload()) {
-    showToast('🔒 업로드 권한이 없습니다. 관리자에게 문의하세요.', true);
-    return;
-  }
-  // 폼 전체 초기화
-  ['inp-gdrive','inp-title','inp-location','inp-memo',
-   'inp-host-base','inp-host-path','inp-host-direct'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
-  const dateEl = document.getElementById('inp-date');
-  if (dateEl) dateEl.value = new Date().toISOString().slice(0,10);
-  const eventEl = document.getElementById('inp-event');
-  if (eventEl) eventEl.value = 'travel';
-  const decadeEl = document.getElementById('inp-decade');
-  if (decadeEl) decadeEl.value = '2020s';
-  // 미리보기 숨기기
-  ['drive-preview','host-preview'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.style.display = 'none';
-  });
-  // Drive 탭으로 초기화
-  currentUploadMode = 'drive';
-  currentHostType   = 'github';
-  setUploadMode('drive');
-  // 모달 열기
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function closeUpload() {
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-function closeModal(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeUpload();
-}
-
-// ▼ 3. 기존 saveRecord() 함수를 아래 코드로 완전히 교체합니다 ▼
-// 직관적인 다이렉트 업로드 및 저장 함수
+// 파이어베이스 직접 업로드 함수
 async function saveRecord() {
   const title = document.getElementById('inp-title')?.value.trim() || '';
   const date = document.getElementById('inp-date')?.value || '';
+  const persons = [...(document.getElementById('inp-person')?.selectedOptions||[])].map(o=>o.value);
+  const event = document.getElementById('inp-event')?.value || '';
   const memo = document.getElementById('inp-memo')?.value.trim() || '';
 
   if (!title) { showToast('제목을 입력해주세요', true); return; }
 
-  // 1. 스마트폰에서 선택한 사진 파일 가져오기
   const fileInput = document.getElementById('inp-file');
   if (!fileInput || !fileInput.files[0]) {
     showToast('📸 사진을 먼저 선택해주세요!', true); return;
@@ -1867,94 +972,61 @@ async function saveRecord() {
   showToast('⏳ 사진을 클라우드에 올리는 중입니다... 창을 닫지 마세요.', false);
 
   try {
-    // 2. 파이어베이스 스토리지(사진 창고)에 파일 원본 직접 업로드
+    // 1. 파이어베이스 스토리지에 파일 업로드
     const fileName = Date.now() + '_' + file.name;
     const storageRef = firebase.storage().ref('photos/' + fileName);
     await storageRef.put(file);
 
-    // 3. 업로드가 완료된 사진의 고유 웹 주소 받아오기
+    // 2. 업로드가 완료된 사진의 고유 웹 주소 받아오기
     const imgUrl = await storageRef.getDownloadURL();
 
-    // 4. 데이터베이스에 사진 주소와 입력한 글자 정보 함께 저장
+    // 3. 데이터베이스에 사진 주소와 글자 정보 저장
     const recordData = {
       title: title,
       date: date,
+      person: persons.join(', '),
+      event: event,
       memo: memo,
-      imgUrl: imgUrl, // 갤러리에서 올려 변환된 파이어베이스 사진 주소
+      imgUrl: imgUrl,
       author: SESSION.id || '관리자',
       created: new Date().toISOString(),
     };
 
-    await firebase.firestore().collection('records').add(recordData);
+    // 파이어베이스 클라우드에 영구 저장
+    await db.collection('records').add(recordData);
     
+    // (임시) 화면에 바로 보여주기 위해 내 폰에도 잠시 저장
+    const localRecords = getRecords();
+    localRecords.push(recordData);
+    saveRecords(localRecords);
+
     showToast('✅ 사진과 기록이 성공적으로 저장되었습니다!');
     closeUpload();
     
-    // 업로드된 결과를 화면에 바로 반영하기 위해 1.5초 뒤 자동 새로고침
+    // 업로드된 결과를 화면에 바로 반영하기 위해 새로고침
     setTimeout(() => window.location.reload(), 1500);
     
   } catch (error) {
     console.error("저장 실패:", error);
-    showToast('❌ 업로드 중 오류가 발생했습니다. 다시 시도해 주세요.', true);
+    showToast('❌ 업로드 중 오류가 발생했습니다. 권한이나 암호를 확인해주세요.', true);
   }
 }
-// ▲ -------------------------------------------------------- ▲
+
 // ════════ SIDEBAR TOGGLE ════════
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
 // ════════ START ════════
 init();
 
-// ── 상단바 유저 영역 렌더 ──
 (function renderTopbarUser(){
   const el = document.getElementById('topbar-user');
   if(!el) return;
   const roleLabel = SESSION.isAdmin ? '👑 관리자' : `👤 ${SESSION.name||SESSION.id}`;
-  const uploadBtn = canUpload()
-    ? `<button class="topbar-btn" onclick="openUpload()">+ 기록 추가</button>`
-    : `<span style="font-size:0.78rem;color:var(--text-sub);padding:8px 12px;background:var(--cream);border-radius:8px;">열람 전용</span>`;
-  const adminBtn = isAdmin()
-    ? `<button class="topbar-btn" style="background:var(--gold);color:var(--brown-deep);" onclick="openAdminPanel()">👑 관리</button>`
-    : '';
   el.innerHTML = `
     <span style="font-size:0.82rem;color:var(--text-sub);padding:6px 12px;background:var(--cream);border-radius:20px;">${roleLabel}</span>
-    ${uploadBtn}
-    ${adminBtn}
-    <button class="topbar-btn" style="background:transparent;color:var(--text-sub);border:1px solid rgba(44,26,14,0.15);" onclick="logout()">로그아웃</button>`;
-
-  // 사이드바 '기록 추가' 항목도 권한에 따라 표시
-  document.querySelectorAll('.nav-item').forEach(el=>{
-    if(el.getAttribute('onclick')==="openUpload()"){
-      if(!canUpload()) el.style.opacity='0.35';
-    }
-  });
+    <button class="topbar-btn" onclick="openUpload()">+ 기록 추가</button>`;
 })();
 </script>
-
-<!-- ═══════ ADMIN PANEL MODAL ═══════ -->
-<div id="admin-panel-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,0.55);backdrop-filter:blur(6px);z-index:2000;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:var(--warm-white);border-radius:20px;width:100%;max-width:720px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,0.35);">
-    <!-- header -->
-    <div style="padding:24px 28px 16px;border-bottom:1px solid rgba(44,26,14,0.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <div>
-        <h3 style="font-family:'Noto Serif KR',serif;font-size:1.3rem;color:var(--brown-deep);">👑 관리자 패널</h3>
-        <p style="font-size:0.78rem;color:var(--text-sub);margin-top:3px;">가족 구성원 가입 승인 및 권한 관리</p>
-      </div>
-      <button onclick="closeAdminPanel()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-sub);padding:4px;">✕</button>
-    </div>
-    <!-- tabs -->
-    <div style="display:flex;border-bottom:1px solid rgba(44,26,14,0.08);flex-shrink:0;">
-      <button class="ap-tab active" onclick="apTab('pending')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">⏳ 승인 대기 <span id="badge-pending" style="background:var(--rust);color:#fff;border-radius:20px;padding:2px 7px;font-size:0.7rem;margin-left:4px;"></span></button>
-      <button class="ap-tab" onclick="apTab('members')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">✅ 승인된 구성원</button>
-      <button class="ap-tab" onclick="apTab('permissions')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">🔐 권한 설정</button>
-      <button class="ap-tab" onclick="apTab('pw')" style="flex:1;padding:14px;font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:var(--transition);">🔑 비밀번호</button>
-    </div>
-    <!-- body -->
-    <div style="padding:24px;overflow-y:auto;flex:1;" id="ap-body"></div>
-  </div>
-</div>
 
 </body>
 </html>
