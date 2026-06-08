@@ -831,7 +831,16 @@ body {
       <button class="modal-close" onclick="closeUpload()">✕</button>
     </div>
     <div class="modal-body">
+<div class="form-group" style="background: rgba(212,168,83,0.1); padding: 30px 20px; border-radius: 12px; text-align: center; margin-bottom: 24px; border: 2px dashed rgba(212,168,83,0.5);">
+        <label style="display: block; font-size: 1.1rem; color: var(--brown-deep); font-weight: 600; cursor: pointer;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">📸</div>
+          여기를 눌러 스마트폰 사진첩에서 사진 선택
+          <input type="file" id="inp-file" accept="image/*" style="display: none;" onchange="previewSelectedFile(this)">
+        </label>
+        <div id="file-preview-name" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-sub);">선택된 사진이 없습니다.</div>
+      </div>
 
+      <hr style="border:none;border-top:1px solid rgba(44,26,14,0.08);margin:16px 0 14px;">
       <!-- ① 방식 탭 버튼 -->
       <div style="display:flex;gap:0;border:2px solid rgba(44,26,14,0.12);border-radius:12px;overflow:hidden;margin-bottom:18px;">
         <button id="tab-btn-drive" onclick="setUploadMode('drive')"
@@ -1059,21 +1068,25 @@ function getUsers(){ try{return JSON.parse(localStorage.getItem('fa_users')||'[]
 function saveUsers(u){ localStorage.setItem('fa_users', JSON.stringify(u)); }
 function getSession(){ try{return JSON.parse(sessionStorage.getItem('fa_session')||'null');}catch{return null;} }
 
-// ── 세션 가드: 로그인 안 된 경우 auth 페이지로 ──
+// ── 세션 가드: 무조건 관리자 자동 로그인 ──
 (function authGuard(){
-  // 관리자 초기 계정 시드 (최초 1회)
   const users = getUsers();
-  if(!users.find(u=>u.id==='나')){
-    users.push({
+  // 관리자 계정 확인 및 생성
+  let adminUser = users.find(u => u.id === '나');
+  if(!adminUser){
+    adminUser = {
       id:'나', name:'나 (관리자·아버지)', role:'나', group:'direct',
-      pw: btoa('admin1234'),   // 초기 비밀번호 — 반드시 변경!
-      status:'approved', isAdmin:true,
-      canUpload:true, canPost:true,
-      joinedAt: new Date().toISOString()
-    });
+      pw: btoa('admin1234'), status:'approved', isAdmin:true,
+      canUpload:true, canPost:true, joinedAt: new Date().toISOString()
+    };
+    users.push(adminUser);
     saveUsers(users);
   }
-  const sess = getSession();
+  // 브라우저에 접속하자마자 무조건 관리자 세션 발급
+  sessionStorage.setItem('fa_session', JSON.stringify(adminUser));
+})();
+
+const SESSION = getSession() || {};
   if(!sess) { window.location.href = 'auth.html'; }
 })();
 
@@ -1704,7 +1717,17 @@ function previewDriveLink(url) {
     img.style.display = 'none'; fallback.style.display = 'block';
   }
 }
-
+// 선택한 사진 파일 이름 화면에 표시하기
+function previewSelectedFile(input) {
+  const nameBox = document.getElementById('file-preview-name');
+  if (input.files && input.files[0]) {
+    nameBox.innerHTML = `✅ <b>${input.files[0].name}</b> 사진이 선택되었습니다.`;
+    nameBox.style.color = "var(--sage)";
+  } else {
+    nameBox.textContent = "선택된 사진이 없습니다.";
+    nameBox.style.color = "var(--text-sub)";
+  }
+}
 // ════════ 웹 호스팅 유틸 ════════
 function getHostImgUrl() {
   if (currentHostType === 'custom') {
@@ -1826,58 +1849,53 @@ function closeModal(e) {
 }
 
 // ▼ 3. 기존 saveRecord() 함수를 아래 코드로 완전히 교체합니다 ▼
+// 직관적인 다이렉트 업로드 및 저장 함수
 async function saveRecord() {
-  const title   = document.getElementById('inp-title')?.value.trim() || '';
-  const date    = document.getElementById('inp-date')?.value || '';
-  const persons = [...(document.getElementById('inp-person')?.selectedOptions||[])].map(o=>o.value);
-  const event   = document.getElementById('inp-event')?.value || '';
-  const location= document.getElementById('inp-location')?.value.trim() || '';
-  const decade  = document.getElementById('inp-decade')?.value || '';
-  const memo    = document.getElementById('inp-memo')?.value.trim() || '';
+  const title = document.getElementById('inp-title')?.value.trim() || '';
+  const date = document.getElementById('inp-date')?.value || '';
+  const memo = document.getElementById('inp-memo')?.value.trim() || '';
 
   if (!title) { showToast('제목을 입력해주세요', true); return; }
 
-  let imgUrl = '', openUrl = '', uploadMode = currentUploadMode;
-
-  // 구글 드라이브 주소 등 가져오기
-  if (currentUploadMode === 'drive') {
-    const driveUrl = document.getElementById('inp-gdrive')?.value.trim() || '';
-    if (!driveUrl) { showToast('Google Drive 링크를 입력해주세요', true); return; }
-    imgUrl  = driveShareToImg(driveUrl) || '';
-    openUrl = driveShareToOpen(driveUrl);
-  } else {
-    imgUrl  = getHostImgUrl();
-    openUrl = imgUrl;
-    if (!imgUrl) { showToast('이미지 URL을 입력해주세요', true); return; }
+  // 1. 스마트폰에서 선택한 사진 파일 가져오기
+  const fileInput = document.getElementById('inp-file');
+  if (!fileInput || !fileInput.files[0]) {
+    showToast('📸 사진을 먼저 선택해주세요!', true); return;
   }
 
-  // 파이어베이스에 저장할 데이터 꾸러미 만들기
-  const recordData = {
-    title: title,
-    date: date,
-    person: persons.join(', '),
-    event: event,
-    location: location,
-    decade: decade,
-    memo: memo,
-    imgUrl: imgUrl,
-    openUrl: openUrl,
-    uploadMode: uploadMode,
-    author: SESSION.id || '관리자',
-    authorName: SESSION.name || SESSION.id || '관리자',
-    created: new Date().toISOString(),
-  };
+  const file = fileInput.files[0];
+  showToast('⏳ 사진을 클라우드에 올리는 중입니다... 창을 닫지 마세요.', false);
 
   try {
-    // 기존 localStorage(내 폰에만 저장) 대신 파이어베이스(클라우드)에 저장!
-    await db.collection('records').add(recordData);
+    // 2. 파이어베이스 스토리지(사진 창고)에 파일 원본 직접 업로드
+    const fileName = Date.now() + '_' + file.name;
+    const storageRef = firebase.storage().ref('photos/' + fileName);
+    await storageRef.put(file);
+
+    // 3. 업로드가 완료된 사진의 고유 웹 주소 받아오기
+    const imgUrl = await storageRef.getDownloadURL();
+
+    // 4. 데이터베이스에 사진 주소와 입력한 글자 정보 함께 저장
+    const recordData = {
+      title: title,
+      date: date,
+      memo: memo,
+      imgUrl: imgUrl, // 갤러리에서 올려 변환된 파이어베이스 사진 주소
+      author: SESSION.id || '관리자',
+      created: new Date().toISOString(),
+    };
+
+    await firebase.firestore().collection('records').add(recordData);
     
-    showToast('✅ 클라우드에 안전하게 저장되었습니다!');
+    showToast('✅ 사진과 기록이 성공적으로 저장되었습니다!');
     closeUpload();
     
+    // 업로드된 결과를 화면에 바로 반영하기 위해 1.5초 뒤 자동 새로고침
+    setTimeout(() => window.location.reload(), 1500);
+    
   } catch (error) {
-    console.error("저장 중 오류 발생: ", error);
-    showToast('❌ 저장에 실패했습니다. 관리자에게 문의하세요.', true);
+    console.error("저장 실패:", error);
+    showToast('❌ 업로드 중 오류가 발생했습니다. 다시 시도해 주세요.', true);
   }
 }
 // ▲ -------------------------------------------------------- ▲
