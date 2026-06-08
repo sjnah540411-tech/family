@@ -1028,8 +1028,28 @@ body {
 }
 .host-type-btn.active { background:var(--brown-deep);color:var(--gold-light);border-color:var(--brown-deep); }
 </style>
-
+<!-- 구글 파이어베이스 시스템(SDK) 불러오기 -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <script>
+// ▼ 2. 여기에 복사해 둔 암호와 파이어베이스 시작 코드를 넣습니다 ▼
+const firebaseConfig = {
+  apiKey: "선생님의_API_키",       // 복사하신 내용으로 덮어쓰세요!
+  authDomain: "선생님의_도메인",
+  projectId: "선생님의_프로젝트ID",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "..."
+};
+  
+// 파이어베이스 시작하기
+firebase.initializeApp(firebaseConfig);
+
+// 사용할 도구(데이터베이스와 사진 저장소) 정의하기
+const db = firebase.firestore();
+const storage = firebase.storage();
+</script>
 // ════════════════════════════════════════
 //  AUTH & PERMISSION SYSTEM
 // ════════════════════════════════════════
@@ -1805,7 +1825,8 @@ function closeModal(e) {
   if (e.target === document.getElementById('modal-overlay')) closeUpload();
 }
 
-function saveRecord() {
+// ▼ 3. 기존 saveRecord() 함수를 아래 코드로 완전히 교체합니다 ▼
+async function saveRecord() {
   const title   = document.getElementById('inp-title')?.value.trim() || '';
   const date    = document.getElementById('inp-date')?.value || '';
   const persons = [...(document.getElementById('inp-person')?.selectedOptions||[])].map(o=>o.value);
@@ -1818,6 +1839,7 @@ function saveRecord() {
 
   let imgUrl = '', openUrl = '', uploadMode = currentUploadMode;
 
+  // 구글 드라이브 주소 등 가져오기
   if (currentUploadMode === 'drive') {
     const driveUrl = document.getElementById('inp-gdrive')?.value.trim() || '';
     if (!driveUrl) { showToast('Google Drive 링크를 입력해주세요', true); return; }
@@ -1829,24 +1851,36 @@ function saveRecord() {
     if (!imgUrl) { showToast('이미지 URL을 입력해주세요', true); return; }
   }
 
-  const record = {
-    id: Date.now(), title, date,
-    person: persons.join(', '), event, location, decade, memo,
-    imgUrl, openUrl, uploadMode,
-    hostType: currentUploadMode === 'host' ? currentHostType : null,
-    author:     SESSION.id   || '관리자',
+  // 파이어베이스에 저장할 데이터 꾸러미 만들기
+  const recordData = {
+    title: title,
+    date: date,
+    person: persons.join(', '),
+    event: event,
+    location: location,
+    decade: decade,
+    memo: memo,
+    imgUrl: imgUrl,
+    openUrl: openUrl,
+    uploadMode: uploadMode,
+    author: SESSION.id || '관리자',
     authorName: SESSION.name || SESSION.id || '관리자',
     created: new Date().toISOString(),
   };
 
-  const records = getRecords();
-  records.push(record);
-  saveRecords(records);
-  refreshStats(); renderRecentEvents(); renderEventList(); renderGallery();
-  closeUpload();
-  showToast('✅ 기록이 저장되었습니다!');
+  try {
+    // 기존 localStorage(내 폰에만 저장) 대신 파이어베이스(클라우드)에 저장!
+    await db.collection('records').add(recordData);
+    
+    showToast('✅ 클라우드에 안전하게 저장되었습니다!');
+    closeUpload();
+    
+  } catch (error) {
+    console.error("저장 중 오류 발생: ", error);
+    showToast('❌ 저장에 실패했습니다. 관리자에게 문의하세요.', true);
+  }
 }
-
+// ▲ -------------------------------------------------------- ▲
 // ════════ SIDEBAR TOGGLE ════════
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
