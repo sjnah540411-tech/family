@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -70,7 +70,7 @@ body {
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
 #app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; display: none; }
 
-/* ───────── SIDEBAR ───────── */
+/* ───────── SIDEBAR (풍성한 오리지널 레이아웃 복원) ───────── */
 #sidebar { background: var(--brown-deep); padding: 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--brown-mid) transparent; }
 .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid rgba(212,168,83,0.2); }
 .sidebar-logo h2 { font-family: 'Noto Serif KR', serif; color: var(--gold-light); font-size: 1.25rem; letter-spacing: 0.08em; line-height: 1.4; }
@@ -87,6 +87,8 @@ body {
 .breadcrumb { color: var(--text-sub); font-size: 0.82rem; }
 .breadcrumb span { color: var(--brown-light); margin: 0 6px; }
 .breadcrumb b { color: var(--text-main); font-weight: 500; }
+#search-box { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--cream); border: 1px solid rgba(44,26,14,0.12); border-radius: 24px; padding: 8px 16px; min-width: 180px; }
+#search-box input { border: none; background: transparent; font-family: 'Noto Sans KR', sans-serif; font-size: 0.85rem; color: var(--text-main); outline: none; width: 100%; }
 .topbar-btn { background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 9px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .topbar-btn:hover { background: var(--brown-mid); transform: translateY(-1px); }
 .topbar-btn.logout { background: transparent; color: var(--text-sub); border: 1px solid rgba(44,26,14,0.2); box-shadow: none; }
@@ -100,7 +102,7 @@ body {
 .page-header h2 { font-family: 'Noto Serif KR', serif; font-size: clamp(1.5rem, 3vw, 2rem); color: var(--brown-deep); line-height: 1.3; }
 .page-header p { color: var(--text-sub); font-size: 0.88rem; margin-top: 6px; }
 
-/* ───────── DASHBOARD UI (종전 디자인 복구) ───────── */
+/* ───────── DASHBOARD UI (박스형 오리지널 복원) ───────── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 16px; margin-bottom: 32px; }
 .stat-card { background: var(--cream); border: 1px solid rgba(44,26,14,0.08); border-radius: var(--radius); padding: 20px; text-align: center; }
 .stat-card .num { font-family: 'Noto Serif KR', serif; font-size: 2rem; color: var(--brown-mid); font-weight: 700; }
@@ -241,13 +243,29 @@ body {
     <p>Family Archive · Since 1954</p>
   </div>
   <div class="nav-section">
-    <div class="nav-item active" onclick="showPage('dashboard')"><span class="icon">🏠</span> 대시보드</div>
-    <div class="nav-item" onclick="showPage('gallery')"><span class="icon">🖼️</span> 갤러리 전체보기</div>
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item active" id="menu-dash" onclick="showPage('dashboard')"><span class="icon">🏠</span> 대시보드</div>
+    <div class="nav-item" id="menu-gall" onclick="showPage('gallery')"><span class="icon">🖼️</span> 전체 갤러리</div>
   </div>
   <div class="nav-section">
-    <div class="nav-section-title">분류별 보기</div>
-    <div class="nav-item" onclick="showPage('timeline')"><span class="icon">⏳</span> 10년 주기 타임라인</div>
-    <div class="nav-item" onclick="showPage('events')"><span class="icon">🎉</span> 이벤트별 모아보기</div>
+    <div class="nav-section-title">👨‍👩‍👧‍👦 인물별 갤러리</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('직계가족');">└ 직계가족</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('나');">└ 나 (아버지)</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('아내');">└ 아내</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('아들');">└ 아들</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('딸');">└ 딸</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('며느리');">└ 며느리</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('손녀');">└ 손녀</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('친가');">└ 친가 (6형제)</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('처가');">└ 처가 (5자매)</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">시대별</div>
+    <div class="nav-item" onclick="showPage('timeline')"><span class="icon">⏳</span> 연대 타임라인</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">이벤트별</div>
+    <div class="nav-item" onclick="showPage('events')"><span class="icon">🎉</span> 전체 이벤트</div>
   </div>
   <div class="nav-section">
     <div class="nav-section-title">관리자 메뉴</div>
@@ -270,7 +288,7 @@ body {
   <div class="page active" id="page-dashboard">
     <div class="page-header">
       <h2>우리 가족의 발자취 🌸</h2>
-      <p>가족들의 소중한 기록과 인물을 관리합니다</p>
+      <p>가족들의 소중한 기록과 인물을 체계적으로 관리합니다</p>
     </div>
     
     <div class="section-title">
@@ -280,17 +298,17 @@ body {
     <div class="family-preview" id="dash-direct"></div>
 
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:32px;">
-      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--brown-mid);">
+      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--brown-mid); box-shadow:0 4px 12px rgba(0,0,0,0.04);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌳 친가</div>
-          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('친가')">➕ 등록</button>
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌳 친가 (6형제)</div>
+          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('친가')">➕ 인물 등록</button>
         </div>
         <div id="dash-paternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
       </div>
-      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--sage);">
+      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--sage); box-shadow:0 4px 12px rgba(0,0,0,0.04);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌿 처가</div>
-          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('처가')">➕ 등록</button>
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌿 처가 (5자매)</div>
+          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('처가')">➕ 인물 등록</button>
         </div>
         <div id="dash-maternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
       </div>
@@ -302,23 +320,18 @@ body {
 
   <div class="page" id="page-gallery">
     <div class="page-header"><h2>전체 갤러리 🖼️</h2></div>
-    <div id="search-box" style="margin-bottom:20px; margin-left:0; width:100%;"><input type="text" placeholder="검색어 (이름, 내용 등)..." oninput="searchRecords(this.value)"></div>
+    <div class="filter-bar" id="gallery-filters" style="margin-bottom:16px;"></div>
+    <div id="search-box" style="margin-bottom:20px; margin-left:0; width:100%;"><input type="text" placeholder="제목이나 메모 검색어 입력..." oninput="searchRecords(this.value)"></div>
     <div class="photo-grid" id="photo-grid"></div>
   </div>
 
   <div class="page" id="page-timeline">
-    <div class="page-header">
-      <h2>10년 주기 타임라인 ⏳</h2>
-      <p>연대를 클릭하면 해당 시기의 사진이 펼쳐집니다.</p>
-    </div>
+    <div class="page-header"><h2>10년 주기 타임라인 ⏳</h2><p>연대를 클릭하면 해당 시기의 추억들이 차르륵 펼쳐집니다.</p></div>
     <div id="timeline-container"></div>
   </div>
 
   <div class="page" id="page-events">
-    <div class="page-header">
-      <h2>이벤트별 모아보기 🎉</h2>
-      <p>주제별로 분류된 사진첩입니다.</p>
-    </div>
+    <div class="page-header"><h2>이벤트별 모아보기 🎉</h2><p>주제별 카테고리를 터치해 보세요.</p></div>
     <div id="events-container"></div>
   </div>
 
@@ -339,18 +352,15 @@ body {
     <div class="modal-body">
       <div class="form-group" style="text-align:center; margin-bottom:20px;">
         <label style="cursor:pointer; display:inline-block;">
-          <div id="member-img-preview" style="width:100px; height:100px; border-radius:50%; background:#e0d8d0; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:2.5rem; border:2px dashed var(--brown-light);">
-            📷
-          </div>
+          <div id="member-img-preview" style="width:100px; height:100px; border-radius:50%; background:#e0d8d0; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:2.5rem; border:2px dashed var(--brown-light);">📷</div>
           <span style="font-size:0.8rem; color:var(--gold);">프로필 사진 선택</span>
           <input type="file" id="member-photo" accept="image/*" style="display:none;" onchange="previewMemberPhoto(this)">
         </label>
       </div>
-
       <div class="form-row">
-        <div class="form-group"><label>이름</label><input type="text" id="mem-name" placeholder="홍길동"></div>
+        <div class="form-group"><label>이름</label><input type="text" id="mem-name" placeholder="이름 입력"></div>
         <div class="form-group">
-          <label>생년월일</label>
+          <label>생년월일 (스크롤식 편의 설정)</label>
           <div style="display:flex; gap:6px;">
             <select id="mem-birth-year" style="flex:2;"></select>
             <select id="mem-birth-month" style="flex:1.2;"></select>
@@ -367,7 +377,7 @@ body {
             <option value="처가">처가</option>
           </select>
         </div>
-        <div class="form-group"><label>관계/역할</label><input type="text" id="mem-role" placeholder="예: 첫째 딸, 할아버지"></div>
+        <div class="form-group"><label>관계/역할</label><input type="text" id="mem-role" placeholder="예: 아내, 첫째 딸, 장남"></div>
       </div>
       <button class="btn-primary" onclick="saveMember()">가족 등록하기</button>
     </div>
@@ -377,28 +387,24 @@ body {
 <div id="modal-upload" class="modal-overlay" onclick="closeModal(event, 'modal-upload')">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3>📤 기록 추가 (다중 선택 가능)</h3>
+      <h3>📤 기록 추가 (다중 선택 및 영상 지원)</h3>
       <button class="modal-close" onclick="closeUpload()">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group" style="background: rgba(212,168,83,0.1); padding: 30px 20px; border-radius: 12px; text-align: center; border: 2px dashed rgba(212,168,83,0.5);">
         <label style="display: block; cursor: pointer;">
           <div style="font-size: 2.5rem; margin-bottom: 10px;">📸 🎬</div>
-          <b style="color:var(--brown-deep);">사진 및 동영상 선택</b><br>
+          <b style="color:var(--brown-deep);">사진 및 동영상 파일들 선택</b><br>
           <input type="file" id="inp-file" accept="image/*, video/*" multiple style="display: none;" onchange="previewUploadFiles(this)">
         </label>
         <div id="file-preview-name" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-sub);">선택된 파일 없음</div>
       </div>
-
       <div class="form-row">
         <div class="form-group"><label>제목</label><input type="text" id="inp-title" placeholder="제목"></div>
         <div class="form-group"><label>날짜</label><input type="date" id="inp-date"></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label>등장 인물 (등록된 가족)</label>
-          <select id="inp-person" multiple style="height:96px;"></select>
-        </div>
+        <div class="form-group"><label>등장 인물 (복수 선택)</label><select id="inp-person" multiple style="height:96px;"></select></div>
         <div class="form-group">
           <label>이벤트 분류</label>
           <select id="inp-event">
@@ -410,14 +416,39 @@ body {
           </select>
         </div>
       </div>
-      <div class="form-group">
-        <label>설명 · 메모</label>
-        <textarea id="inp-memo" rows="3" placeholder="자세한 이야기를 적어주세요."></textarea>
-      </div>
+      <div class="form-group"><label>설명 · 메모</label><textarea id="inp-memo" rows="3" placeholder="자세한 이야기를 적어주세요."></textarea></div>
       <button class="btn-primary" onclick="saveRecord()">💾 클라우드에 모두 올리기</button>
     </div>
   </div>
 </div>
+
+<div id="modal-edit" class="modal-overlay" onclick="closeModal(event, 'modal-edit')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>✏️ 기록 수정하기</h3>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>제목</label><input type="text" id="edit-title"></div>
+        <div class="form-group"><label>날짜</label><input type="date" id="edit-date"></div>
+      </div>
+      <div class="form-group">
+        <label>이벤트 분류</label>
+        <select id="edit-event">
+          <option value="travel">✈️ 가족여행</option>
+          <option value="wedding">💍 결혼식</option>
+          <option value="graduation">🎓 졸업/입학</option>
+          <option value="special">⭐ 특별한 날</option>
+          <option value="daily">☀️ 소소한 일상</option>
+        </select>
+      </div>
+      <div class="form-group"><label>설명 · 메모</label><textarea id="edit-memo" rows="3"></textarea></div>
+      <button class="btn-primary" onclick="updateRecord()">💾 변경 내용 저장</button>
+    </div>
+  </div>
+</div>
+
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -441,6 +472,7 @@ const storage = firebase.storage();
 let GLOBAL_RECORDS = [];
 let GLOBAL_MEMBERS = [];
 let CURRENT_USER = null;
+let currentEditId = null;
 
 const DECADES = [
   { id:'before1954', label:'1954년 이전' }, { id:'1950s', label:'1950년대' },
@@ -487,14 +519,13 @@ function initDateSelects() {
   document.getElementById('mem-birth-day').innerHTML = '<option value="">일</option>' + d;
 }
 
-// ════════ 보안 (자동 로그인/회원가입 및 마스터키) ════════
+// ════════ 보안 및 자동 로그인 ════════
 function switchAuthTab(tab) {
   document.getElementById('tab-login').classList.remove('active'); document.getElementById('tab-signup').classList.remove('active');
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
 }
-
 async function handleSignup() {
   const name = document.getElementById('signup-name').value.trim();
   const role = document.getElementById('signup-role').value;
@@ -510,59 +541,42 @@ async function handleSignup() {
   } catch(e) {}
   showLoading(false);
 }
-
 async function handleLogin() {
   const name = document.getElementById('login-name').value.trim();
   const pw = document.getElementById('login-pw').value;
   if(!name || !pw) return showToast('정보를 입력해주세요.', true);
   showLoading(true);
-  
   try {
     if(name === '나' && pw === '0000') {
         const snap = await db.collection('auth_users').where('name', '==', '나').get();
         let userObj = { name: '나', role: '직계가족', pw: btoa('0000'), status: 'approved', isAdmin: true };
-        if(snap.empty) {
-            const added = await db.collection('auth_users').add(userObj);
-            userObj.id = added.id;
-        } else {
-            userObj.id = snap.docs[0].id;
-            await db.collection('auth_users').doc(userObj.id).update({ pw: btoa('0000'), status: 'approved', isAdmin: true });
-        }
-        localStorage.setItem('fa_session', JSON.stringify(userObj));
-        startApp(userObj);
-        return;
+        if(snap.empty) { const added = await db.collection('auth_users').add(userObj); userObj.id = added.id; } 
+        else { userObj.id = snap.docs[0].id; await db.collection('auth_users').doc(userObj.id).update({ pw: btoa('0000'), status: 'approved', isAdmin: true }); }
+        localStorage.setItem('fa_session', JSON.stringify(userObj)); startApp(userObj); return;
     }
     const snap = await db.collection('auth_users').where('name', '==', name).where('pw', '==', btoa(pw)).get();
-    if(snap.empty) { showToast('정보가 맞지 않습니다. 다시 확인해주세요.', true); showLoading(false); return; }
-    
+    if(snap.empty) { showToast('정보가 맞지 않습니다.', true); showLoading(false); return; }
     const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
     if(user.status === 'pending') showToast('⏳ 아직 승인 대기 중입니다.', true);
     else { localStorage.setItem('fa_session', JSON.stringify(user)); startApp(user); }
-  } catch(e) { showToast('통신 오류가 발생했습니다.', true); }
+  } catch(e) {}
   showLoading(false);
 }
-
 function logout() { localStorage.removeItem('fa_session'); location.reload(); }
-
 async function checkAuth() {
   try {
     const adminCheck = await db.collection('auth_users').where('isAdmin', '==', true).get();
     if(adminCheck.empty) await db.collection('auth_users').add({ name: '나', role: '직계가족', pw: btoa('0000'), status: 'approved', isAdmin: true });
   } catch(e) {}
-  
   const session = localStorage.getItem('fa_session');
   if(session) {
-    const user = JSON.parse(session);
-    startApp(user);
-    db.collection('auth_users').doc(user.id).get().then(v => {
-      if(!v.exists || v.data().status !== 'approved') logout();
-    });
+    const user = JSON.parse(session); startApp(user);
+    db.collection('auth_users').doc(user.id).get().then(v => { if(!v.exists || v.data().status !== 'approved') logout(); });
     return;
   }
   document.getElementById('splash').classList.add('hidden');
   document.getElementById('auth-overlay').style.display = 'flex';
 }
-
 function startApp(user) {
   CURRENT_USER = user;
   document.getElementById('auth-overlay').style.display = 'none';
@@ -574,9 +588,9 @@ function startApp(user) {
   loadData();
 }
 
-// ════════ 데이터 동기화 ════════
+// ════════ 데이터 클라우드 연동 ════════
 async function loadData() {
-  showLoading(true, '데이터 동기화 중...');
+  showLoading(true, '클라우드 동기화 중...');
   try {
     const [recSnap, memSnap] = await Promise.all([db.collection('records').get(), db.collection('family_members').get()]);
     GLOBAL_RECORDS = recSnap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => new Date(b.created) - new Date(a.created));
@@ -586,22 +600,37 @@ async function loadData() {
     document.getElementById('total-users').textContent = GLOBAL_MEMBERS.length;
     
     updateMemberSelects();
+    renderGalleryFilters();
     renderDashMembers();
     renderRecent();
-    renderGallery();
+    renderGallery('all');
     renderTimelineFolders();
     renderEventFolders();
     if(CURRENT_USER.isAdmin) loadAdminList();
-  } catch(e) {}
+  } catch(e) { console.error(e); }
   showLoading(false);
 }
 
-// ════════ 렌더링 함수 ════════
+// ════════ 상단 인물 필터 생성 ════════
+function renderGalleryFilters() {
+  const filterBar = document.getElementById('gallery-filters');
+  let html = `<button class="filter-btn active" onclick="filterGallery('all', this)">✨ 전체</button>`;
+  const added = new Set();
+  GLOBAL_MEMBERS.forEach(m => {
+    if(!added.has(m.name)) {
+      html += `<button class="filter-btn" onclick="filterGallery('${m.name}', this)">${m.name}</button>`;
+      added.add(m.name);
+    }
+  });
+  filterBar.innerHTML = html;
+}
+
 function updateMemberSelects() {
   const sel = document.getElementById('inp-person');
   sel.innerHTML = GLOBAL_MEMBERS.map(m => `<option value="${m.name}">${m.name} (${m.role})</option>`).join('');
 }
 
+// 대시보드 오리지널 박스 구조 렌더링
 function renderDashMembers() {
   document.getElementById('dash-direct').innerHTML = '';
   document.getElementById('dash-paternal').innerHTML = '';
@@ -618,9 +647,9 @@ function renderDashMembers() {
           <div class="birth">${m.birthDate || ''}</div>
         </div>`;
     } else if (m.group === '친가') {
-      document.getElementById('dash-paternal').innerHTML += `<span style="background:rgba(107,63,42,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;cursor:pointer;color:var(--brown-deep);font-weight:500;">${m.name} <small style="color:var(--text-sub);">(${m.role})</small></span>`;
+      document.getElementById('dash-paternal').innerHTML += `<span style="background:rgba(107,63,42,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;color:var(--brown-deep);font-weight:500;margin-bottom:4px;">${m.name} <small style="color:var(--text-sub);">(${m.role})</small></span>`;
     } else if (m.group === '처가') {
-      document.getElementById('dash-maternal').innerHTML += `<span style="background:rgba(122,140,110,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;cursor:pointer;color:var(--brown-deep);font-weight:500;">${m.name} <small style="color:var(--text-sub);">(${m.role})</small></span>`;
+      document.getElementById('dash-maternal').innerHTML += `<span style="background:rgba(122,140,110,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;color:var(--brown-deep);font-weight:500;margin-bottom:4px;">${m.name} <small style="color:var(--text-sub);">(${m.role})</small></span>`;
     }
   });
 }
@@ -631,7 +660,6 @@ function renderRecent() {
     if(!r.imgUrl) mediaHtml = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--brown-light);">🖼️</div>`;
     else if(r.fileType==='video') mediaHtml = `<video src="${r.imgUrl}#t=0.1"></video>`;
     else mediaHtml = `<img src="${r.imgUrl}">`;
-
     return `
     <div class="event-item" onclick="openLightbox('${r.id}')">
       <div class="event-thumb" style="background:#e0d8d0;">${mediaHtml}</div>
@@ -643,31 +671,49 @@ function renderRecent() {
 function generatePhotoHTML(r) {
   const rot = r.rotation || 0; const scale = (rot%180!==0)?1.35:1;
   let m = '';
-  if(!r.imgUrl) {
-    m = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#e0d8d0;color:var(--brown-light);font-size:3rem;">🖼️</div>`;
-  } else if(r.fileType==='video') {
-    m = `<video src="${r.imgUrl}#t=0.1" style="transform:rotate(${rot}deg) scale(${scale});"></video><div class="video-badge">▶️</div>`;
-  } else {
-    m = `<img src="${r.imgUrl}" style="transform:rotate(${rot}deg) scale(${scale});">`;
-  }
+  if(!r.imgUrl) m = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#e0d8d0;color:var(--brown-light);font-size:3rem;">🖼️</div>`;
+  else if(r.fileType==='video') m = `<video src="${r.imgUrl}#t=0.1" style="transform:rotate(${rot}deg) scale(${scale});"></video><div class="video-badge">▶️</div>`;
+  else m = `<img src="${r.imgUrl}" style="transform:rotate(${rot}deg) scale(${scale});">`;
 
-  const btn = (CURRENT_USER.isAdmin || r.author===CURRENT_USER.name) ? `<button onclick="deleteRecord('${r.id}','${r.imgUrl}',event)">🗑️</button>`:'';
+  const editBtn = `<button onclick="openEditModal('${r.id}', event)" title="내용 수정">✏️</button>`;
+  const delBtn = (CURRENT_USER.isAdmin || r.author===CURRENT_USER.name) ? `<button onclick="deleteRecord('${r.id}','${r.imgUrl}',event)" title="삭제">🗑️</button>`:'';
+  
   return `
   <div class="photo-card">
-    <div class="card-actions"><button onclick="rotateImg('${r.id}',${rot},this,event)">🔄</button>${btn}</div>
+    <div class="card-actions"><button onclick="rotateImg('${r.id}',${rot},this,event)" title="회전">🔄</button>${editBtn}${delBtn}</div>
     <div class="photo-thumb" onclick="openLightbox('${r.id}')">${m}</div>
     <div class="photo-info" onclick="openLightbox('${r.id}')"><h4>${r.title}</h4><p class="memo-text">${r.memo||''}</p><div class="meta">${r.date||''}</div></div>
   </div>`;
 }
 
-function renderGallery() { document.getElementById('photo-grid').innerHTML = GLOBAL_RECORDS.map(generatePhotoHTML).join(''); }
-function searchRecords(q) {
-  const v = q.toLowerCase();
-  const arr = GLOBAL_RECORDS.filter(r => (r.title||'').toLowerCase().includes(v) || (r.memo||'').toLowerCase().includes(v));
+function renderGallery(target = 'all') {
+  let arr = GLOBAL_RECORDS;
+  if(target !== 'all') {
+    if(target === '직계가족' || target === '친가' || target === '처가') {
+      const names = GLOBAL_MEMBERS.filter(m => m.group === target).map(m => m.name);
+      arr = GLOBAL_RECORDS.filter(r => names.some(n => r.person && r.person.includes(n)));
+    } else {
+      arr = GLOBAL_RECORDS.filter(r => r.person && r.person.includes(target));
+    }
+  }
   document.getElementById('photo-grid').innerHTML = arr.map(generatePhotoHTML).join('');
 }
 
-// ════════ 폴더(아코디언) 구조 생성 ════════
+function filterGallery(target, btn) {
+  if(btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderGallery(target);
+}
+
+function searchRecords(q) {
+  const v = q.toLowerCase();
+  const arr = GLOBAL_RECORDS.filter(r => (r.title||'').toLowerCase().includes(v) || (r.memo||'').toLowerCase().includes(v) || (r.person||'').toLowerCase().includes(v));
+  document.getElementById('photo-grid').innerHTML = arr.map(generatePhotoHTML).join('');
+}
+
+// 폴더 구조 생성
 function renderTimelineFolders() {
   let html = '';
   DECADES.forEach(dec => {
@@ -698,20 +744,14 @@ function renderEventFolders() {
   document.getElementById('events-container').innerHTML = html;
 }
 
-
 // ════════ 라이트박스 ════════
 function openLightbox(id) {
   const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return;
   const rot = r.rotation||0; const tr = `transform:rotate(${rot}deg);`;
-  
   let m = '';
-  if(!r.imgUrl) {
-    m = `<div style="width:200px;height:200px;background:#e0d8d0;display:flex;align-items:center;justify-content:center;font-size:4rem;">🖼️</div>`;
-  } else if(r.fileType==='video') {
-    m = `<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`;
-  } else {
-    m = `<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
-  }
+  if(!r.imgUrl) m = `<div style="width:200px;height:200px;background:#e0d8d0;display:flex;align-items:center;justify-content:center;font-size:4rem;">🖼️</div>`;
+  else if(r.fileType==='video') m = `<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`;
+  else m = `<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
 
   document.getElementById('lightbox-media').innerHTML = m;
   document.getElementById('lightbox-caption').innerHTML = `<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small>${r.date||''} / 등록: ${r.author||''}</small>`;
@@ -727,13 +767,9 @@ function closeLightbox(e) {
 // ════════ 인물 등록 ════════
 let tempMemFile = null;
 function openMemberModal(group) {
-  document.getElementById('mem-group').value = group;
-  document.getElementById('mem-name').value = ''; 
-  document.getElementById('mem-birth-year').value = ''; 
-  document.getElementById('mem-birth-month').value = ''; 
-  document.getElementById('mem-birth-day').value = ''; 
-  document.getElementById('mem-role').value = '';
-  document.getElementById('member-img-preview').innerHTML = '📷'; tempMemFile = null;
+  document.getElementById('mem-group').value = group; document.getElementById('mem-name').value = '';
+  document.getElementById('mem-birth-year').value = ''; document.getElementById('mem-birth-month').value = ''; document.getElementById('mem-birth-day').value = '';
+  document.getElementById('mem-role').value = ''; document.getElementById('member-img-preview').innerHTML = '📷'; tempMemFile = null;
   document.getElementById('modal-member').classList.add('open');
 }
 function closeMemberModal() { document.getElementById('modal-member').classList.remove('open'); }
@@ -747,15 +783,11 @@ function previewMemberPhoto(inp) {
 }
 async function saveMember() {
   const name = document.getElementById('mem-name').value.trim();
-  const y = document.getElementById('mem-birth-year').value;
-  const m = document.getElementById('mem-birth-month').value;
-  const d = document.getElementById('mem-birth-day').value;
+  const y = document.getElementById('mem-birth-year').value; const m = document.getElementById('mem-birth-month').value; const d = document.getElementById('mem-birth-day').value;
   const birthDate = (y && m && d) ? `${y}-${m}-${d}` : '';
-  const group = document.getElementById('mem-group').value;
-  const role = document.getElementById('mem-role').value.trim();
-  
+  const group = document.getElementById('mem-group').value; const role = document.getElementById('mem-role').value.trim();
   if(!name) return showToast('이름을 입력하세요.', true);
-  showLoading(true);
+  showLoading(true, '인물 정보 클라우드 저장 중...');
   try {
     let url = '';
     if(tempMemFile) {
@@ -763,27 +795,24 @@ async function saveMember() {
       await ref.put(tempMemFile); url = await ref.getDownloadURL();
     }
     await db.collection('family_members').add({ name, birthDate, group, role, photoUrl: url });
-    showToast('👤 인물 등록 완료!'); closeMemberModal(); loadData();
+    showToast('👤 새 가족 인물이 등록되었습니다!'); closeMemberModal(); loadData();
   } catch(e) {}
   showLoading(false);
 }
 
-// ════════ 기록(사진/영상) 업로드 ════════
+// ════════ 기록 업로드 ════════
 function openUpload() { document.getElementById('modal-upload').classList.add('open'); }
 function closeUpload() { document.getElementById('modal-upload').classList.remove('open'); }
 function previewUploadFiles(inp) { document.getElementById('file-preview-name').innerHTML = inp.files.length ? `✅ <b>${inp.files.length}개</b> 파일 선택됨` : '선택 없음'; }
 
 async function saveRecord() {
-  const title = document.getElementById('inp-title').value.trim();
-  const memo = document.getElementById('inp-memo').value.trim();
-  const fi = document.getElementById('inp-file');
+  const title = document.getElementById('inp-title').value.trim(); const memo = document.getElementById('inp-memo').value.trim(); const fi = document.getElementById('inp-file');
   if(!title) return showToast('제목 필수!', true); if(!fi.files.length) return showToast('파일을 선택하세요!', true);
-  
   const files = Array.from(fi.files); const total = files.length;
   showLoading(true, `업로드 중... (1/${total})`);
   try {
     for(let i=0; i<total; i++) {
-      showLoading(true, `업로드 중... (${i+1}/${total})`);
+      showLoading(true, `클라우드 업로드 중... (${i+1}/${total})`);
       const file = files[i]; const isVid = file.type.startsWith('video/');
       const ref = firebase.storage().ref('photos/' + Date.now() + '_' + file.name);
       await ref.put(file); const url = await ref.getDownloadURL();
@@ -794,9 +823,36 @@ async function saveRecord() {
         rotation: 0, author: CURRENT_USER.name, created: new Date().toISOString()
       });
     }
-    alert(`✅ 저장 완료 (무료 5GB 클라우드 내 보관됨)`);
-    closeUpload(); loadData();
+    alert(`✅ 저장 완료 (5GB 안전 창고 보관됨)`); closeUpload(); loadData();
   } catch(e) { showToast('오류 발생', true); }
+  showLoading(false);
+}
+
+// ════════ 수정(Edit) 시스템 완성 ════════
+function openEditModal(id, event) {
+  if(event) event.stopPropagation();
+  const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return;
+  currentEditId = id;
+  document.getElementById('edit-title').value = r.title || '';
+  document.getElementById('edit-date').value = r.date || '';
+  document.getElementById('edit-memo').value = r.memo || '';
+  document.getElementById('edit-event').value = r.event || 'daily';
+  document.getElementById('modal-edit').classList.add('open');
+}
+function closeEditModal() { document.getElementById('modal-edit').classList.remove('open'); currentEditId = null; }
+async function updateRecord() {
+  if(!currentEditId) return;
+  const title = document.getElementById('edit-title').value.trim();
+  const date = document.getElementById('edit-date').value;
+  const memo = document.getElementById('edit-memo').value.trim();
+  const event = document.getElementById('edit-event').value;
+  if(!title) return showToast('제목을 입력해 주세요.', true);
+  showLoading(true, '수정 내용 기록 중...');
+  try {
+    await db.collection('records').doc(currentEditId).update({ title, date, memo, event });
+    showToast('✅ 수정 내용이 클라우드에 성공적으로 반영되었습니다.');
+    closeEditModal(); loadData();
+  } catch(e) { showToast('수정 오류 발생', true); }
   showLoading(false);
 }
 
@@ -807,27 +863,31 @@ async function rotateImg(id, cur, btn, ev) {
   db.collection('records').doc(id).update({rotation:n});
 }
 async function deleteRecord(id, url, ev) {
-  ev.stopPropagation(); if(!confirm("삭제하시겠습니까?")) return;
-  showLoading(true);
+  ev.stopPropagation(); if(!confirm("정말로 삭제하시겠습니까?")) return;
+  showLoading(true, '클라우드에서 삭제 중...');
   try { await db.collection('records').doc(id).delete(); if(url && url.includes('firebase')) await firebase.storage().refFromURL(url).delete(); loadData(); } catch(e){}
   showLoading(false);
 }
 
-// ════════ 관리자 승인 ════════
+// 승인 관리
 async function loadAdminList() {
   const el = document.getElementById('admin-user-list');
   const snap = await db.collection('auth_users').where('status','==','pending').get();
-  if(snap.empty) return el.innerHTML = '<p>대기 중인 가족이 없습니다.</p>';
-  el.innerHTML = snap.docs.map(d => `<div class="event-item"><div class="event-body"><h4>${d.data().name}</h4><p>${d.data().role}</p></div><button onclick="approveUser('${d.id}')">승인</button></div>`).join('');
+  if(snap.empty) return el.innerHTML = '<p style="padding:20px; text-align:center;">대기 중인 신청자가 없습니다.</p>';
+  el.innerHTML = snap.docs.map(d => `<div class="event-item"><div class="event-body"><h4>${d.data().name}</h4><p>${d.data().role}</p></div><button class="topbar-btn" onclick="approveUser('${d.id}')">승인하기</button></div>`).join('');
 }
 async function approveUser(id) { await db.collection('auth_users').doc(id).update({status:'approved'}); showToast('승인 완료'); loadData(); }
 
-// 기본 UI 조작
-function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active'); if(innerWidth<=768) document.getElementById('sidebar').classList.remove('open'); }
+// UI 페이지 변경
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('bc-current').textContent = id === 'dashboard' ? '대시보드' : id === 'gallery' ? '전체 갤러리' : id === 'timeline' ? '연대 타임라인' : id === 'events' ? '이벤트 파일' : '관리자';
+  if(innerWidth<=768) document.getElementById('sidebar').classList.remove('open');
+}
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 function closeModal(e, id) { if(e.target.id===id) document.getElementById(id).classList.remove('open'); }
 
-// 🚀 시스템 시작 (자동 로그인 확인)
 checkAuth();
 </script>
 </body>
