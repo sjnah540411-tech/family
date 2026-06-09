@@ -34,7 +34,7 @@ body {
 /* ───────── 로그인/회원가입 화면 ───────── */
 #auth-overlay {
   position: fixed; inset: 0; background: var(--brown-deep); z-index: 5000;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 0.5s ease;
 }
 .auth-box {
@@ -54,13 +54,13 @@ body {
 
 /* ───────── 라이트박스 (확대보기) ───────── */
 #lightbox-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 6000;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000;
   display: none; align-items: center; justify-content: center; flex-direction: column;
 }
 #lightbox-overlay.open { display: flex; }
-.lightbox-close { position: absolute; top: 20px; right: 24px; font-size: 2rem; color: #fff; background: none; border: none; cursor: pointer; z-index: 6010; }
-#lightbox-media { max-width: 95vw; max-height: 85vh; display: flex; justify-content: center; align-items: center; }
-#lightbox-caption { color: #fff; margin-top: 16px; font-size: 1rem; text-align: center; max-width: 80%; line-height: 1.5; }
+.lightbox-close { position: absolute; top: 20px; right: 24px; font-size: 2.5rem; color: #fff; background: none; border: none; cursor: pointer; z-index: 6010; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+#lightbox-media { max-width: 95vw; max-height: 85vh; display: flex; justify-content: center; align-items: center; position: relative; }
+#lightbox-caption { color: #fff; margin-top: 20px; font-size: 1.1rem; text-align: center; max-width: 80%; line-height: 1.6; }
 
 /* ───────── SPLASH & LAYOUT ───────── */
 #splash { position: fixed; inset: 0; background: var(--brown-deep); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s; }
@@ -87,8 +87,6 @@ body {
 .breadcrumb { color: var(--text-sub); font-size: 0.82rem; }
 .breadcrumb span { color: var(--brown-light); margin: 0 6px; }
 .breadcrumb b { color: var(--text-main); font-weight: 500; }
-#search-box { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--cream); border: 1px solid rgba(44,26,14,0.12); border-radius: 24px; padding: 8px 16px; min-width: 180px; }
-#search-box input { border: none; background: transparent; font-family: 'Noto Sans KR', sans-serif; font-size: 0.85rem; color: var(--text-main); outline: none; width: 100%; }
 .topbar-btn { background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 9px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .topbar-btn:hover { background: var(--brown-mid); transform: translateY(-1px); }
 .topbar-btn.logout { background: transparent; color: var(--text-sub); border: 1px solid rgba(44,26,14,0.2); box-shadow: none; }
@@ -102,29 +100,20 @@ body {
 .page-header h2 { font-family: 'Noto Serif KR', serif; font-size: clamp(1.5rem, 3vw, 2rem); color: var(--brown-deep); line-height: 1.3; }
 .page-header p { color: var(--text-sub); font-size: 0.88rem; margin-top: 6px; }
 
-/* ───────── DASHBOARD UI ───────── */
+/* ───────── DASHBOARD UI (종전 디자인 복구) ───────── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 16px; margin-bottom: 32px; }
 .stat-card { background: var(--cream); border: 1px solid rgba(44,26,14,0.08); border-radius: var(--radius); padding: 20px; text-align: center; }
 .stat-card .num { font-family: 'Noto Serif KR', serif; font-size: 2rem; color: var(--brown-mid); font-weight: 700; }
 .stat-card .label { font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; }
 
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--gold-light); }
-.section-title { font-family: 'Noto Serif KR', serif; font-size: 1.1rem; color: var(--brown-deep); display: flex; align-items: center; gap: 8px; margin: 0; border: none; padding: 0; }
-.add-member-btn { font-size: 0.75rem; background: var(--cream); border: 1px solid var(--brown-light); color: var(--brown-deep); padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+.section-title { font-family: 'Noto Serif KR', serif; font-size: 1.1rem; color: var(--brown-deep); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--gold-light); display: flex; align-items: center; gap: 8px; }
+.add-member-btn { font-size: 0.75rem; background: var(--cream); border: 1px solid var(--brown-light); color: var(--brown-deep); padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; margin-left: auto; }
 .add-member-btn:hover { background: var(--gold-light); }
 
-/* ───────── MEMBER CARDS ───────── */
 .family-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 12px; margin-bottom: 32px; }
-.family-card { background: var(--cream); border-radius: var(--radius); padding: 16px 10px; text-align: center; border: 2px solid transparent; position: relative; }
-.family-card.paternal { border-left: 4px solid var(--brown-mid); }
-.family-card.maternal { border-left: 4px solid var(--sage); }
+.family-card { background: var(--cream); border-radius: var(--radius); padding: 16px 10px; text-align: center; border: 2px solid transparent; }
 .family-card.direct { border-left: 4px solid var(--gold); }
-.family-card .avatar {
-  width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 10px;
-  background: linear-gradient(135deg, var(--brown-light), var(--gold));
-  display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white;
-  overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+.family-card .avatar { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 10px; background: linear-gradient(135deg, var(--brown-light), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .family-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
 .family-card .name { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
 .family-card .role { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
@@ -133,7 +122,7 @@ body {
 /* ───────── PHOTO GRID ───────── */
 .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
 .photo-card { border-radius: var(--radius); overflow: hidden; background: var(--cream); border: 1px solid rgba(44,26,14,0.08); position: relative; }
-.photo-thumb { width: 100%; aspect-ratio: 4/3; background: #000; position: relative; overflow: hidden; cursor: pointer; }
+.photo-thumb { width: 100%; aspect-ratio: 4/3; background: #e0d8d0; position: relative; overflow: hidden; cursor: pointer; }
 .photo-thumb img, .photo-thumb video { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; transition: transform 0.4s ease; }
 .video-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: rgba(255,255,255,0.8); pointer-events: none; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 .photo-info { padding: 14px; }
@@ -145,16 +134,9 @@ body {
 
 /* ───────── RECENT EVENTS (LIST) ───────── */
 .event-list { display: flex; flex-direction: column; gap: 12px; }
-.event-item {
-  display: flex; align-items: flex-start; gap: 16px; background: var(--cream);
-  border-radius: var(--radius); padding: 14px; border: 1px solid rgba(44,26,14,0.08); cursor: pointer;
-  transition: 0.2s;
-}
+.event-item { display: flex; align-items: flex-start; gap: 16px; background: var(--cream); border-radius: var(--radius); padding: 14px; border: 1px solid rgba(44,26,14,0.08); cursor: pointer; transition: 0.2s; }
 .event-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
-.event-thumb {
-  width: 70px; height: 70px; border-radius: 8px; flex-shrink: 0; background: #ddd; overflow: hidden;
-  display: flex; align-items: center; justify-content: center; position: relative;
-}
+.event-thumb { width: 70px; height: 70px; border-radius: 8px; flex-shrink: 0; background: #ddd; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
 .event-thumb img, .event-thumb video { width:100%; height:100%; object-fit:cover; }
 .event-body { flex: 1; }
 .event-body h4 { font-size: 0.95rem; font-weight:600; margin-bottom: 4px; }
@@ -162,21 +144,12 @@ body {
 .event-date { font-size: 0.75rem; color: var(--brown-light); }
 
 /* ───────── TIMELINE & EVENTS FOLDERS (ACCORDION) ───────── */
-.folder-card {
-  background: var(--cream); border-radius: var(--radius); border: 1px solid rgba(44,26,14,0.08);
-  margin-bottom: 16px; overflow: hidden; transition: 0.3s;
-}
-.folder-header {
-  padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
-  cursor: pointer; background: #fff;
-}
+.folder-card { background: var(--cream); border-radius: var(--radius); border: 1px solid rgba(44,26,14,0.08); margin-bottom: 16px; overflow: hidden; transition: 0.3s; }
+.folder-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #fff; }
 .folder-header:hover { background: var(--warm-white); }
 .folder-title { font-size: 1.1rem; font-weight: 600; color: var(--brown-deep); display: flex; align-items: center; gap: 10px; }
 .folder-count { font-size: 0.8rem; color: var(--brown-light); background: rgba(212,168,83,0.15); padding: 4px 10px; border-radius: 20px; }
-.folder-content {
-  padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
-  background: var(--cream);
-}
+.folder-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: var(--cream); }
 .folder-card.open .folder-content { padding: 20px; max-height: 2000px; }
 .folder-card.open .folder-header { border-bottom: 1px solid rgba(44,26,14,0.08); }
 
@@ -300,27 +273,30 @@ body {
       <p>가족들의 소중한 기록과 인물을 관리합니다</p>
     </div>
     
-    <div class="section-header">
-      <h3 class="section-title">👨‍👩‍👧‍👦 직계가족</h3>
+    <div class="section-title">
+      👨‍👩‍👧‍👦 직계가족 
       <button class="add-member-btn" onclick="openMemberModal('직계가족')">➕ 인물 등록</button>
     </div>
     <div class="family-preview" id="dash-direct"></div>
 
-    <div class="section-header">
-      <h3 class="section-title">🌳 친가</h3>
-      <button class="add-member-btn" onclick="openMemberModal('친가')">➕ 인물 등록</button>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:32px;">
+      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--brown-mid);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌳 친가</div>
+          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('친가')">➕ 등록</button>
+        </div>
+        <div id="dash-paternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      </div>
+      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--sage);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌿 처가</div>
+          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('처가')">➕ 등록</button>
+        </div>
+        <div id="dash-maternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      </div>
     </div>
-    <div class="family-preview" id="dash-paternal"></div>
 
-    <div class="section-header">
-      <h3 class="section-title">🌿 처가</h3>
-      <button class="add-member-btn" onclick="openMemberModal('처가')">➕ 인물 등록</button>
-    </div>
-    <div class="family-preview" id="dash-maternal"></div>
-
-    <div class="section-header" style="margin-top:20px;">
-      <h3 class="section-title">🕐 최근 업데이트 기록</h3>
-    </div>
+    <div class="section-title">🕐 최근 업데이트 기록</div>
     <div class="event-list" id="recent-events"></div>
   </div>
 
@@ -363,7 +339,7 @@ body {
     <div class="modal-body">
       <div class="form-group" style="text-align:center; margin-bottom:20px;">
         <label style="cursor:pointer; display:inline-block;">
-          <div id="member-img-preview" style="width:100px; height:100px; border-radius:50%; background:#e0d8d0; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:2rem; border:2px dashed var(--brown-light);">
+          <div id="member-img-preview" style="width:100px; height:100px; border-radius:50%; background:#e0d8d0; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:2.5rem; border:2px dashed var(--brown-light);">
             📷
           </div>
           <span style="font-size:0.8rem; color:var(--gold);">프로필 사진 선택</span>
@@ -373,7 +349,14 @@ body {
 
       <div class="form-row">
         <div class="form-group"><label>이름</label><input type="text" id="mem-name" placeholder="홍길동"></div>
-        <div class="form-group"><label>생년월일</label><input type="date" id="mem-birth"></div>
+        <div class="form-group">
+          <label>생년월일</label>
+          <div style="display:flex; gap:6px;">
+            <select id="mem-birth-year" style="flex:2;"></select>
+            <select id="mem-birth-month" style="flex:1.2;"></select>
+            <select id="mem-birth-day" style="flex:1.2;"></select>
+          </div>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -494,6 +477,15 @@ function getDecadeFromDate(dateStr) {
   if(year < 2020) return '2010s'; if(year < 2030) return '2020s';
   return '2030s';
 }
+function initDateSelects() {
+  let y='', m='', d='';
+  for(let i=new Date().getFullYear(); i>=1920; i--) y+=`<option value="${i}">${i}년</option>`;
+  for(let i=1; i<=12; i++) m+=`<option value="${String(i).padStart(2,'0')}">${i}월</option>`;
+  for(let i=1; i<=31; i++) d+=`<option value="${String(i).padStart(2,'0')}">${i}일</option>`;
+  document.getElementById('mem-birth-year').innerHTML = '<option value="">년도</option>' + y;
+  document.getElementById('mem-birth-month').innerHTML = '<option value="">월</option>' + m;
+  document.getElementById('mem-birth-day').innerHTML = '<option value="">일</option>' + d;
+}
 
 // ════════ 보안 (자동 로그인/회원가입 및 마스터키) ════════
 function switchAuthTab(tab) {
@@ -526,7 +518,6 @@ async function handleLogin() {
   showLoading(true);
   
   try {
-    // 💡 [마스터 비상키] 이름이 '나' 이고 비번이 '0000'일 때 무조건 통과 & 권한 복구!
     if(name === '나' && pw === '0000') {
         const snap = await db.collection('auth_users').where('name', '==', '나').get();
         let userObj = { name: '나', role: '직계가족', pw: btoa('0000'), status: 'approved', isAdmin: true };
@@ -541,17 +532,12 @@ async function handleLogin() {
         startApp(userObj);
         return;
     }
-
-    // 일반 로그인 처리
     const snap = await db.collection('auth_users').where('name', '==', name).where('pw', '==', btoa(pw)).get();
     if(snap.empty) { showToast('정보가 맞지 않습니다. 다시 확인해주세요.', true); showLoading(false); return; }
     
     const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
     if(user.status === 'pending') showToast('⏳ 아직 승인 대기 중입니다.', true);
-    else { 
-      localStorage.setItem('fa_session', JSON.stringify(user)); 
-      startApp(user); 
-    }
+    else { localStorage.setItem('fa_session', JSON.stringify(user)); startApp(user); }
   } catch(e) { showToast('통신 오류가 발생했습니다.', true); }
   showLoading(false);
 }
@@ -573,7 +559,6 @@ async function checkAuth() {
     });
     return;
   }
-  
   document.getElementById('splash').classList.add('hidden');
   document.getElementById('auth-overlay').style.display = 'flex';
 }
@@ -585,6 +570,7 @@ function startApp(user) {
   document.getElementById('splash').classList.add('hidden');
   document.getElementById('topbar-user-info').innerHTML = `👤 ${user.name}`;
   if(user.isAdmin) document.getElementById('menu-admin').style.display = 'flex';
+  initDateSelects();
   loadData();
 }
 
@@ -617,27 +603,38 @@ function updateMemberSelects() {
 }
 
 function renderDashMembers() {
-  const map = { '직계가족':'dash-direct', '친가':'dash-paternal', '처가':'dash-maternal' };
-  for(let key in map) document.getElementById(map[key]).innerHTML = '';
+  document.getElementById('dash-direct').innerHTML = '';
+  document.getElementById('dash-paternal').innerHTML = '';
+  document.getElementById('dash-maternal').innerHTML = '';
+
   GLOBAL_MEMBERS.forEach(m => {
-    if(!map[m.group]) return;
-    const img = m.photoUrl ? `<img src="${m.photoUrl}">` : '👤';
-    document.getElementById(map[m.group]).innerHTML += `
-      <div class="family-card ${m.group==='직계가족'?'direct':m.group==='친가'?'paternal':'maternal'}">
-        <div class="avatar">${img}</div>
-        <div class="name">${m.name}</div>
-        <div class="role">${m.role}</div>
-        <div class="birth">${m.birthDate || ''}</div>
-      </div>`;
+    if (m.group === '직계가족') {
+      const img = m.photoUrl ? `<img src="${m.photoUrl}">` : '👤';
+      document.getElementById('dash-direct').innerHTML += `
+        <div class="family-card direct">
+          <div class="avatar">${img}</div>
+          <div class="name">${m.name}</div>
+          <div class="role">${m.role}</div>
+          <div class="birth">${m.birthDate || ''}</div>
+        </div>`;
+    } else if (m.group === '친가') {
+      document.getElementById('dash-paternal').innerHTML += `<span style="background:rgba(107,63,42,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;cursor:pointer;color:var(--brown-deep);font-weight:500;">${m.name} <small style="color:var(--text-sub);">(${m.role})</small></span>`;
+    } else if (m.group === '처가') {
+      document.getElementById('dash-maternal').innerHTML += `<span style="background:rgba(122,140,110,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;cursor:pointer;color:var(--brown-deep);font-weight:500;">${m.name} <small style="color:var(--text-sub);">(${m.role})</small></span>`;
+    }
   });
 }
 
 function renderRecent() {
   document.getElementById('recent-events').innerHTML = GLOBAL_RECORDS.slice(0,5).map(r => {
-    let media = r.fileType==='video' ? `<video src="${r.imgUrl}#t=0.1"></video>` : `<img src="${r.imgUrl}">`;
+    let mediaHtml = '';
+    if(!r.imgUrl) mediaHtml = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--brown-light);">🖼️</div>`;
+    else if(r.fileType==='video') mediaHtml = `<video src="${r.imgUrl}#t=0.1"></video>`;
+    else mediaHtml = `<img src="${r.imgUrl}">`;
+
     return `
     <div class="event-item" onclick="openLightbox('${r.id}')">
-      <div class="event-thumb">${media}</div>
+      <div class="event-thumb" style="background:#e0d8d0;">${mediaHtml}</div>
       <div class="event-body"><h4>${r.title}</h4><p>${r.memo||''}</p><div class="event-date">${r.date||''}</div></div>
     </div>`;
   }).join('');
@@ -645,7 +642,15 @@ function renderRecent() {
 
 function generatePhotoHTML(r) {
   const rot = r.rotation || 0; const scale = (rot%180!==0)?1.35:1;
-  let m = r.fileType==='video' ? `<video src="${r.imgUrl}#t=0.1" style="transform:rotate(${rot}deg) scale(${scale});"></video><div class="video-badge">▶️</div>` : `<img src="${r.imgUrl}" style="transform:rotate(${rot}deg) scale(${scale});">`;
+  let m = '';
+  if(!r.imgUrl) {
+    m = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#e0d8d0;color:var(--brown-light);font-size:3rem;">🖼️</div>`;
+  } else if(r.fileType==='video') {
+    m = `<video src="${r.imgUrl}#t=0.1" style="transform:rotate(${rot}deg) scale(${scale});"></video><div class="video-badge">▶️</div>`;
+  } else {
+    m = `<img src="${r.imgUrl}" style="transform:rotate(${rot}deg) scale(${scale});">`;
+  }
+
   const btn = (CURRENT_USER.isAdmin || r.author===CURRENT_USER.name) ? `<button onclick="deleteRecord('${r.id}','${r.imgUrl}',event)">🗑️</button>`:'';
   return `
   <div class="photo-card">
@@ -655,9 +660,7 @@ function generatePhotoHTML(r) {
   </div>`;
 }
 
-function renderGallery() {
-  document.getElementById('photo-grid').innerHTML = GLOBAL_RECORDS.map(generatePhotoHTML).join('');
-}
+function renderGallery() { document.getElementById('photo-grid').innerHTML = GLOBAL_RECORDS.map(generatePhotoHTML).join(''); }
 function searchRecords(q) {
   const v = q.toLowerCase();
   const arr = GLOBAL_RECORDS.filter(r => (r.title||'').toLowerCase().includes(v) || (r.memo||'').toLowerCase().includes(v));
@@ -700,7 +703,16 @@ function renderEventFolders() {
 function openLightbox(id) {
   const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return;
   const rot = r.rotation||0; const tr = `transform:rotate(${rot}deg);`;
-  const m = r.fileType==='video' ? `<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>` : `<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
+  
+  let m = '';
+  if(!r.imgUrl) {
+    m = `<div style="width:200px;height:200px;background:#e0d8d0;display:flex;align-items:center;justify-content:center;font-size:4rem;">🖼️</div>`;
+  } else if(r.fileType==='video') {
+    m = `<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`;
+  } else {
+    m = `<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
+  }
+
   document.getElementById('lightbox-media').innerHTML = m;
   document.getElementById('lightbox-caption').innerHTML = `<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small>${r.date||''} / 등록: ${r.author||''}</small>`;
   document.getElementById('lightbox-overlay').classList.add('open');
@@ -716,7 +728,11 @@ function closeLightbox(e) {
 let tempMemFile = null;
 function openMemberModal(group) {
   document.getElementById('mem-group').value = group;
-  document.getElementById('mem-name').value = ''; document.getElementById('mem-birth').value = ''; document.getElementById('mem-role').value = '';
+  document.getElementById('mem-name').value = ''; 
+  document.getElementById('mem-birth-year').value = ''; 
+  document.getElementById('mem-birth-month').value = ''; 
+  document.getElementById('mem-birth-day').value = ''; 
+  document.getElementById('mem-role').value = '';
   document.getElementById('member-img-preview').innerHTML = '📷'; tempMemFile = null;
   document.getElementById('modal-member').classList.add('open');
 }
@@ -731,9 +747,13 @@ function previewMemberPhoto(inp) {
 }
 async function saveMember() {
   const name = document.getElementById('mem-name').value.trim();
-  const birthDate = document.getElementById('mem-birth').value;
+  const y = document.getElementById('mem-birth-year').value;
+  const m = document.getElementById('mem-birth-month').value;
+  const d = document.getElementById('mem-birth-day').value;
+  const birthDate = (y && m && d) ? `${y}-${m}-${d}` : '';
   const group = document.getElementById('mem-group').value;
   const role = document.getElementById('mem-role').value.trim();
+  
   if(!name) return showToast('이름을 입력하세요.', true);
   showLoading(true);
   try {
@@ -789,7 +809,7 @@ async function rotateImg(id, cur, btn, ev) {
 async function deleteRecord(id, url, ev) {
   ev.stopPropagation(); if(!confirm("삭제하시겠습니까?")) return;
   showLoading(true);
-  try { await db.collection('records').doc(id).delete(); if(url.includes('firebase')) await firebase.storage().refFromURL(url).delete(); loadData(); } catch(e){}
+  try { await db.collection('records').doc(id).delete(); if(url && url.includes('firebase')) await firebase.storage().refFromURL(url).delete(); loadData(); } catch(e){}
   showLoading(false);
 }
 
@@ -802,11 +822,12 @@ async function loadAdminList() {
 }
 async function approveUser(id) { await db.collection('auth_users').doc(id).update({status:'approved'}); showToast('승인 완료'); loadData(); }
 
-// 기본 UI
+// 기본 UI 조작
 function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active'); if(innerWidth<=768) document.getElementById('sidebar').classList.remove('open'); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 function closeModal(e, id) { if(e.target.id===id) document.getElementById(id).classList.remove('open'); }
 
+// 🚀 시스템 시작 (자동 로그인 확인)
 checkAuth();
 </script>
 </body>
