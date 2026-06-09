@@ -291,7 +291,7 @@ body {
   background: var(--cream);
   border: 1px solid rgba(44,26,14,0.08);
   transition: var(--transition);
-  cursor: pointer;
+  position: relative; /* 버튼 위치 조정을 위해 추가 */
 }
 .photo-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px var(--shadow); }
 .photo-thumb {
@@ -300,10 +300,15 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-size: 2.5rem; color: rgba(255,255,255,0.7);
   position: relative;
+  overflow: hidden; /* 회전 시 삐져나가는 부분 숨김 */
 }
-.photo-thumb img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
-.photo-info { padding: 12px; }
-.photo-info h4 { font-size: 0.88rem; color: var(--text-main); margin-bottom: 4px; }
+.photo-thumb img { 
+  width:100%; height:100%; object-fit:cover; position:absolute; inset:0; 
+  transition: transform 0.4s ease; /* 회전 애니메이션 부드럽게 */
+}
+.photo-info { padding: 16px; }
+.photo-info h4 { font-size: 0.95rem; color: var(--text-main); margin-bottom: 6px; font-weight:600; }
+.photo-info p.memo-text { font-size: 0.85rem; color: var(--brown-mid); margin-bottom: 8px; line-height: 1.4; word-break: break-all; }
 .photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
 .photo-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
 .tag-chip {
@@ -312,6 +317,20 @@ body {
   font-size: 0.7rem; padding: 2px 8px;
   border-radius: 12px;
 }
+
+/* 카드 수정/삭제/회전 액션 버튼 */
+.card-actions {
+  position: absolute; top: 8px; right: 8px;
+  display: flex; gap: 6px;
+  z-index: 10;
+}
+.card-actions button {
+  background: rgba(255,255,255,0.85); border: 1px solid rgba(44,26,14,0.1);
+  border-radius: 6px; padding: 6px; cursor: pointer;
+  font-size: 0.9rem; transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.card-actions button:hover { background: #fff; transform: scale(1.1); }
 
 /* ───────── EVENTS ───────── */
 .event-list { display: flex; flex-direction: column; gap: 12px; }
@@ -322,7 +341,7 @@ body {
   padding: 16px;
   border: 1px solid rgba(44,26,14,0.08);
   transition: var(--transition);
-  cursor: pointer;
+  position: relative;
 }
 .event-item:hover { box-shadow: 0 4px 16px var(--shadow); transform: translateX(4px); }
 .event-icon {
@@ -334,9 +353,11 @@ body {
 .event-icon.wedding { background: rgba(212,168,83,0.15); }
 .event-icon.graduation { background: rgba(107,63,42,0.10); }
 .event-icon.special { background: rgba(176,92,58,0.12); }
-.event-body h4 { font-size: 0.92rem; color: var(--text-main); margin-bottom: 4px; }
-.event-body p { font-size: 0.8rem; color: var(--text-sub); line-height: 1.5; }
-.event-date { margin-left: auto; font-size: 0.75rem; color: var(--brown-light); white-space: nowrap; }
+.event-body { flex: 1; }
+.event-body h4 { font-size: 0.95rem; color: var(--text-main); margin-bottom: 4px; font-weight:600; }
+.event-body p.memo-text { font-size: 0.85rem; color: var(--brown-mid); margin-bottom: 6px; line-height: 1.4; }
+.event-body .meta { font-size: 0.8rem; color: var(--text-sub); }
+.event-date { font-size: 0.75rem; color: var(--brown-light); white-space: nowrap; margin-left: auto; }
 
 /* ───────── PEOPLE PAGE ───────── */
 .people-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -353,23 +374,8 @@ body {
 .people-tab.maternal { border-color: var(--sage); }
 .people-tab.direct { border-color: var(--gold); }
 
-/* ───────── ADMIN PANEL ───────── */
-.admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px; }
-.admin-card {
-  background: var(--cream);
-  border-radius: var(--radius);
-  padding: 24px;
-  border: 1px solid rgba(44,26,14,0.08);
-  transition: var(--transition);
-  cursor: pointer;
-}
-.admin-card:hover { box-shadow: 0 8px 24px var(--shadow); transform: translateY(-2px); }
-.admin-card h4 { font-size: 0.95rem; color: var(--brown-deep); margin-bottom: 8px; }
-.admin-card p { font-size: 0.8rem; color: var(--text-sub); line-height: 1.5; }
-.admin-card .icon { font-size: 2rem; margin-bottom: 12px; }
-
 /* ───────── MODAL ───────── */
-#modal-overlay {
+.modal-overlay {
   position: fixed; inset: 0;
   background: rgba(44,26,14,0.5);
   backdrop-filter: blur(4px);
@@ -377,7 +383,7 @@ body {
   display: none; align-items: center; justify-content: center;
   padding: 16px;
 }
-#modal-overlay.open { display: flex; }
+.modal-overlay.open { display: flex; }
 .modal-box {
   background: var(--warm-white);
   border-radius: 16px;
@@ -408,7 +414,7 @@ body {
   -webkit-overflow-scrolling: touch; 
 }
 
-/* ───────── UPLOAD FORM ───────── */
+/* ───────── UPLOAD/EDIT FORM ───────── */
 .form-group { margin-bottom: 14px; }
 .form-group label { display: block; font-size: 0.82rem; color: var(--text-sub); margin-bottom: 6px; }
 .form-group input, .form-group select, .form-group textarea {
@@ -467,6 +473,19 @@ body {
 .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
 .empty-state h3 { font-size: 1rem; margin-bottom: 6px; color: var(--text-main); }
 .empty-state p { font-size: 0.85rem; }
+
+/* ───────── 로딩 애니메이션 ───────── */
+#loading-overlay {
+  position: fixed; inset: 0; background: rgba(255,255,255,0.85);
+  z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: none; /* 기본 숨김 */
+}
+.spinner {
+  border: 4px solid rgba(212,168,83,0.3); border-left-color: var(--brown-deep);
+  border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -474,6 +493,11 @@ body {
 <div id="splash">
   <h1>우리가족 아카이브</h1>
   <p>1954년부터 미래까지, 우리 가족의 모든 기록</p>
+</div>
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p id="loading-text" style="color:var(--brown-deep); font-weight:600;">클라우드 동기화 중...</p>
 </div>
 
 <button id="hamburger" onclick="toggleSidebar()">☰</button>
@@ -590,7 +614,7 @@ body {
   <div class="page" id="page-gallery">
     <div class="page-header">
       <h2>전체 갤러리 🖼️</h2>
-      <p>모든 사진과 영상 기록</p>
+      <p>모든 사진과 영상 기록 (수정/삭제/회전 가능)</p>
     </div>
     <div class="filter-bar" id="gallery-filters"></div>
     <div class="photo-grid" id="photo-grid"></div>
@@ -610,8 +634,10 @@ body {
   <div class="page" id="page-timeline"><div class="page-header"><h2>시대별 타임라인 📅</h2></div><div class="decade-grid" id="decade-grid"></div></div>
   <div class="page" id="page-events"><div class="page-header"><h2>이벤트별 기록 🎉</h2></div><div class="filter-bar" id="event-filters"></div><div class="event-list" id="event-list"></div></div>
 
-</div></div><div id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal-box" style="max-width:560px;">
+</div></div>
+
+<div id="modal-upload" class="modal-overlay" onclick="closeModal(event, 'modal-upload')">
+  <div class="modal-box" style="max-width:560px;" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h3>📤 새 사진 추가</h3>
       <button class="modal-close" onclick="closeUpload()">✕</button>
@@ -621,8 +647,8 @@ body {
       <div class="form-group" style="background: rgba(212,168,83,0.1); padding: 30px 20px; border-radius: 12px; text-align: center; margin-bottom: 24px; border: 2px dashed rgba(212,168,83,0.5);">
         <label style="display: block; font-size: 1.1rem; color: var(--brown-deep); font-weight: 600; cursor: pointer;">
           <div style="font-size: 2.5rem; margin-bottom: 10px;">📸</div>
-          여기를 눌러 스마트폰 사진첩에서 사진 선택
-          <input type="file" id="inp-file" accept="image/*" style="display: none;" onchange="previewSelectedFile(this)">
+          여기를 눌러 갤러리에서 사진 여러 장 선택 가능
+          <input type="file" id="inp-file" accept="image/*" multiple style="display: none;" onchange="previewSelectedFile(this)">
         </label>
         <div id="file-preview-name" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-sub);">선택된 사진이 없습니다.</div>
       </div>
@@ -666,13 +692,67 @@ body {
       </div>
       <div class="form-group">
         <label>설명 · 메모</label>
-        <textarea id="inp-memo" rows="3" placeholder="이 순간에 대한 이야기를 적어주세요..."></textarea>
+        <textarea id="inp-memo" rows="3" placeholder="사진에 대한 설명을 적어주세요. 여러 장을 올리면 같은 메모가 일괄 적용됩니다."></textarea>
       </div>
 
-      <button class="btn-primary" onclick="saveRecord()">💾 클라우드에 사진 저장하기</button>
+      <button class="btn-primary" onclick="saveRecord()">💾 클라우드에 사진 모두 저장하기</button>
       <p style="text-align:center;font-size:0.72rem;color:var(--brown-light);margin-top:8px;">
-        저장 버튼을 누르면 파이어베이스 안전 창고로 업로드됩니다.
+        사진 용량에 따라 다소 시간이 걸릴 수 있습니다.
       </p>
+    </div>
+  </div>
+</div>
+
+<div id="modal-edit" class="modal-overlay" onclick="closeModal(event, 'modal-edit')">
+  <div class="modal-box" style="max-width:560px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>✏️ 기록 수정하기</h3>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:16px;">* 사진 자체는 변경할 수 없습니다. 제목, 날짜, 설명 등 텍스트만 수정 가능합니다.</p>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>제목 <span style="float:right;font-size:0.7rem;color:var(--rust);">필수</span></label>
+          <input type="text" id="edit-title">
+        </div>
+        <div class="form-group">
+          <label>날짜</label>
+          <input type="date" id="edit-date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>등장 인물 <small style="color:var(--brown-light)">(복수 선택)</small></label>
+          <select id="edit-person" multiple style="height:96px;">
+            <option value="나">나 (아버지)</option>
+            <option value="아내">아내</option>
+            <option value="아들">아들</option>
+            <option value="딸">딸</option>
+            <option value="며느리">며느리</option>
+            <option value="손녀">손녀</option>
+            <option value="친가">친가</option>
+            <option value="처가">처가</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>이벤트 분류</label>
+          <select id="edit-event">
+            <option value="travel">✈️ 가족여행</option>
+            <option value="wedding">💍 결혼식</option>
+            <option value="graduation">🎓 졸업식</option>
+            <option value="special">⭐ 특별 이벤트</option>
+            <option value="daily">☀️ 일상</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>설명 · 메모</label>
+        <textarea id="edit-memo" rows="3"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="updateRecord()">💾 변경 내용 저장</button>
     </div>
   </div>
 </div>
@@ -683,51 +763,28 @@ body {
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
 <script>
-// ▼▼ 2. 여기에 파이어베이스 웹사이트에서 복사한 진짜 코드를 덮어쓰세요 ▼▼
+// ▼▼ 2. 여기에 파이어베이스 웹사이트에서 복사한 선생님의 진짜 코드를 덮어쓰세요 ▼▼
 const firebaseConfig = {
   apiKey: "AIzaSyCzvwa5Q88RIjYUieWkh_RydWyfrZoPqXA",
   authDomain: "family-a19f9.firebaseapp.com",
   projectId: "family-a19f9",
   storageBucket: "family-a19f9.firebasestorage.app",
   messagingSenderId: "261921694732",
-  appId: "1:261921694732:web:df25fe595538969b743a29"
+  appId: "1:261921694732:web:df25fe595538969b743a29",
 };
 // ▲▲ ---------------------------------------------------------------- ▲▲
+
 // 파이어베이스 시작하기
 firebase.initializeApp(firebaseConfig);
 
-// 사용할 도구(데이터베이스와 사진 저장소) 정의하기
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// ════════ AUTH & PERMISSION SYSTEM ════════
-function getUsers(){ try{return JSON.parse(localStorage.getItem('fa_users')||'[]');}catch{return[];} }
-function saveUsers(u){ localStorage.setItem('fa_users', JSON.stringify(u)); }
-function getSession(){ try{return JSON.parse(sessionStorage.getItem('fa_session')||'null');}catch{return null;} }
+// 전역 데이터 저장소
+let GLOBAL_RECORDS = [];
+let currentEditId = null;
 
-// ── 무조건 관리자 자동 로그인 ──
-(function authGuard(){
-  const users = getUsers();
-  let adminUser = users.find(u => u.id === '나');
-  if(!adminUser){
-    adminUser = {
-      id:'나', name:'나 (관리자·아버지)', role:'나', group:'direct',
-      pw: btoa('admin1234'), status:'approved', isAdmin:true,
-      canUpload:true, canPost:true, joinedAt: new Date().toISOString()
-    };
-    users.push(adminUser);
-    saveUsers(users);
-  }
-  sessionStorage.setItem('fa_session', JSON.stringify(adminUser));
-})();
-
-const SESSION = getSession() || {};
-
-function canUpload(){ return SESSION.isAdmin || SESSION.canUpload; }
-function canPost(){   return SESSION.isAdmin || SESSION.canPost;   }
-function isAdmin(){   return !!SESSION.isAdmin; }
-
-// ── 토스트 알림 ──
+// ════════ 토스트 & 로딩 알림 ════════
 function showToast(msg, isError=false){
   let t = document.getElementById('toast-msg');
   if(!t){
@@ -742,6 +799,13 @@ function showToast(msg, isError=false){
   t.style.opacity = '1';
   clearTimeout(t._timer);
   t._timer = setTimeout(()=>t.style.opacity='0', 3000);
+}
+
+function showLoading(show, text = '클라우드 동기화 중...') {
+  const overlay = document.getElementById('loading-overlay');
+  const textEl = document.getElementById('loading-text');
+  if(textEl) textEl.textContent = text;
+  overlay.style.display = show ? 'flex' : 'none';
 }
 
 // ════════ DATA ════════
@@ -764,11 +828,6 @@ const FAMILY = {
   ],
 };
 
-const DECADES = [
-  { id:'2020s', label:'2020년대', count:0, max:20 },
-  { id:'2030s', label:'2030년대', count:0, max:20 },
-];
-
 const EVENTS = [
   { id:'travel', label:'가족여행', icon:'✈️', cls:'travel' },
   { id:'wedding', label:'결혼식', icon:'💍', cls:'wedding' },
@@ -776,12 +835,6 @@ const EVENTS = [
   { id:'special', label:'특별 이벤트', icon:'⭐', cls:'special' },
   { id:'daily', label:'일상', icon:'☀️', cls:'travel' },
 ];
-
-// localStorage 기반 간이 DB (화면 표시용)
-function getRecords() {
-  try { return JSON.parse(localStorage.getItem('fa_records') || '[]'); } catch { return []; }
-}
-function saveRecords(r) { localStorage.setItem('fa_records', JSON.stringify(r)); }
 
 // ════════ RENDER HELPERS ════════
 function renderFamilyCard(m) {
@@ -791,18 +844,32 @@ function renderFamilyCard(m) {
     <div class="role">${m.role}</div>
   </div>`;
 }
+
 function renderPhotoCard(r) {
-  const tags = [r.person, r.decade, r.event, r.location].filter(Boolean);
+  const tags = [r.person, r.event].filter(Boolean);
+  
+  // 저장된 회전 각도 가져오기 (없으면 0도)
+  const rotation = r.rotation || 0;
+  // 90도나 270도 회전 시 여백이 생기는 것을 방지하기 위해 살짝 확대
+  const scale = (rotation % 180 !== 0) ? 1.35 : 1; 
+  
   const thumb = r.imgUrl
-    ? `<img src="${r.imgUrl}" alt="${r.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" onerror="this.style.display='none'">`
+    ? `<img src="${r.imgUrl}" alt="${r.title}" style="transform: rotate(${rotation}deg) scale(${scale});" onerror="this.style.display='none'">`
     : '';
+    
   return `<div class="photo-card">
+    <div class="card-actions">
+      <button onclick="rotateRecord('${r.id}', ${rotation}, this)" title="사진 회전">🔄</button>
+      <button onclick="openEditModal('${r.id}')" title="수정">✏️</button>
+      <button onclick="deleteRecord('${r.id}', '${r.imgUrl}')" title="삭제">🗑️</button>
+    </div>
     <div class="photo-thumb" style="position:relative;">
       ${thumb}
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:${r.imgUrl?'0':'1'};">🖼️</div>
     </div>
     <div class="photo-info">
       <h4>${r.title}</h4>
+      ${r.memo ? `<p class="memo-text">${r.memo}</p>` : ''}
       <div class="meta" style="display:flex;justify-content:space-between;align-items:center;">
         <span>${r.date||''}</span>
       </div>
@@ -810,59 +877,57 @@ function renderPhotoCard(r) {
     </div>
   </div>`;
 }
+
 function renderEventItem(e) {
   const cat = EVENTS.find(x=>x.id===e.event)||EVENTS[0];
   return `<div class="event-item">
     <div class="event-icon ${cat.cls}">${cat.icon}</div>
     <div class="event-body">
       <h4>${e.title}</h4>
-      <p>${e.person ? e.person : ''}</p>
+      ${e.memo ? `<p class="memo-text">${e.memo}</p>` : ''}
+      <p class="meta">${e.person ? e.person : ''}</p>
     </div>
     <div class="event-date">${e.date||''}</div>
   </div>`;
 }
 
-// ════════ INIT ════════
-function init() {
-  setTimeout(()=>{ document.getElementById('splash').classList.add('hidden'); }, 1800);
-  document.getElementById('direct-family-cards').innerHTML = FAMILY.direct.map(renderFamilyCard).join('');
-  
-  // Event filters
-  document.getElementById('event-filters').innerHTML = 
-    `<button class="filter-btn active" onclick="filterEvents('all',this)">전체</button>` +
-    EVENTS.map(e=>`<button class="filter-btn" onclick="filterEvents('${e.id}',this)">${e.icon} ${e.label}</button>`).join('');
+// ════════ 데이터 동기화 ════════
+async function loadDataFromCloud() {
+  showLoading(true, '클라우드 동기화 중...');
+  try {
+    const snapshot = await db.collection('records').get();
+    GLOBAL_RECORDS = snapshot.docs.map(doc => {
+      return { id: doc.id, ...doc.data() };
+    });
+    GLOBAL_RECORDS.sort((a, b) => new Date(b.created) - new Date(a.created));
 
-  // Gallery filters
-  const allPeople = [...FAMILY.direct, ...FAMILY.paternal, ...FAMILY.maternal];
-  document.getElementById('gallery-filters').innerHTML =
-    `<button class="filter-btn active" onclick="filterGallery('all',this)">전체</button>` +
-    allPeople.map(m=>`<button class="filter-btn" onclick="filterGallery('${m.id}',this)">${m.name}</button>`).join('');
-
-  refreshStats();
-  renderRecentEvents();
-  renderEventList();
-  renderGallery();
+    refreshStats();
+    renderRecentEvents();
+    renderEventList();
+    renderGallery();
+  } catch(error) {
+    console.error("클라우드 로딩 에러:", error);
+    showToast("데이터를 불러오는데 실패했습니다.", true);
+  }
+  showLoading(false);
 }
 
 function refreshStats() {
-  const records = getRecords();
-  document.getElementById('total-photos').textContent = records.length;
-  document.getElementById('total-events').textContent = records.filter(r=>r.event).length;
+  document.getElementById('total-photos').textContent = GLOBAL_RECORDS.length;
+  document.getElementById('total-events').textContent = GLOBAL_RECORDS.filter(r=>r.event).length;
 }
 
 function renderRecentEvents() {
-  const records = getRecords();
   const el = document.getElementById('recent-events');
-  if (records.length === 0) {
+  if (GLOBAL_RECORDS.length === 0) {
     el.innerHTML = `<div class="empty-state"><div class="icon">📭</div><h3>아직 기록이 없습니다</h3><p>"기록 추가" 버튼으로 첫 기록을 남겨보세요</p></div>`;
   } else {
-    el.innerHTML = records.slice(-5).reverse().map(renderEventItem).join('');
+    el.innerHTML = GLOBAL_RECORDS.slice(0, 5).map(renderEventItem).join('');
   }
 }
 
 function renderEventList(filter='all') {
-  const records = getRecords();
-  const filtered = filter === 'all' ? records : records.filter(r => r.event === filter);
+  const filtered = filter === 'all' ? GLOBAL_RECORDS : GLOBAL_RECORDS.filter(r => r.event === filter);
   const el = document.getElementById('event-list');
   el.innerHTML = filtered.length
     ? filtered.map(renderEventItem).join('')
@@ -870,13 +935,31 @@ function renderEventList(filter='all') {
 }
 
 function renderGallery(filter='all') {
-  const records = getRecords();
-  const filtered = filter === 'all' ? records : records.filter(r => r.person && r.person.includes(filter));
+  const filtered = filter === 'all' ? GLOBAL_RECORDS : GLOBAL_RECORDS.filter(r => r.person && r.person.includes(filter));
   const el = document.getElementById('photo-grid');
   el.innerHTML = filtered.length
     ? filtered.map(renderPhotoCard).join('')
     : `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🖼️</div><h3>사진이 없습니다</h3></div>`;
 }
+
+
+// ════════ INIT ════════
+function init() {
+  setTimeout(()=>{ document.getElementById('splash').classList.add('hidden'); }, 1800);
+  document.getElementById('direct-family-cards').innerHTML = FAMILY.direct.map(renderFamilyCard).join('');
+  
+  document.getElementById('event-filters').innerHTML = 
+    `<button class="filter-btn active" onclick="filterEvents('all',this)">전체</button>` +
+    EVENTS.map(e=>`<button class="filter-btn" onclick="filterEvents('${e.id}',this)">${e.icon} ${e.label}</button>`).join('');
+
+  const allPeople = [...FAMILY.direct, ...FAMILY.paternal, ...FAMILY.maternal];
+  document.getElementById('gallery-filters').innerHTML =
+    `<button class="filter-btn active" onclick="filterGallery('all',this)">전체</button>` +
+    allPeople.map(m=>`<button class="filter-btn" onclick="filterGallery('${m.id}',this)">${m.name}</button>`).join('');
+
+  loadDataFromCloud();
+}
+
 
 // ════════ NAVIGATION ════════
 let currentPage = 'dashboard';
@@ -911,9 +994,10 @@ function filterGalleryDirect(person) { renderGallery(person); }
 function searchRecords(query) {
   if (!query.trim()) { renderGallery(); return; }
   const q = query.toLowerCase();
-  const records = getRecords().filter(r =>
+  const records = GLOBAL_RECORDS.filter(r =>
     (r.title||'').toLowerCase().includes(q) ||
-    (r.person||'').toLowerCase().includes(q)
+    (r.person||'').toLowerCase().includes(q) ||
+    (r.memo||'').toLowerCase().includes(q)
   );
   showPage('gallery');
   document.getElementById('photo-grid').innerHTML = records.length
@@ -922,7 +1006,7 @@ function searchRecords(query) {
 }
 
 
-// ════════ MODAL & UPLOAD ════════
+// ════════ UPLOAD (다중 추가) 기능 ════════
 function openUpload() {
   ['inp-title','inp-memo'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
@@ -934,16 +1018,19 @@ function openUpload() {
   document.getElementById('file-preview-name').style.color = "var(--text-sub)";
   document.getElementById('inp-file').value = "";
   
-  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('modal-upload').classList.add('open');
 }
-function closeUpload() { document.getElementById('modal-overlay').classList.remove('open'); }
-function closeModal(e) { if (e.target === document.getElementById('modal-overlay')) closeUpload(); }
+function closeUpload() { document.getElementById('modal-upload').classList.remove('open'); }
 
-// 선택한 사진 파일 이름 화면에 표시하기
+// 파일 선택 시 몇 장 선택했는지 표시
 function previewSelectedFile(input) {
   const nameBox = document.getElementById('file-preview-name');
-  if (input.files && input.files[0]) {
-    nameBox.innerHTML = `✅ <b>${input.files[0].name}</b> 사진이 선택되었습니다.`;
+  if (input.files && input.files.length > 0) {
+    if (input.files.length === 1) {
+      nameBox.innerHTML = `✅ <b>${input.files[0].name}</b> 1장 선택됨`;
+    } else {
+      nameBox.innerHTML = `✅ <b>총 ${input.files.length}장</b>의 사진이 선택됨`;
+    }
     nameBox.style.color = "var(--sage)";
   } else {
     nameBox.textContent = "선택된 사진이 없습니다.";
@@ -951,7 +1038,7 @@ function previewSelectedFile(input) {
   }
 }
 
-// 파이어베이스 직접 업로드 함수
+// 여러 장의 사진을 차례대로 클라우드에 업로드
 async function saveRecord() {
   const title = document.getElementById('inp-title')?.value.trim() || '';
   const date = document.getElementById('inp-date')?.value || '';
@@ -962,51 +1049,180 @@ async function saveRecord() {
   if (!title) { showToast('제목을 입력해주세요', true); return; }
 
   const fileInput = document.getElementById('inp-file');
-  if (!fileInput || !fileInput.files[0]) {
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
     showToast('📸 사진을 먼저 선택해주세요!', true); return;
   }
 
-  const file = fileInput.files[0];
-  showToast('⏳ 사진을 클라우드에 올리는 중입니다... 창을 닫지 마세요.', false);
+  const files = Array.from(fileInput.files);
+  const totalFiles = files.length;
+  
+  // 첫 업로드 시작 알림
+  showLoading(true, `클라우드 저장 중... (1 / ${totalFiles})`);
 
   try {
-    // 1. 파이어베이스 스토리지에 파일 업로드
-    const fileName = Date.now() + '_' + file.name;
-    const storageRef = firebase.storage().ref('photos/' + fileName);
-    await storageRef.put(file);
+    // 선택된 여러 파일들을 하나씩 처리
+    for (let i = 0; i < totalFiles; i++) {
+      const file = files[i];
+      
+      // 알림 글씨 실시간 변경
+      showLoading(true, `클라우드 저장 중... (${i + 1} / ${totalFiles})`);
+      
+      // 1. Storage에 사진 업로드
+      const fileName = Date.now() + '_' + i + '_' + file.name;
+      const storageRef = firebase.storage().ref('photos/' + fileName);
+      await storageRef.put(file);
 
-    // 2. 업로드가 완료된 사진의 고유 웹 주소 받아오기
-    const imgUrl = await storageRef.getDownloadURL();
+      // 2. 사진 URL 가져오기
+      const imgUrl = await storageRef.getDownloadURL();
 
-    // 3. 데이터베이스에 사진 주소와 글자 정보 저장
-    const recordData = {
+      // 3. Database에 글 정보 저장
+      // 여러 장일 경우 제목 뒤에 (1), (2) 번호를 자동으로 붙여줍니다.
+      let finalTitle = title;
+      if (totalFiles > 1) {
+        finalTitle = `${title} (${i + 1})`;
+      }
+
+      const recordData = {
+        title: finalTitle,
+        date: date,
+        person: persons.join(', '),
+        event: event,
+        memo: memo,
+        imgUrl: imgUrl,
+        rotation: 0, // 기본 회전각 0도 설정
+        created: new Date().toISOString(),
+      };
+
+      await db.collection('records').add(recordData);
+    }
+    
+    showToast(`✅ ${totalFiles}장의 사진이 성공적으로 저장되었습니다!`);
+    closeUpload();
+    
+    // 업로드 완료 후 화면 다시 그리기
+    await loadDataFromCloud();
+    
+  } catch (error) {
+    console.error("저장 실패:", error);
+    showToast('❌ 업로드 중 오류가 발생했습니다.', true);
+  }
+  showLoading(false);
+}
+
+// ════════ 회전, 수정 및 삭제 기능 ════════
+
+// 1. 회전 기능 (버튼 누를 때마다 90도씩 회전)
+async function rotateRecord(docId, currentRotation, btnElement) {
+  // 현재 각도에서 90도를 더하고, 360도가 되면 다시 0도로 만듦
+  const newRotation = (currentRotation + 90) % 360;
+  
+  // 화면(UI)의 사진을 즉시 회전시켜서 부드럽게 보이게 함
+  const card = btnElement.closest('.photo-card');
+  const img = card.querySelector('img');
+  if (img) {
+    const scale = (newRotation % 180 !== 0) ? 1.35 : 1; 
+    img.style.transform = `rotate(${newRotation}deg) scale(${scale})`;
+  }
+  
+  // 다음 클릭을 위해 버튼의 클릭 이벤트를 새 각도로 업데이트
+  btnElement.setAttribute('onclick', `rotateRecord('${docId}', ${newRotation}, this)`);
+  
+  // 전역 데이터 업데이트
+  const rec = GLOBAL_RECORDS.find(r => r.id === docId);
+  if(rec) rec.rotation = newRotation;
+
+  // 클라우드 데이터베이스에 바뀐 각도 몰래 저장 (로딩창 띄우지 않음)
+  try {
+    await db.collection('records').doc(docId).update({ rotation: newRotation });
+  } catch (error) {
+    console.error("회전 동기화 실패:", error);
+  }
+}
+
+
+// 2. 삭제 기능
+async function deleteRecord(docId, imgUrl) {
+  if(!confirm("⚠️ 정말로 이 기록을 삭제하시겠습니까?\n한 번 삭제하면 복구할 수 없습니다.")) return;
+  
+  showLoading(true, '삭제 중입니다...');
+  try {
+    await db.collection('records').doc(docId).delete();
+    
+    if(imgUrl && imgUrl.includes('firebasestorage')) {
+      const fileRef = firebase.storage().refFromURL(imgUrl);
+      await fileRef.delete().catch(e => console.log("사진 파일이 이미 삭제되었거나 없습니다.", e));
+    }
+    
+    showToast('🗑️ 기록이 삭제되었습니다.');
+    await loadDataFromCloud(); 
+  } catch (error) {
+    console.error("삭제 실패:", error);
+    showToast('❌ 삭제 중 오류가 발생했습니다.', true);
+  }
+  showLoading(false);
+}
+
+// 3. 수정 기능
+function openEditModal(docId) {
+  const rec = GLOBAL_RECORDS.find(r => r.id === docId);
+  if(!rec) return;
+  
+  currentEditId = docId; 
+  
+  document.getElementById('edit-title').value = rec.title || '';
+  document.getElementById('edit-date').value = rec.date || '';
+  document.getElementById('edit-memo').value = rec.memo || '';
+  document.getElementById('edit-event').value = rec.event || 'travel';
+  
+  const personSelect = document.getElementById('edit-person');
+  const savedPersons = rec.person ? rec.person.split(', ') : [];
+  for(let i=0; i < personSelect.options.length; i++) {
+    personSelect.options[i].selected = savedPersons.includes(personSelect.options[i].value);
+  }
+
+  document.getElementById('modal-edit').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('modal-edit').classList.remove('open');
+  currentEditId = null;
+}
+
+async function updateRecord() {
+  if(!currentEditId) return;
+  
+  const title = document.getElementById('edit-title').value.trim();
+  const date = document.getElementById('edit-date').value;
+  const persons = [...document.getElementById('edit-person').selectedOptions].map(o=>o.value);
+  const event = document.getElementById('edit-event').value;
+  const memo = document.getElementById('edit-memo').value.trim();
+
+  if (!title) { showToast('제목을 입력해주세요', true); return; }
+  
+  showLoading(true, '수정 중입니다...');
+  try {
+    await db.collection('records').doc(currentEditId).update({
       title: title,
       date: date,
       person: persons.join(', '),
       event: event,
-      memo: memo,
-      imgUrl: imgUrl,
-      author: SESSION.id || '관리자',
-      created: new Date().toISOString(),
-    };
-
-    // 파이어베이스 클라우드에 영구 저장
-    await db.collection('records').add(recordData);
+      memo: memo
+    });
     
-    // (임시) 화면에 바로 보여주기 위해 내 폰에도 잠시 저장
-    const localRecords = getRecords();
-    localRecords.push(recordData);
-    saveRecords(localRecords);
-
-    showToast('✅ 사진과 기록이 성공적으로 저장되었습니다!');
-    closeUpload();
-    
-    // 업로드된 결과를 화면에 바로 반영하기 위해 새로고침
-    setTimeout(() => window.location.reload(), 1500);
-    
+    showToast('✅ 수정 내용이 저장되었습니다.');
+    closeEditModal();
+    await loadDataFromCloud(); 
   } catch (error) {
-    console.error("저장 실패:", error);
-    showToast('❌ 업로드 중 오류가 발생했습니다. 권한이나 암호를 확인해주세요.', true);
+    console.error("수정 실패:", error);
+    showToast('❌ 수정 중 오류가 발생했습니다.', true);
+  }
+  showLoading(false);
+}
+
+// 모달 닫기
+function closeModal(e, modalId) {
+  if (e.target === document.getElementById(modalId)) {
+    document.getElementById(modalId).classList.remove('open');
   }
 }
 
@@ -1016,14 +1232,6 @@ function toggleSidebar() { document.getElementById('sidebar').classList.toggle('
 // ════════ START ════════
 init();
 
-(function renderTopbarUser(){
-  const el = document.getElementById('topbar-user');
-  if(!el) return;
-  const roleLabel = SESSION.isAdmin ? '👑 관리자' : `👤 ${SESSION.name||SESSION.id}`;
-  el.innerHTML = `
-    <span style="font-size:0.82rem;color:var(--text-sub);padding:6px 12px;background:var(--cream);border-radius:20px;">${roleLabel}</span>
-    <button class="topbar-btn" onclick="openUpload()">+ 기록 추가</button>`;
-})();
 </script>
 
 </body>
