@@ -375,16 +375,16 @@ body {
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: none; align-items: center; justify-content: center;
-  padding: 16px; /* 모바일 대응 축소 */
+  padding: 16px;
 }
 #modal-overlay.open { display: flex; }
 .modal-box {
   background: var(--warm-white);
   border-radius: 16px;
   max-width: 560px; width: 100%;
-  max-height: 85vh; /* 높이 제한 */
+  max-height: 85vh;
   display: flex;
-  flex-direction: column; /* 분리 스크롤을 위한 핵심 */
+  flex-direction: column;
   box-shadow: 0 24px 60px rgba(44,26,14,0.3);
   animation: modalIn 0.3s ease;
 }
@@ -393,7 +393,7 @@ body {
   padding: 20px 24px 16px;
   border-bottom: 1px solid rgba(44,26,14,0.08);
   display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0; /* 헤더 고정 */
+  flex-shrink: 0;
 }
 .modal-header h3 { font-family: 'Noto Serif KR', serif; font-size: 1.2rem; }
 .modal-close {
@@ -404,7 +404,7 @@ body {
 .modal-close:hover { color: var(--text-main); }
 .modal-body { 
   padding: 24px; 
-  overflow-y: auto; /* 내용물 스크롤 */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch; 
 }
 
@@ -683,24 +683,23 @@ body {
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
 <script>
-// ▼▼ 2. 여기에 복사해 둔 암호와 파이어베이스 시작 코드를 넣습니다 ▼▼
-JavaScript
+// ▼▼ 2. 여기에 파이어베이스 웹사이트에서 복사한 진짜 코드를 덮어쓰세요 ▼▼
 const firebaseConfig = {
-  apiKey: "AIzaSyD.......",
+  apiKey: "여기에_선생님의_진짜_apiKey를_넣으세요",
   authDomain: "family-a19f9.firebaseapp.com",
   projectId: "family-a19f9",
   storageBucket: "family-a19f9.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:12345678:web:abcdefg"
+  messagingSenderId: "여기에_선생님의_진짜_숫자를_넣으세요",
+  appId: "여기에_선생님의_진짜_appId를_넣으세요"
 };
+// ▲▲ ---------------------------------------------------------------- ▲▲
+
 // 파이어베이스 시작하기
 firebase.initializeApp(firebaseConfig);
 
 // 사용할 도구(데이터베이스와 사진 저장소) 정의하기
 const db = firebase.firestore();
 const storage = firebase.storage();
-// ▲▲ ---------------------------------------------------- ▲▲
-
 
 // ════════ AUTH & PERMISSION SYSTEM ════════
 function getUsers(){ try{return JSON.parse(localStorage.getItem('fa_users')||'[]');}catch{return[];} }
