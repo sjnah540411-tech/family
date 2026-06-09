@@ -34,7 +34,7 @@ body {
 /* ───────── 로그인/회원가입 화면 ───────── */
 #auth-overlay {
   position: fixed; inset: 0; background: var(--brown-deep); z-index: 5000;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 0.5s ease;
 }
 .auth-box {
@@ -177,7 +177,7 @@ body {
   padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
   background: var(--cream);
 }
-.folder-card.open .folder-content { padding: 20px; max-height: 2000px; /* 임의의 큰 값 */ }
+.folder-card.open .folder-content { padding: 20px; max-height: 2000px; }
 .folder-card.open .folder-header { border-bottom: 1px solid rgba(44,26,14,0.08); }
 
 /* ───────── MODALS ───────── */
@@ -197,6 +197,17 @@ body {
 #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
 .spinner { border: 4px solid rgba(212,168,83,0.3); border-left-color: var(--brown-deep); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 16px; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ───────── RESPONSIVE ───────── */
+#hamburger { display: none; position: fixed; top: 16px; left: 16px; z-index: 2000; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 10px 12px; font-size: 1.2rem; }
+@media (max-width: 768px) {
+  #app { grid-template-columns: 1fr; }
+  #sidebar { position: fixed; inset: 0 auto 0 0; z-index: 1500; width: 260px; transform: translateX(-100%); transition: 0.3s; }
+  #sidebar.open { transform: none; }
+  #hamburger { display: block; }
+  #main { padding-top: 0; }
+  #topbar { padding: 12px 16px; padding-left: 56px; }
+}
 </style>
 </head>
 <body>
@@ -211,6 +222,7 @@ body {
   <p id="loading-text" style="color:var(--brown-deep); font-weight:600;">데이터 처리 중...</p>
 </div>
 
+<!-- 🔐 로그인 & 회원가입 화면 -->
 <div id="auth-overlay">
   <div class="auth-box">
     <div class="auth-logo">
@@ -222,9 +234,11 @@ body {
       <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">가입 신청</div>
     </div>
     <div id="form-login">
-      <div class="auth-form-group"><label>이름 (예: 나, 아내, 딸)</label><input type="text" id="login-name" placeholder="가입하신 이름"></div>
+      <!-- 관리자의 편의를 위해 미리 '나'를 적어둡니다 -->
+      <div class="auth-form-group"><label>이름 (예: 나, 아내, 딸)</label><input type="text" id="login-name" value="나"></div>
       <div class="auth-form-group"><label>비밀번호</label><input type="password" id="login-pw" placeholder="비밀번호"></div>
       <button class="auth-btn" onclick="handleLogin()">입장하기</button>
+      <p style="font-size:0.75rem; color:var(--text-sub); text-align:center; margin-top:12px;">한 번 로그인하면 영구적으로 자동 접속됩니다.</p>
     </div>
     <div id="form-signup" style="display: none;">
       <div class="auth-form-group"><label>이름</label><input type="text" id="signup-name" placeholder="본인 이름"></div>
@@ -243,6 +257,7 @@ body {
   </div>
 </div>
 
+<!-- 🔍 라이트박스 -->
 <div id="lightbox-overlay" onclick="closeLightbox(event)">
   <button class="lightbox-close" onclick="closeLightbox(event)">✕</button>
   <div id="lightbox-media"></div>
@@ -273,6 +288,7 @@ body {
 </nav>
 
 <div id="main">
+  <!-- 상단바 -->
   <div id="topbar">
     <div class="breadcrumb">🏠 <span>›</span> <b id="bc-current">대시보드</b></div>
     <div style="margin-left: auto; display:flex; gap:10px; align-items:center;">
@@ -282,6 +298,7 @@ body {
     </div>
   </div>
 
+  <!-- 대시보드 -->
   <div class="page active" id="page-dashboard">
     <div class="page-header">
       <h2>우리 가족의 발자취 🌸</h2>
@@ -312,12 +329,14 @@ body {
     <div class="event-list" id="recent-events"></div>
   </div>
 
+  <!-- 갤러리 -->
   <div class="page" id="page-gallery">
     <div class="page-header"><h2>전체 갤러리 🖼️</h2></div>
     <div id="search-box" style="margin-bottom:20px; margin-left:0; width:100%;"><input type="text" placeholder="검색어 (이름, 내용 등)..." oninput="searchRecords(this.value)"></div>
     <div class="photo-grid" id="photo-grid"></div>
   </div>
 
+  <!-- 타임라인 -->
   <div class="page" id="page-timeline">
     <div class="page-header">
       <h2>10년 주기 타임라인 ⏳</h2>
@@ -326,6 +345,7 @@ body {
     <div id="timeline-container"></div>
   </div>
 
+  <!-- 이벤트 -->
   <div class="page" id="page-events">
     <div class="page-header">
       <h2>이벤트별 모아보기 🎉</h2>
@@ -334,6 +354,7 @@ body {
     <div id="events-container"></div>
   </div>
 
+  <!-- 가족 승인 관리 페이지 -->
   <div class="page" id="page-admin">
     <div class="page-header"><h2>가족 승인 관리 👑</h2></div>
     <div class="event-list" id="admin-user-list"></div>
@@ -342,6 +363,7 @@ body {
 </div>
 </div>
 
+<!-- 👤 인물 등록 모달 -->
 <div id="modal-member" class="modal-overlay" onclick="closeModal(event, 'modal-member')">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -379,6 +401,7 @@ body {
   </div>
 </div>
 
+<!-- 📤 기록 추가(업로드) 모달 -->
 <div id="modal-upload" class="modal-overlay" onclick="closeModal(event, 'modal-upload')">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -431,12 +454,12 @@ body {
 <script>
 // ▼▼ 파이어베이스 진짜 암호로 교체하세요 ▼▼
 const firebaseConfig = {
-  apiKey: "AIzaSyCzvwa5Q88RIjYUieWkh_RydWyfrZoPqXA",
+  apiKey: "여기에_선생님의_진짜_apiKey를_넣으세요",
   authDomain: "family-a19f9.firebaseapp.com",
   projectId: "family-a19f9",
   storageBucket: "family-a19f9.firebasestorage.app",
-  messagingSenderId: "261921694732",
-  appId: "1:261921694732:web:df25fe595538969b743a29",
+  messagingSenderId: "여기에_선생님의_진짜_숫자를_넣으세요",
+  appId: "여기에_선생님의_진짜_appId를_넣으세요"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -483,7 +506,7 @@ function getDecadeFromDate(dateStr) {
   return '2030s';
 }
 
-// ════════ 보안 (로그인/회원가입) ════════
+// ════════ 보안 (자동 로그인/회원가입) ════════
 function switchAuthTab(tab) {
   document.getElementById('tab-login').classList.remove('active'); document.getElementById('tab-signup').classList.remove('active');
   document.getElementById('tab-'+tab).classList.add('active');
@@ -505,6 +528,7 @@ async function handleSignup() {
   } catch(e) {}
   showLoading(false);
 }
+
 async function handleLogin() {
   const name = document.getElementById('login-name').value.trim();
   const pw = document.getElementById('login-pw').value;
@@ -514,25 +538,49 @@ async function handleLogin() {
     if(snap.empty) { showToast('정보가 맞지 않습니다.', true); showLoading(false); return; }
     const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
     if(user.status === 'pending') showToast('⏳ 아직 승인 대기 중입니다.', true);
-    else { localStorage.setItem('fa_session', JSON.stringify(user)); startApp(user); }
+    else { 
+      // 1. 로그인 성공 시 브라우저에 영구 저장
+      localStorage.setItem('fa_session', JSON.stringify(user)); 
+      startApp(user); 
+    }
   } catch(e) {}
   showLoading(false);
 }
-function logout() { localStorage.removeItem('fa_session'); location.reload(); }
+
+function logout() { 
+  // 로그아웃 시 영구 저장된 정보 삭제
+  localStorage.removeItem('fa_session'); 
+  location.reload(); 
+}
+
 async function checkAuth() {
+  // 1. 관리자 계정 자동 생성 (없을 경우에만)
   try {
     const adminCheck = await db.collection('auth_users').where('isAdmin', '==', true).get();
     if(adminCheck.empty) await db.collection('auth_users').add({ name: '나', role: '직계가족', pw: btoa('1234'), status: 'approved', isAdmin: true });
   } catch(e) {}
+  
+  // 2. 영구 자동 로그인 처리 (0.1초 쾌속 입장)
   const session = localStorage.getItem('fa_session');
   if(session) {
     const user = JSON.parse(session);
-    const v = await db.collection('auth_users').doc(user.id).get();
-    if(v.exists && v.data().status === 'approved') return startApp({id: user.id, ...v.data()});
+    // 지연 없이 바로 앱 화면으로 입장시킴
+    startApp(user);
+    
+    // 화면을 띄워둔 상태에서, 혹시 관리자가 승인을 취소했는지 몰래 재확인
+    db.collection('auth_users').doc(user.id).get().then(v => {
+      if(!v.exists || v.data().status !== 'approved') {
+        logout(); // 강제 로그아웃
+      }
+    });
+    return;
   }
+  
+  // 3. 처음 방문한 사람만 로그인 창을 띄움
   document.getElementById('splash').classList.add('hidden');
-  document.getElementById('auth-overlay').style.opacity = '1';
+  document.getElementById('auth-overlay').style.display = 'flex';
 }
+
 function startApp(user) {
   CURRENT_USER = user;
   document.getElementById('auth-overlay').style.display = 'none';
@@ -762,6 +810,7 @@ function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classLis
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 function closeModal(e, id) { if(e.target.id===id) document.getElementById(id).classList.remove('open'); }
 
+// 🚀 시스템 시작 (여기를 통해 자동 로그인이 실행됩니다)
 checkAuth();
 </script>
 </body>
