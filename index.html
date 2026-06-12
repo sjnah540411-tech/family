@@ -130,6 +130,7 @@ body {
 .photo-info { padding: 12px; flex: 1; }
 .photo-info h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; font-weight:600; cursor:pointer;}
 .photo-info p.memo-text { font-size: 0.8rem; color: var(--brown-mid); margin-bottom: 6px; line-height: 1.4; word-break: break-all; }
+.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
 .card-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; z-index: 10; }
 .card-actions button { background: rgba(255,255,255,0.9); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 4px; cursor: pointer; font-size: 0.8rem; }
 
@@ -151,7 +152,7 @@ body {
 .folder-title { font-size: 1.05rem; font-weight: 600; color: var(--brown-deep); display: flex; align-items: center; gap: 8px; }
 .folder-count { font-size: 0.75rem; color: var(--brown-light); background: rgba(212,168,83,0.15); padding: 4px 8px; border-radius: 20px; }
 .folder-content { padding: 0 16px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: var(--cream); }
-.folder-card.open .folder-content { padding: 16px; max-height: 8000px; }
+.folder-card.open .folder-content { padding: 20px; max-height: 8000px; }
 .folder-card.open .folder-header { border-bottom: 1px solid rgba(44,26,14,0.08); }
 
 /* ───────── MODALS ───────── */
@@ -172,7 +173,7 @@ body {
 .dyn-val { flex: 1; padding: 10px; border: 1px solid rgba(44,26,14,0.2); border-radius: 6px; font-size: 0.85rem; font-family: inherit; }
 .dyn-del { background: var(--rust); color: #fff; border: none; border-radius: 6px; padding: 8px 10px; cursor: pointer; font-size: 0.8rem; }
 
-/* ───────── MOBILE RESPONSIVE ───────── */
+/* ───────── RESPONSIVE ───────── */
 #hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
 @media (max-width: 768px) {
   #app { display: block; }
@@ -291,7 +292,7 @@ body {
     <div class="breadcrumb">🏠 <span>›</span> <b id="bc-current">대시보드</b></div>
     <div style="margin-left: auto; display:flex; gap:10px; align-items:center;">
       <div id="topbar-user-info" style="font-size:0.85rem; color:var(--brown-mid); font-weight:600; margin-right:8px;"></div>
-      <button class="topbar-btn" onclick="openUpload()" style="box-shadow: 0 4px 12px rgba(212,168,83,0.4);">➕ 기록 추가</button>
+      <button class="topbar-btn" onclick="openUpload()">➕ 기록 추가</button>
       <button class="topbar-btn logout" onclick="logout()">로그아웃</button>
     </div>
   </div>
@@ -357,10 +358,7 @@ body {
 
 <div id="modal-member" class="modal-overlay" onclick="closeModal(event, 'modal-member')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3>👤 가족 프로필 상세 기록</h3>
-      <button class="modal-close" onclick="closeMemberModal()">✕</button>
-    </div>
+    <div class="modal-header"><h3>👤 가족 프로필 상세 기록</h3><button class="modal-close" onclick="closeMemberModal()">✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="mem-edit-id">
       <div class="form-group" style="text-align:center; margin-bottom:20px;">
@@ -506,7 +504,9 @@ const firebaseConfig = {
   storageBucket: "family-a19f9.firebasestorage.app",
   messagingSenderId: "261921694732",
   appId: "1:261921694732:web:df25fe595538969b743a29",
- };
+  measurementId: "G-GJ6WXTS7Y7"
+};
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -764,13 +764,13 @@ async function saveRecord() {
 }
 
 function openEditModal(id, ev) { 
-  ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author!trim()!==CURRENT_USER.name)return showToast('권한 없음',true); currentEditId=id; document.getElementById('edit-title').value=r.title||''; document.getElementById('edit-date').value=r.date||''; document.getElementById('edit-memo').value=r.memo||''; document.getElementById('edit-event').value=r.event||'daily'; 
+  ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); currentEditId=id; document.getElementById('edit-title').value=r.title||''; document.getElementById('edit-date').value=r.date||''; document.getElementById('edit-memo').value=r.memo||''; document.getElementById('edit-event').value=r.event||'daily'; 
   if(r.date){ const pts=r.date.split('-'); document.getElementById('edit-date-year').value=pts[0]||''; document.getElementById('edit-date-month').value=pts[1]||''; document.getElementById('edit-date-day').value=pts[2]||''; }
   const sel=document.getElementById('edit-person'); const ps=(r.person||'').split(', '); for(let i=0;i<sel.options.length;i++) sel.options[i].selected=ps.includes(sel.options[i].value); document.getElementById('modal-edit').classList.add('open'); 
 }
 function closeEditModal() { document.getElementById('modal-edit').classList.remove('open'); }
 async function updateRecord() { if(!currentEditId)return; const t=document.getElementById('edit-title').value.trim(); if(!t)return; showLoading(true); try{ await db.collection('records').doc(currentEditId).update({title:t, date:document.getElementById('edit-date').value, memo:document.getElementById('edit-memo').value.trim(), event:document.getElementById('edit-event').value, person:[...document.getElementById('edit-person').selectedOptions].map(o=>o.value).join(', ')}); closeEditModal(); await loadData(); showToast('수정 완료!'); }catch(e){} showLoading(false); }
-async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author!==CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await firebase.storage().refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
+async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await firebase.storage().refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
 
 async function loadAdminList() { const e=document.getElementById('admin-user-list'), s=await db.collection('auth_users').where('status','==','pending').get(); if(s.empty)return e.innerHTML='<p style="padding:20px; text-align:center;">신청자 없음</p>'; e.innerHTML=s.docs.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;border:1px solid #eee;"><div><b>${d.data().name}</b> [<span style="color:var(--brown-light);">${d.data().role}</span>]</div><button class="topbar-btn" onclick="approveUser('${d.id}')">승인하기</button></div>`).join(''); }
 async function approveUser(id) { await db.collection('auth_users').doc(id).update({status:'approved'}); showToast('승인 완료!'); loadData(); }
