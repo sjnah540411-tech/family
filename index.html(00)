@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리가족 아카이브</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+:root {
+  --cream: #f5f0e8;
+  --warm-white: #faf8f4;
+  --brown-deep: #2c1a0e;
+  --brown-mid: #6b3f2a;
+  --brown-light: #c4956a;
+  --gold: #d4a853;
+  --gold-light: #e8c98a;
+  --sage: #7a8c6e;
+  --rust: #b05c3a;
+  --text-main: #2c1a0e;
+  --text-sub: #6b5a4e;
+  --shadow: rgba(44,26,14,0.12);
+  --radius: 12px;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif; background: var(--cream);
+  color: var(--text-main); min-height: 100vh; overflow-x: hidden;
+}
+
+/* ───────── 로그인/회원가입 화면 ───────── */
+#auth-overlay {
+  position: fixed; inset: 0; background: var(--brown-deep); z-index: 5000;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 0.5s ease;
+}
+.auth-box {
+  background: var(--warm-white); width: 90%; max-width: 400px;
+  border-radius: 16px; padding: 32px 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+.auth-logo { text-align: center; margin-bottom: 24px; }
+.auth-logo h2 { font-family: 'Noto Serif KR', serif; color: var(--brown-deep); font-size: 1.5rem; }
+.auth-logo p { font-size: 0.8rem; color: var(--text-sub); margin-top: 4px; }
+.auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid rgba(44,26,14,0.1); }
+.auth-tab { flex: 1; text-align: center; padding: 10px; font-weight: 600; cursor: pointer; color: var(--text-sub); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.auth-tab.active { color: var(--brown-deep); border-bottom-color: var(--gold); }
+.auth-form-group { margin-bottom: 16px; }
+.auth-form-group label { display: block; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-sub); }
+.auth-form-group input, .auth-form-group select, .auth-form-group textarea { width: 100%; padding: 12px; border: 1px solid rgba(44,26,14,0.2); border-radius: 8px; font-size: 0.9rem; font-family: inherit; }
+.auth-btn { width: 100%; padding: 14px; background: var(--brown-mid); color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
+
+/* ───────── 라이트박스 (확대보기) ───────── */
+#lightbox-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000;
+  display: none; align-items: center; justify-content: center; flex-direction: column;
+}
+#lightbox-overlay.open { display: flex; }
+.lightbox-close { position: absolute; top: 20px; right: 24px; font-size: 2.5rem; color: #fff; background: none; border: none; cursor: pointer; z-index: 6010; }
+#lightbox-media { max-width: 95vw; max-height: 85vh; display: flex; justify-content: center; align-items: center; position: relative; }
+#lightbox-caption { color: #fff; margin-top: 20px; font-size: 1.1rem; text-align: center; max-width: 80%; line-height: 1.6; }
+
+/* ───────── SPLASH & LAYOUT ───────── */
+#splash { position: fixed; inset: 0; background: var(--brown-deep); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s; }
+#splash.hidden { opacity:0; visibility:hidden; }
+#splash h1 { font-family: 'Noto Serif KR', serif; color: var(--gold-light); font-size: clamp(2rem, 6vw, 3.5rem); letter-spacing: 0.15em; animation: fadeUp 1s ease forwards; }
+#splash p { color: var(--brown-light); font-size: 1rem; letter-spacing: 0.1em; animation: fadeUp 1s ease 0.3s both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+#app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; display: none; }
+
+/* ───────── SIDEBAR ───────── */
+#sidebar { background: var(--brown-deep); padding: 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--brown-mid) transparent; z-index: 1000; }
+.sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid rgba(212,168,83,0.2); }
+.sidebar-logo h2 { font-family: 'Noto Serif KR', serif; color: var(--gold-light); font-size: 1.25rem; letter-spacing: 0.08em; line-height: 1.4; }
+.sidebar-logo p { color: var(--brown-light); font-size: 0.75rem; margin-top: 4px; letter-spacing: 0.05em; }
+.nav-section { padding: 16px 0 8px; }
+.nav-section-title { color: var(--gold); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0 24px 8px; font-weight: 500; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: rgba(245,240,232,0.7); cursor: pointer; transition: var(--transition); font-size: 0.88rem; border-left: 3px solid transparent; }
+.nav-item:hover { color: var(--gold-light); background: rgba(212,168,83,0.06); }
+.nav-item.active { color: var(--gold-light); border-left-color: var(--gold); background: rgba(212,168,83,0.10); }
+
+/* ───────── TOP BAR & CONTENT ───────── */
+#main { display: flex; flex-direction: column; background: var(--warm-white); overflow: hidden; width:100%; }
+#topbar { background: var(--warm-white); border-bottom: 1px solid rgba(44,26,14,0.08); padding: 16px 32px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
+.breadcrumb { color: var(--text-sub); font-size: 0.82rem; }
+.breadcrumb span { color: var(--brown-light); margin: 0 6px; }
+.breadcrumb b { color: var(--text-main); font-weight: 500; }
+#search-box { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--cream); border: 1px solid rgba(44,26,14,0.12); border-radius: 24px; padding: 8px 16px; min-width: 180px; }
+#search-box input { border: none; background: transparent; font-family: 'Noto Sans KR', sans-serif; font-size: 0.85rem; color: var(--text-main); outline: none; width: 100%; }
+.topbar-btn { background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 9px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.topbar-btn:hover { background: var(--brown-mid); transform: translateY(-1px); }
+.topbar-btn.logout { background: transparent; color: var(--text-sub); border: 1px solid rgba(44,26,14,0.2); box-shadow: none; }
+.topbar-btn.logout:hover { background: var(--cream); color: var(--text-main); }
+
+/* ───────── PAGES ───────── */
+.page { display: none; padding: 32px; flex: 1; animation: pageIn 0.4s ease; }
+.page.active { display: block; }
+@keyframes pageIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.page-header { margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px; }
+.page-header h2 { font-family: 'Noto Serif KR', serif; font-size: 1.8rem; color: var(--brown-deep); }
+
+/* ───────── DASHBOARD UI ───────── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 16px; margin-bottom: 32px; }
+.stat-card { background: var(--cream); border: 1px solid rgba(44,26,14,0.08); border-radius: var(--radius); padding: 20px; text-align: center; }
+.stat-card .num { font-family: 'Noto Serif KR', serif; font-size: 2rem; color: var(--brown-mid); font-weight: 700; }
+.stat-card .label { font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; }
+
+.section-title { font-family: 'Noto Serif KR', serif; font-size: 1.1rem; color: var(--brown-deep); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--gold-light); display: flex; align-items: center; gap: 8px; }
+.add-member-btn { font-size: 0.75rem; background: var(--cream); border: 1px solid var(--brown-light); color: var(--brown-deep); padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; margin-left: auto; }
+.add-member-btn:hover { background: var(--gold-light); }
+
+.family-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 12px; margin-bottom: 32px; }
+.family-card { background: var(--cream); border-radius: var(--radius); padding: 16px 10px; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.family-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+.family-card.direct { border-left: 4px solid var(--gold); }
+.family-card .avatar { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 10px; background: linear-gradient(135deg, var(--brown-light), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.family-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
+.family-card .name { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+.family-card .role { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
+.family-card .birth { font-size: 0.65rem; color: var(--brown-light); margin-top: 4px; }
+
+/* ───────── PHOTO GRID ───────── */
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.photo-card { border-radius: var(--radius); overflow: hidden; background: var(--cream); border: 1px solid rgba(44,26,14,0.08); position: relative; }
+.photo-thumb { width: 100%; aspect-ratio: 4/3; background: #e0d8d0; position: relative; overflow: hidden; cursor: pointer; }
+.photo-thumb img, .photo-thumb video { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; transition: transform 0.4s ease; }
+.video-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: rgba(255,255,255,0.8); pointer-events: none; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.photo-info { padding: 14px; }
+.photo-info h4 { font-size: 0.95rem; color: var(--text-main); margin-bottom: 6px; font-weight:600; cursor:pointer;}
+.photo-info p.memo-text { font-size: 0.85rem; color: var(--brown-mid); margin-bottom: 8px; line-height: 1.4; word-break: break-all; }
+.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
+.card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 10; }
+.card-actions button { background: rgba(255,255,255,0.9); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 5px; cursor: pointer; font-size: 0.85rem; }
+
+/* ───────── RECENT EVENTS (LIST) ───────── */
+.event-list { display: flex; flex-direction: column; gap: 12px; }
+.event-item { display: flex; align-items: flex-start; gap: 16px; background: var(--cream); border-radius: var(--radius); padding: 14px; border: 1px solid rgba(44,26,14,0.08); cursor: pointer; transition: 0.2s; }
+.event-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
+.event-thumb { width: 70px; height: 70px; border-radius: 8px; flex-shrink: 0; background: #ddd; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+.event-thumb img, .event-thumb video { width:100%; height:100%; object-fit:cover; }
+.event-body { flex: 1; }
+.event-body h4 { font-size: 0.95rem; font-weight:600; margin-bottom: 4px; }
+.event-body p { font-size: 0.8rem; color: var(--brown-mid); margin-bottom: 4px; }
+.event-date { font-size: 0.75rem; color: var(--brown-light); }
+
+/* ───────── TIMELINE & EVENTS FOLDERS (ACCORDION) ───────── */
+.folder-card { background: var(--cream); border-radius: var(--radius); border: 1px solid rgba(44,26,14,0.08); margin-bottom: 16px; overflow: hidden; transition: 0.3s; }
+.folder-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #fff; }
+.folder-header:hover { background: var(--warm-white); }
+.folder-title { font-size: 1.1rem; font-weight: 600; color: var(--brown-deep); display: flex; align-items: center; gap: 10px; }
+.folder-count { font-size: 0.8rem; color: var(--brown-light); background: rgba(212,168,83,0.15); padding: 4px 10px; border-radius: 20px; }
+.folder-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: var(--cream); }
+.folder-card.open .folder-content { padding: 20px; max-height: 5000px; }
+.folder-card.open .folder-header { border-bottom: 1px solid rgba(44,26,14,0.08); }
+
+/* ───────── MODALS ───────── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(44,26,14,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: var(--warm-white); border-radius: 16px; max-width: 560px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(44,26,14,0.3); }
+.modal-header { padding: 20px 24px 16px; border-bottom: 1px solid rgba(44,26,14,0.08); display: flex; justify-content: space-between; align-items: center; }
+.modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-sub); }
+.modal-body { padding: 24px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 0.82rem; color: var(--text-sub); margin-bottom: 6px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-primary { width: 100%; padding: 12px; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
+
+/* ───────── LOADING ───────── */
+#loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.spinner { border: 4px solid rgba(212,168,83,0.3); border-left-color: var(--brown-deep); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 16px; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ───────── RESPONSIVE ───────── */
+#hamburger { display: none; position: fixed; top: 12px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 8px 14px; font-size: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
+@media (max-width: 768px) {
+  #app { display: block; }
+  #hamburger { display: block; }
+  #sidebar { position: fixed; left: -300px; width: 260px; z-index: 9000; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+  #sidebar.open { left: 0; }
+  #main { padding-top: 60px; width:100%; } 
+  #topbar { padding: 12px; }
+  .page { padding: 20px 16px; }
+}
+
+.member-list-item { display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 15px; border-radius:8px; border:1px solid #eee; margin-bottom:8px; }
+.member-list-item div { font-size:0.9rem; }
+.member-list-actions button { background:var(--cream); border:1px solid #ccc; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:0.8rem; margin-left:4px; }
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <h1>우리가족 아카이브</h1>
+  <p>1954년부터 미래까지, 우리 가족의 모든 기록</p>
+</div>
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p id="loading-text" style="color:var(--brown-deep); font-weight:600;">데이터 처리 중...</p>
+</div>
+
+<button id="hamburger" onclick="toggleSidebar()">☰</button>
+
+<!-- 🔐 로그인 & 회원가입 화면 -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <h2>우리가족 아카이브</h2>
+      <p>가족 승인 후 열람이 가능합니다</p>
+    </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">로그인</div>
+      <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">가입 신청</div>
+    </div>
+    <div id="form-login">
+      <div class="auth-form-group"><label>이름</label><input type="text" id="login-name" value="나상진"></div>
+      <div class="auth-form-group"><label>비밀번호</label><input type="password" id="login-pw" placeholder="비밀번호를 입력하세요"></div>
+      <button class="auth-btn" onclick="handleLogin()">입장하기</button>
+      <p style="font-size:0.75rem; color:var(--text-sub); text-align:center; margin-top:12px;">한 번 로그인하면 영구적으로 자동 접속됩니다.</p>
+    </div>
+    <div id="form-signup" style="display: none;">
+      <div class="auth-form-group"><label>이름</label><input type="text" id="signup-name" placeholder="본인 이름 입력"></div>
+      <div class="auth-form-group">
+        <label>가족 그룹</label>
+        <select id="signup-role">
+          <option value="직계가족">직계가족</option>
+          <option value="친가">친가</option>
+          <option value="처가">처가</option>
+        </select>
+      </div>
+      <div class="auth-form-group"><label>비밀번호 (숫자 4자리)</label><input type="password" id="signup-pw" pattern="\d*" inputmode="numeric" maxlength="4" placeholder="숫자 4자리 설정"></div>
+      <div class="auth-form-group"><label>비밀번호 확인</label><input type="password" id="signup-pw-confirm" pattern="\d*" inputmode="numeric" maxlength="4" placeholder="비밀번호 다시 입력"></div>
+      <button class="auth-btn" onclick="handleSignup()" style="background:var(--brown-deep);">신청하기</button>
+      <p style="font-size:0.75rem; color:var(--text-sub); text-align:center; margin-top:12px;">가입 신청 후 관리자의 승인이 필요합니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 🔍 라이트박스 -->
+<div id="lightbox-overlay" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">✕</button>
+  <div id="lightbox-media"></div>
+  <div id="lightbox-caption"></div>
+</div>
+
+<!-- 👤 상세 프로필 확인 창 -->
+<div id="modal-profile" class="modal-overlay" onclick="closeModal(event, 'modal-profile')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>👤 가족 상세 프로필</h3>
+      <button class="modal-close" onclick="document.getElementById('modal-profile').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="profile-content">
+      <!-- 자바스크립트로 프로필 내용 채워짐 -->
+    </div>
+  </div>
+</div>
+
+<div id="app">
+<nav id="sidebar">
+  <div class="sidebar-logo"><h2>우리가족<br>아카이브</h2><p>Since 1954</p></div>
+  <div class="nav-section">
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item active" onclick="showPage('dashboard')"><span class="icon">🏠</span> 대시보드</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('all');"><span class="icon">🖼️</span> 전체 갤러리</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">👨‍👩‍👧‍👦 인물별 갤러리</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('직계가족');">└ 직계가족</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('나상진');">└ 나상진 (아버지)</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('아내');">└ 아내</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('아들');">└ 아들</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('딸');">└ 딸</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('친가');">└ 친가 (6형제)</div>
+    <div class="nav-item" onclick="showPage('gallery'); filterGallery('처가');">└ 처가 (5자매)</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">분류별 보기</div>
+    <div class="nav-item" onclick="showPage('timeline')"><span class="icon">⏳</span> 10년 주기 타임라인</div>
+    <div class="nav-item" onclick="showPage('events')"><span class="icon">🎉</span> 이벤트 파일</div>
+  </div>
+  <div class="nav-section" id="menu-admin-wrap" style="display:none;">
+    <div class="nav-section-title">관리자 메뉴</div>
+    <div class="nav-item" onclick="showPage('admin')" style="color:var(--gold-light);"><span class="icon">👑</span> 가족 승인 관리</div>
+  </div>
+</nav>
+
+<div id="main">
+  <div id="topbar">
+    <div class="breadcrumb">🏠 <span>›</span> <b id="bc-current">대시보드</b></div>
+    <div style="margin-left: auto; display:flex; gap:10px; align-items:center;">
+      <div id="topbar-user-info" style="font-size:0.85rem; color:var(--brown-mid); font-weight:600; margin-right:8px;"></div>
+      <button class="topbar-btn" onclick="openUpload()" style="box-shadow: 0 4px 12px rgba(212,168,83,0.4);">➕ 기록 추가</button>
+      <button class="topbar-btn logout" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div><h2>우리 가족의 발자취 🌸</h2><p>가족 사진을 클릭하면 상세한 인생 기록을 볼 수 있습니다.</p></div>
+    </div>
+    
+    <div class="section-title">
+      👨‍👩‍👧‍👦 직계가족 
+      <div style="margin-left:auto; display:flex; gap:6px;">
+        <button class="add-member-btn" onclick="openMemberModal('직계가족')">➕ 인물 등록</button>
+        <button class="add-member-btn" style="background:#fff; border-color:#ccc;" onclick="openManageMembersModal()">⚙️ 가족 관리</button>
+      </div>
+    </div>
+    <div class="family-preview" id="dash-direct"></div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:32px;">
+      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--brown-mid); box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌳 친가 (6형제)</div>
+          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('친가')">➕ 인물 등록</button>
+        </div>
+        <div id="dash-paternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      </div>
+      <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--sage); box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌿 처가 (5자매)</div>
+          <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('처가')">➕ 인물 등록</button>
+        </div>
+        <div id="dash-maternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      </div>
+    </div>
+
+    <div class="section-title">🕐 최근 업데이트 기록</div>
+    <div class="event-list" id="recent-events" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:16px;"></div>
+  </div>
+
+  <div class="page" id="page-gallery">
+    <div class="page-header"><h2>전체 갤러리 🖼️</h2></div>
+    <div class="filter-bar" id="gallery-filters" style="margin-bottom:16px; display:flex; gap:8px; flex-wrap:wrap; background:var(--cream); padding:10px; border-radius:12px;"></div>
+    <div id="search-box" style="margin-bottom:20px; margin-left:0; width:100%; max-width:400px;"><input type="text" placeholder="검색어 (이름, 내용 등)..." oninput="searchRecords(this.value)"></div>
+    <div class="photo-grid" id="photo-grid"></div>
+  </div>
+
+  <div class="page" id="page-timeline">
+    <div class="page-header">
+      <h2>10년 주기 타임라인 ⏳</h2>
+      <p>연대를 클릭하면 해당 시기의 사진이 펼쳐집니다.</p>
+    </div>
+    <div id="timeline-container"></div>
+  </div>
+
+  <div class="page" id="page-events">
+    <div class="page-header">
+      <h2>이벤트별 모아보기 🎉</h2>
+      <p>주제별로 분류된 사진첩입니다.</p>
+    </div>
+    <div id="events-container"></div>
+  </div>
+
+  <div class="page" id="page-admin">
+    <div class="page-header"><h2>가족 가입 승인 대기열 👑</h2></div>
+    <div class="event-list" id="admin-user-list"></div>
+  </div>
+</div>
+</div>
+
+<!-- 👤 인물 등록/수정 모달 -->
+<div id="modal-member" class="modal-overlay" onclick="closeModal(event, 'modal-member')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>👤 가족 프로필 등록/수정</h3>
+      <button class="modal-close" onclick="closeMemberModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mem-edit-id">
+      <div class="form-group" style="text-align:center; margin-bottom:20px;">
+        <label style="cursor:pointer; display:inline-block;">
+          <div id="member-img-preview" style="width:100px; height:100px; border-radius:50%; background:#e0d8d0; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:2.5rem; border:2px dashed var(--brown-light);">📷</div>
+          <span style="font-size:0.8rem; color:var(--gold);">프로필 사진 선택</span>
+          <input type="file" id="member-photo" accept="image/*" style="display:none;" onchange="previewMemberPhoto(this)">
+        </label>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>이름</label><input type="text" id="mem-name" placeholder="홍길동"></div>
+        <div class="form-group">
+          <label>생년월일</label>
+          <div style="display:flex; gap:6px;">
+            <select id="mem-birth-year" style="flex:2;"></select>
+            <select id="mem-birth-month" style="flex:1.2;"></select>
+            <select id="mem-birth-day" style="flex:1.2;"></select>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>소속 그룹</label>
+          <select id="mem-group"><option value="직계가족">직계가족</option><option value="친가">친가</option><option value="처가">처가</option></select>
+        </div>
+        <div class="form-group"><label>관계/역할</label><input type="text" id="mem-role" placeholder="예: 첫째 딸, 할아버지"></div>
+      </div>
+      
+      <hr style="border:0; border-top:1px dashed rgba(44,26,14,0.2); margin:10px 0 15px;">
+      
+      <div class="form-group"><label>🎓 학력</label><input type="text" id="mem-edu" placeholder="예: OO대학교 졸업"></div>
+      <div class="form-group"><label>💼 주요 경력</label><textarea id="mem-career" rows="2" placeholder="예: OO기업 임원 (1990~2014)"></textarea></div>
+      <div class="form-group"><label>🔗 링크 (블로그, 동영상 주소 등)</label><input type="url" id="mem-link" placeholder="https://..."></div>
+      <div class="form-group"><label>✉️ 편지 및 기타 참고사항</label><textarea id="mem-note" rows="3" placeholder="가족에게 남기는 편지나 남기고 싶은 기록을 자유롭게 적어주세요."></textarea></div>
+
+      <button class="btn-primary" onclick="saveMember()">가족 정보 저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ⚙️ 가족 명단 관리 모달 -->
+<div id="modal-manage-members" class="modal-overlay" onclick="closeModal(event, 'modal-manage-members')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3>⚙️ 등록된 가족 관리</h3><button class="modal-close" onclick="document.getElementById('modal-manage-members').classList.remove('open')">✕</button></div>
+    <div class="modal-body" id="manage-members-list"></div>
+  </div>
+</div>
+
+<!-- 📤 기록 추가 모달 -->
+<div id="modal-upload" class="modal-overlay" onclick="closeModal(event, 'modal-upload')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>📤 기록 추가 (다중 선택 가능)</h3>
+      <button class="modal-close" onclick="closeUpload()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="background: rgba(212,168,83,0.1); padding: 30px 20px; border-radius: 12px; text-align: center; border: 2px dashed rgba(212,168,83,0.5);">
+        <label style="display: block; cursor: pointer;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">📸 🎬</div>
+          <b style="color:var(--brown-deep);">사진 및 동영상 선택</b><br>
+          <input type="file" id="inp-file" accept="image/*, video/*, video/mp4, video/quicktime, .mov" multiple style="display: none;" onchange="previewUploadFiles(this)">
+        </label>
+        <div id="file-preview-name" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-sub);">선택된 파일 없음</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>제목</label><input type="text" id="inp-title" placeholder="제목"></div>
+        <div class="form-group"><label>날짜</label><input type="date" id="inp-date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>등장 인물 (복수 선택)</label><select id="inp-person" multiple style="height:96px;"></select></div>
+        <div class="form-group">
+          <label>이벤트 분류</label>
+          <select id="inp-event">
+            <option value="travel">✈️ 가족여행</option><option value="wedding">💍 결혼식</option>
+            <option value="graduation">🎓 졸업/입학</option><option value="special">⭐ 특별한 날</option><option value="daily">☀️ 소소한 일상</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>설명 · 메모</label><textarea id="inp-memo" rows="3" placeholder="자세한 이야기를 적어주세요."></textarea></div>
+      <button class="btn-primary" onclick="saveRecord()">💾 클라우드에 모두 올리기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✏️ 기록 수정 모달 -->
+<div id="modal-edit" class="modal-overlay" onclick="closeModal(event, 'modal-edit')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3>✏️ 내용 수정</h3><button class="modal-close" onclick="closeEditModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>제목</label><input type="text" id="edit-title"></div>
+        <div class="form-group"><label>날짜</label><input type="date" id="edit-date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>등장 인물</label><select id="edit-person" multiple style="height:80px;"></select></div>
+        <div class="form-group"><label>이벤트</label><select id="edit-event"><option value="travel">✈️ 가족여행</option><option value="wedding">💍 결혼식</option><option value="graduation">🎓 졸업/입학</option><option value="special">⭐ 특별한 날</option><option value="daily">☀️ 일상</option></select></div>
+      </div>
+      <div class="form-group"><label>메모</label><textarea id="edit-memo" rows="2"></textarea></div>
+      <button class="btn-primary" onclick="updateRecord()">저장하기</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+<script>
+// ▼▼ 파이어베이스 진짜 암호 6줄을 여기에 덮어쓰세요 ▼▼
+const firebaseConfig = {
+  apiKey: "AIzaSyCzvwa5Q88RIjYUieWkh_RydWyfrZoPqXA",
+  authDomain: "family-a19f9.firebaseapp.com",
+  projectId: "family-a19f9",
+  storageBucket: "family-a19f9.firebasestorage.app",
+  messagingSenderId: "261921694732",
+  appId: "1:261921694732:web:df25fe595538969b743a29",
+  measurementId: "G-GJ6WXTS7Y7"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+let GLOBAL_RECORDS = [];
+let GLOBAL_MEMBERS = [];
+let CURRENT_USER = null;
+let currentEditId = null;
+
+const DECADES = [
+  { id:'before1954', label:'1954년 이전' }, { id:'1950s', label:'1950년대' }, { id:'1960s', label:'1960년대' }, { id:'1970s', label:'1970년대' },
+  { id:'1980s', label:'1980년대' }, { id:'1990s', label:'1990년대' }, { id:'2000s', label:'2000년대' }, { id:'2010s', label:'2010년대' },
+  { id:'2020s', label:'2020년대' }, { id:'2030s', label:'2030년대' }
+];
+const EVENT_TYPES = [
+  { id:'travel', label:'✈️ 가족여행' }, { id:'wedding', label:'💍 결혼식' }, { id:'graduation', label:'🎓 졸업/입학' },
+  { id:'special', label:'⭐ 특별한 날' }, { id:'daily', label:'☀️ 소소한 일상' }
+];
+
+function showLoading(show, text='처리 중...') { document.getElementById('loading-text').textContent = text; document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
+function showToast(msg, isErr=false){ let t=document.getElementById('tst'); if(!t){t=document.createElement('div');t.id='tst';t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:20px;color:#fff;z-index:9999;transition:0.3s;';document.body.appendChild(t);} t.style.background=isErr?'var(--rust)':'var(--brown-deep)'; t.textContent=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0', 4000); }
+
+function getDecade(dStr) {
+  if(!dStr) return '2020s'; const y = parseInt(dStr.split('-')[0]);
+  if(y<=1954) return 'before1954'; if(y<1960) return '1950s'; if(y<1970) return '1960s'; if(y<1980) return '1970s';
+  if(y<1990) return '1980s'; if(y<2000) return '1990s'; if(y<2010) return '2000s'; if(y<2020) return '2010s'; if(y<2030) return '2020s'; return '2030s';
+}
+
+function initDateSelects() {
+  let y='', m='', d='';
+  for(let i=new Date().getFullYear(); i>=1920; i--) y+=`<option value="${i}">${i}년</option>`;
+  for(let i=1; i<=12; i++) m+=`<option value="${String(i).padStart(2,'0')}">${i}월</option>`;
+  for(let i=1; i<=31; i++) d+=`<option value="${String(i).padStart(2,'0')}">${i}일</option>`;
+  document.getElementById('mem-birth-year').innerHTML = '<option value="">년도</option>' + y;
+  document.getElementById('mem-birth-month').innerHTML = '<option value="">월</option>' + m;
+  document.getElementById('mem-birth-day').innerHTML = '<option value="">일</option>' + d;
+}
+
+// 자동 로그인 및 보안 시스템
+function switchAuthTab(t) { document.getElementById('tab-login').classList.remove('active'); document.getElementById('tab-signup').classList.remove('active'); document.getElementById('tab-'+t).classList.add('active'); document.getElementById('form-login').style.display = t==='login'?'block':'none'; document.getElementById('form-signup').style.display = t==='signup'?'block':'none'; }
+
+async function handleSignup() {
+  const n=document.getElementById('signup-name').value.trim(), r=document.getElementById('signup-role').value, p=document.getElementById('signup-pw').value, pc=document.getElementById('signup-pw-confirm').value;
+  if(!n||!p||!pc)return showToast('정보를 모두 입력해 주세요.',true);
+  if(!/^\d{4}$/.test(p)) return showToast('비밀번호는 반드시 숫자 4자리여야 합니다.', true);
+  if(p !== pc) return showToast('비밀번호 확인이 서로 일치하지 않습니다.', true);
+
+  showLoading(true);
+  try{
+    const e=await db.collection('auth_users').where('name','==',n).get();
+    if(!e.empty){
+      const existing = e.docs[0].data();
+      if(existing.status === 'approved') showToast('💡 이미 가입 및 승인이 완료된 이름입니다. 로그인을 시도해 주세요.', true);
+      else showToast('⏳ 이미 가입 신청되어 승인 대기 중인 이름입니다.', true);
+      showLoading(false); return;
+    }
+    await db.collection('auth_users').add({name:n,role:r,pw:btoa(p),status:'pending',isAdmin:false});
+    showToast('✅ 가입 신청이 접수되었습니다! 관리자 승인을 기다려주세요.');
+    switchAuthTab('login');
+  }catch(e){} showLoading(false);
+}
+
+async function handleLogin() {
+  const n=document.getElementById('login-name').value.trim(), p=document.getElementById('login-pw').value; if(!n||!p)return showToast('정보를 입력하세요.',true); showLoading(true);
+  try{
+    if(n==='나상진'&&p==='0000'){ let o={name:'나상진',role:'아버지',pw:btoa('0000'),status:'approved',isAdmin:true}; const s=await db.collection('auth_users').where('name','==','나상진').get(); if(s.empty){const a=await db.collection('auth_users').add(o);o.id=a.id;}else{o.id=s.docs[0].id;await db.collection('auth_users').doc(o.id).update(o);} localStorage.setItem('fa_session',JSON.stringify(o)); startApp(o); return; }
+    const s=await db.collection('auth_users').where('name','==',n).where('pw','==',btoa(p)).get(); if(s.empty){showToast('이름이나 비밀번호가 잘못되었습니다.',true);showLoading(false);return;}
+    const u={id:s.docs[0].id,...s.docs[0].data()}; if(u.status==='pending')showToast('⏳ 아직 관리자 승인 대기 중입니다.',true); else{localStorage.setItem('fa_session',JSON.stringify(u));startApp(u);}
+  }catch(e){} showLoading(false);
+}
+function logout() { localStorage.removeItem('fa_session'); location.reload(); }
+async function checkAuth() {
+  try { const adminCheck = await db.collection('auth_users').where('isAdmin', '==', true).get(); if(adminCheck.empty) await db.collection('auth_users').add({ name: '나상진', role: '아버지', pw: btoa('0000'), status: 'approved', isAdmin: true }); } catch(e) {}
+  const s = localStorage.getItem('fa_session'); if(s) { const u=JSON.parse(s); startApp(u); db.collection('auth_users').doc(u.id).get().then(v=>{if(!v.exists||v.data().status!=='approved')logout();}); return; }
+  document.getElementById('splash').classList.add('hidden'); document.getElementById('auth-overlay').style.display='flex';
+}
+function startApp(u) { CURRENT_USER=u; document.getElementById('auth-overlay').style.display='none'; document.getElementById('app').style.display='grid'; document.getElementById('splash').classList.add('hidden'); document.getElementById('topbar-user-info').innerHTML = `👤 ${u.name}님`; if(u.isAdmin) document.getElementById('menu-admin-wrap').style.display='block'; initDateSelects(); loadData(); }
+
+// 클라우드 동기화
+async function loadData() {
+  showLoading(true, '동기화 중...');
+  try {
+    const [rs, ms] = await Promise.all([db.collection('records').get(), db.collection('family_members').get()]);
+    GLOBAL_RECORDS = rs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(b.created)-new Date(a.created));
+    GLOBAL_MEMBERS = ms.docs.map(d=>({id:d.id,...d.data()}));
+    updateMemberSelects(); renderDashMembers(); renderGalleryFilters(); renderGallery('all'); renderRecent(); renderTimeline(); renderEvents(); if(CURRENT_USER.isAdmin) loadAdminList();
+  } catch(e) {} showLoading(false);
+}
+
+function updateMemberSelects() { const h = GLOBAL_MEMBERS.map(m=>`<option value="${m.name}">${m.name} (${m.role})</option>`).join(''); document.getElementById('inp-person').innerHTML=h; document.getElementById('edit-person').innerHTML=h; }
+function renderGalleryFilters() { let b = `<button class="add-member-btn" style="margin:0;font-size:0.85rem;" onclick="filterGallery('all')">전체</button>`; let set = new Set(); GLOBAL_MEMBERS.forEach(m => { if(!set.has(m.name)){ b+=`<button class="add-member-btn" style="margin:0;font-size:0.85rem;" onclick="filterGallery('${m.name}')">${m.name}</button>`; set.add(m.name); }}); document.getElementById('gallery-filters').innerHTML = b; }
+
+// 인물 정렬 규칙 (나상진, 아내, 아들, 딸, 며느리, 손녀 순)
+function getOrderScore(m) {
+  const t = (m.name + ' ' + (m.role || '')).toLowerCase();
+  if(t.includes('나상진') || t.includes('아버지')) return 1;
+  if(t.includes('아내')) return 2;
+  if(t.includes('아들')) return 3;
+  if(t.includes('딸')) return 4;
+  if(t.includes('며느리')) return 5;
+  if(t.includes('손녀')) return 6;
+  return 99;
+}
+
+function renderDashMembers() {
+  document.getElementById('dash-direct').innerHTML = ''; document.getElementById('dash-paternal').innerHTML = ''; document.getElementById('dash-maternal').innerHTML = '';
+  
+  let sortedMembers = [...GLOBAL_MEMBERS].sort((a, b) => getOrderScore(a) - getOrderScore(b));
+
+  sortedMembers.forEach(x => {
+    let img = x.photoUrl ? `<img src="${x.photoUrl}">` : '👤';
+    if(x.group==='직계가족') document.getElementById('dash-direct').innerHTML+=`<div class="family-card direct" onclick="openProfile('${x.id}')"><div class="avatar">${img}</div><div class="name">${x.name}</div><div class="role">${x.role}</div></div>`;
+    else if(x.group==='친가') document.getElementById('dash-paternal').innerHTML+=`<span style="background:rgba(107,63,42,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;margin-bottom:4px;cursor:pointer;display:inline-block;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
+    else if(x.group==='처가') document.getElementById('dash-maternal').innerHTML+=`<span style="background:rgba(122,140,110,0.1);padding:6px 12px;border-radius:16px;font-size:0.85rem;margin-bottom:4px;cursor:pointer;display:inline-block;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
+  });
+}
+function renderRecent() { document.getElementById('recent-events').innerHTML = GLOBAL_RECORDS.slice(0,5).map(generatePhotoHTML).join(''); }
+
+// 🔒 권한 통제 시스템 적용
+function generatePhotoHTML(r) {
+  const rot = r.rotation||0; const scale = (rot%180!==0)?1.35:1; let tag='';
+  if(r.fileType==='video') tag=`<video src="${r.imgUrl}#t=0.1" style="transform:rotate(${rot}deg) scale(${scale});"></video><div class="video-badge">▶️</div>`;
+  else tag=`<img src="${r.imgUrl}" style="transform:rotate(${rot}deg) scale(${scale});">`;
+  
+  const hasPermission = (CURRENT_USER.isAdmin || r.author === CURRENT_USER.name);
+  const act = hasPermission ? `<button onclick="rotateImg('${r.id}',${rot},this,event)">🔄</button><button onclick="openEditModal('${r.id}', event)">✏️</button><button onclick="deleteRecord('${r.id}','${r.imgUrl}',event)">🗑️</button>` : '';
+  
+  return `<div class="photo-card"><div class="card-actions">${act}</div><div class="photo-thumb" onclick="openLightbox('${r.id}')">${tag}</div><div class="photo-info" onclick="openLightbox('${r.id}')"><h4>${r.title}</h4><p class="memo-text">${r.memo||''}</p><div style="font-size:0.75rem;color:#888;margin-top:4px;">등록: ${r.author||'미지정'}</div></div></div>`;
+}
+
+function renderGallery(t) {
+  let arr = (t==='all') ? GLOBAL_RECORDS : GLOBAL_RECORDS.filter(r=>r.person && r.person.includes(t));
+  if(t==='직계가족' || t==='친가' || t==='처가') { const names = GLOBAL_MEMBERS.filter(m=>m.group===t).map(m=>m.name); arr = GLOBAL_RECORDS.filter(r=>names.some(n=>r.person&&r.person.includes(n))); }
+  document.getElementById('photo-grid').innerHTML = arr.map(generatePhotoHTML).join('');
+}
+function searchRecords(v) { const q = v.toLowerCase(); document.getElementById('photo-grid').innerHTML = GLOBAL_RECORDS.filter(r=>(r.title||'').toLowerCase().includes(q)||(r.memo||'').toLowerCase().includes(q)||(r.person||'').toLowerCase().includes(q)).map(generatePhotoHTML).join(''); }
+
+function renderTimeline() {
+  let html=''; DECADES.forEach(dec=>{ const items = GLOBAL_RECORDS.filter(r=>getDecade(r.date)===dec.id); html+=`<div class="folder-card" onclick="this.classList.toggle('open')"><div class="folder-header"><div class="folder-title">⏳ ${dec.label}</div><div class="folder-count">${items.length}장</div></div><div class="folder-content" onclick="event.stopPropagation()">${items.length?`<div class="photo-grid" style="margin-top:10px;">${items.map(generatePhotoHTML).join('')}</div>`:'<p style="padding:10px;color:#888;">사진이 없습니다.</p>'}</div></div>`; });
+  document.getElementById('timeline-container').innerHTML = html;
+}
+function renderEvents() {
+  let html=''; EVENT_TYPES.forEach(ev=>{ const items = GLOBAL_RECORDS.filter(r=>r.event===ev.id); html+=`<div class="folder-card" onclick="this.classList.toggle('open')"><div class="folder-header"><div class="folder-title">${ev.label}</div><div class="folder-count">${items.length}장</div></div><div class="folder-content" onclick="event.stopPropagation()">${items.length?`<div class="photo-grid" style="margin-top:10px;">${items.map(generatePhotoHTML).join('')}</div>`:'<p style="padding:10px;color:#888;">사진이 없습니다.</p>'}</div></div>`; });
+  document.getElementById('events-container').innerHTML = html;
+}
+
+// 라이트박스
+function openLightbox(id) {
+  const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; const rot=r.rotation||0; const tr=`transform:rotate(${rot}deg);`;
+  let m = r.fileType==='video'?`<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`:`<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
+  document.getElementById('lightbox-media').innerHTML=m; document.getElementById('lightbox-caption').innerHTML=`<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small style="color:#aaa;">날짜: ${r.date||''} / 작성자: ${r.author||''}</small>`;
+  document.getElementById('lightbox-overlay').classList.add('open');
+}
+function closeLightbox(e) { if(e.target.id==='lightbox-overlay'||e.target.classList.contains('lightbox-close')){document.getElementById('lightbox-media').innerHTML=''; document.getElementById('lightbox-overlay').classList.remove('open');} }
+
+// 👤 가족 상세 프로필 열기 
+function openProfile(id) {
+  const m = GLOBAL_MEMBERS.find(x => x.id === id); if(!m) return;
+  const imgHtml = m.photoUrl ? `<img src="${m.photoUrl}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto 15px;display:block;box-shadow:0 4px 10px rgba(0,0,0,0.2);">` : `<div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--brown-light),var(--gold));margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#fff;">👤</div>`;
+  
+  let linkHtml = '기록이 없습니다.';
+  if (m.link) linkHtml = `<a href="${m.link}" target="_blank" style="color:#0066cc; text-decoration:underline;">바로가기 클릭</a>`;
+
+  const html = `
+    <div style="text-align:center;">
+      ${imgHtml}
+      <h2 style="color:var(--brown-deep); margin-bottom:5px;">${m.name} <span style="font-size:1rem;color:var(--text-sub);">(${m.role})</span></h2>
+      <p style="color:var(--brown-light); font-size:0.9rem; margin-bottom:20px;">생년월일: ${m.birthDate || '미상'}</p>
+    </div>
+    <div style="background:var(--cream); padding:15px; border-radius:12px; margin-bottom:15px;">
+      <h4 style="color:var(--brown-mid); margin-bottom:8px; border-bottom:1px solid rgba(44,26,14,0.1); padding-bottom:4px;">🎓 학력</h4>
+      <p style="font-size:0.9rem; white-space:pre-wrap;">${m.edu || '기록이 없습니다.'}</p>
+    </div>
+    <div style="background:var(--cream); padding:15px; border-radius:12px; margin-bottom:15px;">
+      <h4 style="color:var(--brown-mid); margin-bottom:8px; border-bottom:1px solid rgba(44,26,14,0.1); padding-bottom:4px;">💼 주요 경력</h4>
+      <p style="font-size:0.9rem; white-space:pre-wrap;">${m.career || '기록이 없습니다.'}</p>
+    </div>
+    <div style="background:var(--cream); padding:15px; border-radius:12px; margin-bottom:15px;">
+      <h4 style="color:var(--brown-mid); margin-bottom:8px; border-bottom:1px solid rgba(44,26,14,0.1); padding-bottom:4px;">🔗 링크 (블로그/동영상)</h4>
+      <p style="font-size:0.9rem;">${linkHtml}</p>
+    </div>
+    <div style="background:var(--cream); padding:15px; border-radius:12px; margin-bottom:15px;">
+      <h4 style="color:var(--brown-mid); margin-bottom:8px; border-bottom:1px solid rgba(44,26,14,0.1); padding-bottom:4px;">✉️ 편지 및 참고사항</h4>
+      <p style="font-size:0.9rem; white-space:pre-wrap; line-height:1.5;">${m.note || '기록이 없습니다.'}</p>
+    </div>
+    ${(CURRENT_USER.isAdmin) ? `<div style="text-align:center; margin-top:20px;"><button class="btn-primary" onclick="editMember('${m.id}')" style="width:auto; padding:10px 24px;">✏️ 프로필 수정하기</button></div>` : ''}
+  `;
+  document.getElementById('profile-content').innerHTML = html;
+  document.getElementById('modal-profile').classList.add('open');
+}
+
+// 인물 등록 및 관리
+let tempMemFile = null;
+function openMemberModal(g) { 
+  document.getElementById('mem-edit-id').value=''; document.getElementById('mem-group').value=g; document.getElementById('mem-name').value=''; 
+  document.getElementById('mem-birth-year').value=''; document.getElementById('mem-birth-month').value=''; document.getElementById('mem-birth-day').value=''; 
+  document.getElementById('mem-role').value=''; document.getElementById('mem-edu').value=''; document.getElementById('mem-career').value=''; 
+  document.getElementById('mem-link').value=''; document.getElementById('mem-note').value='';
+  document.getElementById('member-img-preview').innerHTML='📷'; tempMemFile=null; document.getElementById('modal-member').classList.add('open'); 
+}
+function closeMemberModal() { document.getElementById('modal-member').classList.remove('open'); }
+function previewMemberPhoto(inp) { if(inp.files&&inp.files[0]){ tempMemFile=inp.files[0]; const r=new FileReader(); r.onload=e=>document.getElementById('member-img-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`; r.readAsDataURL(tempMemFile); } }
+
+async function saveMember() {
+  const id=document.getElementById('mem-edit-id').value, n=document.getElementById('mem-name').value.trim();
+  const y=document.getElementById('mem-birth-year').value, m=document.getElementById('mem-birth-month').value, d=document.getElementById('mem-birth-day').value, bd=(y&&m&&d)?`${y}-${m}-${d}`:'';
+  const g=document.getElementById('mem-group').value, r=document.getElementById('mem-role').value.trim();
+  const edu=document.getElementById('mem-edu').value.trim(), career=document.getElementById('mem-career').value.trim(), link=document.getElementById('mem-link').value.trim(), note=document.getElementById('mem-note').value.trim();
+  
+  if(!n) return showToast('이름을 입력하세요.',true); showLoading(true);
+  try{ let u=''; if(tempMemFile){ const rf=firebase.storage().ref('profiles/'+Date.now()+'_'+tempMemFile.name); await rf.put(tempMemFile); u=await rf.getDownloadURL(); }
+    let obj = {name:n, birthDate:bd, group:g, role:r, edu:edu, career:career, link:link, note:note}; if(u) obj.photoUrl=u;
+    if(id) await db.collection('family_members').doc(id).update(obj); else await db.collection('family_members').add(obj);
+    showToast('가족 정보가 저장되었습니다.'); closeMemberModal(); document.getElementById('modal-profile').classList.remove('open'); loadData();
+  }catch(e){} showLoading(false);
+}
+
+function openManageMembersModal() {
+  let h = ''; GLOBAL_MEMBERS.forEach(m => { h += `<div class="member-list-item"><div><b>${m.name}</b> <span style="color:#888;">(${m.group}/${m.role})</span></div><div class="member-list-actions"><button onclick="editMember('${m.id}')">수정</button><button onclick="deleteMember('${m.id}')" style="color:var(--rust);">삭제</button></div></div>`; });
+  document.getElementById('manage-members-list').innerHTML = h || '<p>등록된 가족이 없습니다.</p>'; document.getElementById('modal-manage-members').classList.add('open');
+}
+function editMember(id) { 
+  const m = GLOBAL_MEMBERS.find(x=>x.id===id); if(!m)return; 
+  document.getElementById('mem-edit-id').value = id; document.getElementById('mem-name').value = m.name; document.getElementById('mem-group').value = m.group; document.getElementById('mem-role').value = m.role; 
+  document.getElementById('mem-edu').value = m.edu || ''; document.getElementById('mem-career').value = m.career || ''; document.getElementById('mem-link').value = m.link || ''; document.getElementById('mem-note').value = m.note || '';
+  if(m.birthDate) { const pts = m.birthDate.split('-'); document.getElementById('mem-birth-year').value = pts[0]||''; document.getElementById('mem-birth-month').value = pts[1]||''; document.getElementById('mem-birth-day').value = pts[2]||''; } 
+  document.getElementById('member-img-preview').innerHTML = m.photoUrl ? `<img src="${m.photoUrl}" style="width:100%;height:100%;object-fit:cover;">` : '📷'; 
+  document.getElementById('modal-manage-members').classList.remove('open'); document.getElementById('modal-profile').classList.remove('open'); document.getElementById('modal-member').classList.add('open'); 
+}
+async function deleteMember(id) { if(!confirm('이 가족 인물을 삭제하시겠습니까?')) return; showLoading(true); try{ await db.collection('family_members').doc(id).delete(); showToast('삭제 완료'); await loadData(); openManageMembersModal(); }catch(e){} showLoading(false); }
+
+// 업로드 관리
+function openUpload() { document.getElementById('modal-upload').classList.add('open'); document.getElementById('inp-file').value=''; document.getElementById('file-preview-name').textContent='선택 안됨'; document.getElementById('inp-title').value=''; document.getElementById('inp-memo').value=''; document.getElementById('inp-date').value=new Date().toISOString().slice(0,10); }
+function closeUpload() { document.getElementById('modal-upload').classList.remove('open'); }
+function previewUploadFiles(inp) { document.getElementById('file-preview-name').innerHTML = inp.files.length?`✅ <b>${inp.files.length}개</b> 파일 선택됨`:'선택 안됨'; }
+
+async function saveRecord() {
+  const t=document.getElementById('inp-title').value.trim(), m=document.getElementById('inp-memo').value.trim(), f=document.getElementById('inp-file'); if(!t)return showToast('제목을 입력하세요.',true); if(!f.files.length)return showToast('파일을 선택하세요.',true);
+  const fs=Array.from(f.files); const tot=fs.length; showLoading(true, `클라우드 업로드 중... 1/${tot}`);
+  try {
+    for(let i=0; i<tot; i++){
+      showLoading(true, `클라우드 저장 중... ${i+1}/${tot}`); const fl=fs[i]; const isVid = fl.type.startsWith('video/') || fl.name.match(/\.(mp4|mov|webm|avi)$/i);
+      const rf=firebase.storage().ref('photos/'+Date.now()+'_'+fl.name); await rf.put(fl); const u=await rf.getDownloadURL();
+      await db.collection('records').add({ title:tot>1?`${t} (${i+1})`:t, memo:m, imgUrl:u, fileType:isVid?'video':'image', date:document.getElementById('inp-date').value, event:document.getElementById('inp-event').value, person:[...document.getElementById('inp-person').selectedOptions].map(o=>o.value).join(', '), rotation:0, author:CURRENT_USER.name, created:new Date().toISOString() });
+    }
+    closeUpload(); await loadData(); showToast('저장 성공!');
+  }catch(e){} showLoading(false);
+}
+
+// 회전 백엔드 검증
+async function rotateImg(id, cur, btn, ev) {
+  ev.stopPropagation(); const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return;
+  if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name) { return showToast('🚫 다른 사람이 올린 사진은 제어할 수 없습니다.', true); }
+  const n=(cur+90)%360; btn.closest('.photo-card').querySelector('img, video').style.transform=`rotate(${n}deg) scale(${n%180!==0?1.35:1})`; btn.setAttribute('onclick',`rotateImg('${id}',${n},this,event)`);
+  db.collection('records').doc(id).update({rotation:n});
+}
+
+// 수정 백엔드 검증
+function openEditModal(id, ev) {
+  ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return;
+  if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name) { return showToast('🚫 다른 사람이 올린 자료는 수정할 수 없습니다.', true); }
+  currentEditId=id; document.getElementById('edit-title').value=r.title||''; document.getElementById('edit-date').value=r.date||''; document.getElementById('edit-memo').value=r.memo||''; document.getElementById('edit-event').value=r.event||'daily';
+  const sel=document.getElementById('edit-person'); const ps=(r.person||'').split(', '); for(let i=0;i<sel.options.length;i++) sel.options[i].selected = ps.includes(sel.options[i].value);
+  document.getElementById('modal-edit').classList.add('open');
+}
+function closeEditModal() { document.getElementById('modal-edit').classList.remove('open'); }
+
+async function updateRecord() {
+  if(!currentEditId)return; const t=document.getElementById('edit-title').value.trim(); if(!t)return showToast('제목 필수',true);
+  const r = GLOBAL_RECORDS.find(x => x.id === currentEditId); if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name) { showToast('권한이 없습니다.', true); closeEditModal(); return; }
+  showLoading(true);
+  try{ await db.collection('records').doc(currentEditId).update({ title:t, date:document.getElementById('edit-date').value, memo:document.getElementById('edit-memo').value.trim(), event:document.getElementById('edit-event').value, person:[...document.getElementById('edit-person').selectedOptions].map(o=>o.value).join(', ') }); closeEditModal(); await loadData(); showToast('수정 완료!'); }catch(e){} showLoading(false);
+}
+
+// 삭제 백엔드 검증
+async function deleteRecord(id, url, ev) {
+  ev.stopPropagation(); const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return;
+  if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name) { return showToast('🚫 다른 사람이 올린 자료는 삭제할 수 없습니다.', true); }
+  if(!confirm("이 기록을 클라우드에서 영구 삭제하시겠습니까?"))return; showLoading(true);
+  try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await firebase.storage().refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false);
+}
+
+// 가입 승인 대기열
+async function loadAdminList() { const e=document.getElementById('admin-user-list'), s=await db.collection('auth_users').where('status','==','pending').get(); if(s.empty)return e.innerHTML='<p style="padding:20px; text-align:center;">승인 대기 중인 신청자가 없습니다.</p>'; e.innerHTML=s.docs.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;border:1px solid #eee;"><div><b>${d.data().name}</b> [<span style="color:var(--brown-light);">${d.data().role}</span>]</div><button class="topbar-btn" onclick="approveUser('${d.id}')">✅ 가입 승인하기</button></div>`).join(''); }
+async function approveUser(id) { await db.collection('auth_users').doc(id).update({status:'approved'}); showToast('가족 가입 승인이 완료되었습니다!'); loadData(); }
+
+// 네비게이션
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active');
+  const m={'dashboard':'대시보드', 'gallery':'전체 갤러리', 'timeline':'연대 타임라인', 'events':'이벤트 파일', 'admin':'가족 승인 관리'}; document.getElementById('bc-current').textContent = m[id]||'';
+  if(window.innerWidth<=768 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeModal(e, id) { if(e.target.id===id) document.getElementById(id).classList.remove('open'); }
+
+checkAuth();
+</script>
+</body>
+</html>
