@@ -128,9 +128,8 @@ body {
 .photo-thumb img, .photo-thumb video { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; transition: transform 0.4s ease; }
 .video-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: rgba(255,255,255,0.8); pointer-events: none; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 .photo-info { padding: 12px; flex: 1; }
-.photo-info h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; font-weight:600; cursor:pointer;}
+.photo-info h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; font-weight: 600; cursor:pointer;}
 .photo-info p.memo-text { font-size: 0.8rem; color: var(--brown-mid); margin-bottom: 6px; line-height: 1.4; word-break: break-all; }
-.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
 .card-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; z-index: 10; }
 .card-actions button { background: rgba(255,255,255,0.9); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 4px; cursor: pointer; font-size: 0.8rem; }
 
@@ -173,11 +172,9 @@ body {
 .dyn-val { flex: 1; padding: 10px; border: 1px solid rgba(44,26,14,0.2); border-radius: 6px; font-size: 0.85rem; font-family: inherit; }
 .dyn-del { background: var(--rust); color: #fff; border: none; border-radius: 6px; padding: 8px 10px; cursor: pointer; font-size: 0.8rem; }
 
-/* ───────── RESPONSIVE ───────── */
-#hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
+/* ───────── MOBILE RESPONSIVE ───────── */
 @media (max-width: 768px) {
   #app { display: block; }
-  #hamburger { display: block; }
   #sidebar { position: fixed; left: -280px; width: 260px; z-index: 9000; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
   #sidebar.open { left: 0; }
   #main { padding-top: 54px; width:100%; } 
@@ -256,6 +253,31 @@ body {
   </div>
 </div>
 
+<div id="modal-history" class="modal-overlay" onclick="closeModal(event, 'modal-history')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3>📜 가문 역사 / 족보 이야기 추가</h3><button class="modal-close" onclick="closeHistoryModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>기록 제목</label><input type="text" id="his-title" placeholder="예: 파평윤씨 전서공파 대동보 유래"></div>
+      <div class="form-row">
+        <div class="form-group"><label>관련 시기 / 연대</label><input type="text" id="his-period" placeholder="예: 조선 중기, 1970년대 등"></div>
+      </div>
+      <div class="form-group">
+        <label>가문 역사 스토리 전개 (자유 기술란)</label>
+        <p style="font-size:0.75rem; color:#888; margin-bottom:4px;">우측 하단 모서리를 끌어당겨 입력창 크기를 크게 키울 수 있습니다.</p>
+        <textarea id="his-content" rows="8" style="resize:vertical;" placeholder="집안 대대로 전해져 내려오는 역사와 이야기를 생생하게 연재해 주세요."></textarea>
+      </div>
+      <div class="form-group" style="background:rgba(122,140,110,0.1); border:2px dashed var(--sage); padding:20px; border-radius:12px; text-align:center;">
+        <label style="cursor:pointer; display:block;">
+          📁 <b>가문 족보 및 고문서 파일 첨부</b><br><small style="color:var(--text-sub);">(PDF, Word, 한글, 이미지 등 모든 파일 지원)</small>
+          <input type="file" id="his-file" style="display:none;" onchange="previewHistoryFile(this)">
+        </label>
+        <div id="his-file-name" style="margin-top:8px; font-size:0.8rem; color:var(--brown-mid); font-weight:600;">선택된 파일 없음</div>
+      </div>
+      <button class="btn-primary" onclick="saveHistory()">💾 역사 창고에 안전하게 보관</button>
+    </div>
+  </div>
+</div>
+
 <div id="app">
 <nav id="sidebar">
   <div class="sidebar-logo"><h2>우리가족<br>아카이브</h2><p>Since 1954</p></div>
@@ -280,6 +302,7 @@ body {
     <div class="nav-section-title">분류별 보기</div>
     <div class="nav-item" onclick="showPage('timeline')"><span class="icon">⏳</span> 10년 주기 타임라인</div>
     <div class="nav-item" onclick="showPage('events')"><span class="icon">🎉</span> 이벤트 파일</div>
+    <div class="nav-item" id="menu-history" onclick="showPage('history')"><span class="icon">📜</span> 가족 역사 및 족보</div>
   </div>
   <div class="nav-section" id="menu-admin-wrap" style="display:none;">
     <div class="nav-section-title">관리자 메뉴</div>
@@ -314,14 +337,14 @@ body {
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-bottom:32px;">
       <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--brown-mid); box-shadow:0 4px 12px rgba(0,0,0,0.04);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌳 친가 (6형제)</div>
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌳 친가 (나이순 정렬)</div>
           <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('친가')">➕ 인물 등록</button>
         </div>
         <div id="dash-paternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
       </div>
       <div style="background:var(--cream); border-radius:var(--radius); padding:20px; border-left:4px solid var(--sage); box-shadow:0 4px 12px rgba(0,0,0,0.04);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌿 처가 (5자매)</div>
+          <div style="font-family:'Noto Serif KR',serif; font-weight:600; color:var(--brown-deep);">🌿 처가 (나이순 정렬)</div>
           <button class="add-member-btn" style="margin:0;" onclick="openMemberModal('처가')">➕ 인물 등록</button>
         </div>
         <div id="dash-maternal" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
@@ -349,6 +372,14 @@ body {
     <div id="events-container"></div>
   </div>
 
+  <div class="page" id="page-history">
+    <div class="page-header">
+      <div><h2>가족 역사 및 족보 스토리 📜</h2><p>가문의 뿌리, 족보 문서를 저장하고 집안 내력을 연재물 형태로 기록 보존합니다.</p></div>
+      <button class="topbar-btn" onclick="openHistoryModal()">➕ 새 역사 스토리 등록</button>
+    </div>
+    <div id="history-list" style="display:flex; flex-direction:column; gap:16px;"></div>
+  </div>
+
   <div class="page" id="page-admin">
     <div class="page-header"><h2>가족 가입 승인 대기열 👑</h2></div>
     <div class="event-list" id="admin-user-list"></div>
@@ -358,7 +389,10 @@ body {
 
 <div id="modal-member" class="modal-overlay" onclick="closeModal(event, 'modal-member')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-header"><h3>👤 가족 프로필 상세 기록</h3><button class="modal-close" onclick="closeMemberModal()">✕</button></div>
+    <div class="modal-header">
+      <h3>👤 가족 프로필 상세 기록</h3>
+      <button class="modal-close" onclick="closeMemberModal()">✕</button>
+    </div>
     <div class="modal-body">
       <input type="hidden" id="mem-edit-id">
       <div class="form-group" style="text-align:center; margin-bottom:20px;">
@@ -442,7 +476,7 @@ body {
       <div class="form-row">
         <div class="form-group"><label>제목</label><input type="text" id="inp-title" placeholder="제목"></div>
         <div class="form-group">
-          <label>날짜 (달력 또는 직접 스크롤)</label>
+          <label>촬영일자 (사진 촬영시 정보 자동 분석 탑재)</label>
           <div style="display:flex; flex-direction:column; gap:4px;">
             <input type="date" id="inp-date" onchange="syncUploadDate('cal')">
             <div style="display:flex; gap:4px;">
@@ -491,6 +525,8 @@ body {
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
@@ -515,6 +551,7 @@ let GLOBAL_RECORDS = [];
 let GLOBAL_MEMBERS = [];
 let CURRENT_USER = null;
 let currentEditId = null;
+let tempHisFile = null;
 
 const DECADES = [{id:'before1954',label:'1954년 이전'},{id:'1950s',label:'1950년대'},{id:'1960s',label:'1960년대'},{id:'1970s',label:'1970년대'},{id:'1980s',label:'1980년대'},{id:'1990s',label:'1990년대'},{id:'2000s',label:'2000년대'},{id:'2010s',label:'2010년대'},{id:'2020s',label:'2020년대'},{id:'2030s',label:'2030년대'}];
 const EVENT_TYPES = [{id:'travel',label:'✈️ 가족여행'},{id:'wedding',label:'💍 결혼식'},{id:'graduation',label:'🎓 졸업/입학'},{id:'special',label:'⭐ 특별한 날'},{id:'daily',label:'☀️ 소소한 일상'}];
@@ -524,30 +561,25 @@ function showLoading(show, text='처리 중...') { document.getElementById('load
 function showToast(msg, isErr=false){ let t=document.getElementById('tst'); if(!t){t=document.createElement('div');t.id='tst';t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:20px;color:#fff;z-index:9999;transition:0.3s;font-size:0.85rem;';document.body.appendChild(t);} t.style.background=isErr?'var(--rust)':'var(--brown-deep)'; t.textContent=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0', 3500); }
 function getDecade(dStr) { if(!dStr) return '2020s'; const y = parseInt(dStr.split('-')[0]); if(y<=1954) return 'before1954'; if(y<1960) return '1950s'; if(y<1970) return '1960s'; if(y<1980) return '1970s'; if(y<1990) return '1980s'; if(y<2000) return '1990s'; if(y<2010) return '2000s'; if(y<2020) return '2010s'; if(y<2030) return '2020s'; return '2030s'; }
 
-// 날짜 선택기 일괄 초기화
 function initDateSelects() {
   let y='', m='', d='';
   for(let i=new Date().getFullYear(); i>=1920; i--) y+=`<option value="${i}">${i}년</option>`;
   for(let i=1; i<=12; i++) m+=`<option value="${String(i).padStart(2,'0')}">${i}월</option>`;
   for(let i=1; i<=31; i++) d+=`<option value="${String(i).padStart(2,'0')}">${i}일</option>`;
   
-  // 인물 등록
   document.getElementById('mem-birth-year').innerHTML = '<option value="">년도</option>' + y;
   document.getElementById('mem-birth-month').innerHTML = '<option value="">월</option>' + m;
   document.getElementById('mem-birth-day').innerHTML = '<option value="">일</option>' + d;
   
-  // 기록 추가
   document.getElementById('inp-date-year').innerHTML = '<option value="">년도</option>' + y;
   document.getElementById('inp-date-month').innerHTML = '<option value="">월</option>' + m;
   document.getElementById('inp-date-day').innerHTML = '<option value="">일</option>' + d;
   
-  // 기록 수정
   document.getElementById('edit-date-year').innerHTML = '<option value="">년도</option>' + y;
   document.getElementById('edit-date-month').innerHTML = '<option value="">월</option>' + m;
   document.getElementById('edit-date-day').innerHTML = '<option value="">일</option>' + d;
 }
 
-// 💡 날짜 동기화 로직들
 function syncDate(src) {
   if(src === 'cal') {
     const val = document.getElementById('mem-birth-cal').value;
@@ -576,7 +608,7 @@ function syncEditDate(src) {
   }
 }
 
-// 로그인 제어
+// 로그인/보안
 function switchAuthTab(t) { document.getElementById('tab-login').classList.remove('active'); document.getElementById('tab-signup').classList.remove('active'); document.getElementById('tab-'+t).classList.add('active'); document.getElementById('form-login').style.display = t==='login'?'block':'none'; document.getElementById('form-signup').style.display = t==='signup'?'block':'none'; }
 async function handleSignup() {
   const n=document.getElementById('signup-name').value.trim(), r=document.getElementById('signup-role').value, p=document.getElementById('signup-pw').value, pc=document.getElementById('signup-pw-confirm').value;
@@ -600,14 +632,12 @@ async function checkAuth() {
 }
 function startApp(u) { CURRENT_USER=u; document.getElementById('auth-overlay').style.display='none'; document.getElementById('app').style.display='grid'; document.getElementById('splash').classList.add('hidden'); document.getElementById('topbar-user-info').innerHTML=`👤 ${u.name}님`; if(u.isAdmin) document.getElementById('menu-admin-wrap').style.display='block'; initDateSelects(); loadData(); }
 
-// 마크다운 링크 파싱 및 리스트 출력
 function parseMarkdownLinks(str) { return str.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color:#2c1a0e; background:#e8c98a; padding:4px 8px; border-radius:6px; text-decoration:none; font-size:0.8rem; display:inline-block; margin-top:4px;">📎 $1</a>'); }
 function renderProfileList(raw) {
   if(!raw) return '기록이 없습니다.'; const arr = raw.split('|||').filter(v=>v.trim()); if(arr.length===0) return '기록이 없습니다.';
   return `<ul style="padding-left:20px; margin:0; font-size:0.9rem;">` + arr.map(v => `<li style="margin-bottom:8px; line-height:1.5;">${parseMarkdownLinks(v).replace(/\n/g,'<br>')}</li>`).join('') + `</ul>`;
 }
 
-// 가족 서열 설정 점수
 function getOrderScore(m) {
   const t = (m.name + ' ' + (m.role || '')).toLowerCase();
   if(t.includes('나상진') || t.includes('아버지')) return 1;
@@ -624,22 +654,41 @@ async function loadData() {
   try {
     const [rs, ms] = await Promise.all([db.collection('records').get(), db.collection('family_members').get()]);
     GLOBAL_RECORDS = rs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(b.created)-new Date(a.created));
-    GLOBAL_MEMBERS = ms.docs.map(d=>({id:d.id,...d.data()})).sort((a,b) => getOrderScore(a) - getOrderScore(b));
+    GLOBAL_MEMBERS = ms.docs.map(d=>({id:d.id,...d.data()}));
     
-    updateMemberSelects(); renderDashMembers(); renderGalleryFilters(); renderGallery('all'); renderRecent(); renderTimeline(); renderEvents(); if(CURRENT_USER.isAdmin) loadAdminList();
+    updateMemberSelects(); renderDashMembers(); renderGalleryFilters(); renderGallery('all'); renderRecent(); renderTimeline(); renderEvents(); renderHistoryList(); if(CURRENT_USER.isAdmin) loadAdminList();
   } catch(e) {} showLoading(false);
 }
 
 function updateMemberSelects() { const h = GLOBAL_MEMBERS.map(m=>`<option value="${m.name}">${m.name} (${m.role})</option>`).join(''); document.getElementById('inp-person').innerHTML=h; document.getElementById('edit-person').innerHTML=h; }
 function renderGalleryFilters() { let b = `<button class="add-member-btn" style="margin:0;font-size:0.85rem;" onclick="filterGallery('all')">전체보기</button>`; let set = new Set(); GLOBAL_MEMBERS.forEach(m => { if(!set.has(m.name)){ b+=`<button class="add-member-btn" style="margin:0;font-size:0.85rem;" onclick="filterGallery('${m.name}')">${m.name}</button>`; set.add(m.name); }}); document.getElementById('gallery-filters').innerHTML = b; }
 
+// 💡 대시보드 인원 나이순(생년월일이 빠른 순) 정렬 렌더링 반영
 function renderDashMembers() {
   document.getElementById('dash-direct').innerHTML = ''; document.getElementById('dash-paternal').innerHTML = ''; document.getElementById('dash-maternal').innerHTML = '';
-  GLOBAL_MEMBERS.forEach(x => {
+  
+  // 직계가족 고정 정렬
+  let directFamily = GLOBAL_MEMBERS.filter(m => m.group === '직계가족').sort((a,b) => getOrderScore(a) - getOrderScore(b));
+  
+  // 💡 친가/처가 생년월일이 빠른 순(과거 생일이 우선) 정렬 로직 (생일 없으면 뒤로 밀림)
+  let paternalFamily = GLOBAL_MEMBERS.filter(m => m.group === '친가').sort((a,b) => {
+    if(!a.birthDate) return 1; if(!b.birthDate) return -1;
+    return new Date(a.birthDate) - new Date(b.birthDate);
+  });
+  let maternalFamily = GLOBAL_MEMBERS.filter(m => m.group === '처가').sort((a,b) => {
+    if(!a.birthDate) return 1; if(!b.birthDate) return -1;
+    return new Date(a.birthDate) - new Date(b.birthDate);
+  });
+
+  directFamily.forEach(x => {
     let img = x.photoUrl ? `<img src="${x.photoUrl}">` : '👤';
-    if(x.group==='직계가족') document.getElementById('dash-direct').innerHTML+=`<div class="family-card direct" onclick="openProfile('${x.id}')"><div class="avatar">${img}</div><div class="name">${x.name}</div><div class="role">${x.role}</div></div>`;
-    else if(x.group==='친가') document.getElementById('dash-paternal').innerHTML+=`<span style="background:rgba(107,63,42,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
-    else if(x.group==='처가') document.getElementById('dash-maternal').innerHTML+=`<span style="background:rgba(122,140,110,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
+    document.getElementById('dash-direct').innerHTML+=`<div class="family-card direct" onclick="openProfile('${x.id}')"><div class="avatar">${img}</div><div class="name">${x.name}</div><div class="role">${x.role}</div></div>`;
+  });
+  paternalFamily.forEach(x => {
+    document.getElementById('dash-paternal').innerHTML+=`<span style="background:rgba(107,63,42,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;margin-bottom:4px;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
+  });
+  maternalFamily.forEach(x => {
+    document.getElementById('dash-maternal').innerHTML+=`<span style="background:rgba(122,140,110,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;margin-bottom:4px;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
   });
 }
 function renderRecent() { document.getElementById('recent-events').innerHTML = GLOBAL_RECORDS.slice(0,6).map(generatePhotoHTML).join(''); }
@@ -675,7 +724,6 @@ function openLightbox(id) {
 }
 function closeLightbox(e) { if(e.target.id==='lightbox-overlay'||e.target.classList.contains('lightbox-close')){document.getElementById('lightbox-media').innerHTML=''; document.getElementById('lightbox-overlay').classList.remove('open');} }
 
-// 가족 상세 프로필 팝업
 function openProfile(id) {
   const m = GLOBAL_MEMBERS.find(x => x.id === id); if(!m) return;
   const imgHtml = m.photoUrl ? `<img src="${m.photoUrl}" style="width:110px;height:110px;border-radius:50%;object-fit:cover;margin:0 auto 15px;display:block;box-shadow:0 4px 10px rgba(0,0,0,0.2);">` : `<div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--brown-light),var(--gold));margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#fff;">👤</div>`;
@@ -689,7 +737,6 @@ function openProfile(id) {
   document.getElementById('profile-content').innerHTML = html; document.getElementById('modal-profile').classList.add('open');
 }
 
-// 동적 행 추가
 function addDynamicRow(containerId, type, val='') {
   const c = document.getElementById(containerId); const row = document.createElement('div'); row.className = 'dyn-row';
   let inputHtml = '';
@@ -701,7 +748,7 @@ function addDynamicRow(containerId, type, val='') {
 }
 async function attachDocToNote(inp) {
   if(!inp.files||!inp.files[0]) return; const file = inp.files[0]; const ta = inp.parentElement.parentElement.querySelector('textarea'); showLoading(true, '파일 첨부 중...');
-  try { const ref = firebase.storage().ref('docs/'+Date.now()+'_'+file.name); await ref.put(file); const url = await ref.getDownloadURL(); ta.value += (ta.value?'\n':'') + `[${file.name}](${url})`; showToast('첨부 완료!'); } catch(e) { showToast('첨부 실패',true); }
+  try { const ref = storage.ref('docs/'+Date.now()+'_'+file.name); await ref.put(file); const url = await ref.getDownloadURL(); ta.value += (ta.value?'\n':'') + `[${file.name}](${url})`; showToast('첨부 완료!'); } catch(e) { showToast('첨부 실패',true); }
   showLoading(false); inp.value='';
 }
 function getDynVals(cid) { return Array.from(document.getElementById(cid).querySelectorAll('.dyn-val')).map(i=>i.value.trim()).filter(v=>v).join('|||'); }
@@ -723,7 +770,7 @@ async function saveMember() {
   const g=document.getElementById('mem-group').value, r=document.getElementById('mem-role').value.trim();
   const edu=getDynVals('edu-container'), career=getDynVals('career-container'), note=getDynVals('note-container');
   if(!n) return showToast('이름 입력 필수',true); showLoading(true);
-  try{ let u=''; if(tempMemFile){ const rf=firebase.storage().ref('profiles/'+Date.now()+'_'+tempMemFile.name); await rf.put(tempMemFile); u=await rf.getDownloadURL(); }
+  try{ let u=''; if(tempMemFile){ const rf=storage.ref('profiles/'+Date.now()+'_'+tempMemFile.name); await rf.put(tempMemFile); u=await rf.getDownloadURL(); }
     let obj = {name:n, birthDate:bd, group:g, role:r, edu:edu, career:career, note:note}; if(u) obj.photoUrl=u;
     if(id) await db.collection('family_members').doc(id).update(obj); else await db.collection('family_members').add(obj);
     showToast('프로필 저장 완료!'); closeMemberModal(); document.getElementById('modal-profile').classList.remove('open'); loadData();
@@ -742,14 +789,39 @@ function editMember(id) {
 }
 async function deleteMember(id) { if(!confirm('삭제하시겠습니까?')) return; showLoading(true); try{ await db.collection('family_members').doc(id).delete(); showToast('삭제 완료'); await loadData(); openManageMembersModal(); }catch(e){} showLoading(false); }
 
-// 기록 제어
+// ════════ 📸 촬영 일자 메타 데이터(EXIF) 자동 감지 시스템 ════════
 function openUpload() { 
   document.getElementById('modal-upload').classList.add('open'); document.getElementById('inp-file').value=''; document.getElementById('file-preview-name').textContent='선택 안됨'; document.getElementById('inp-title').value=''; document.getElementById('inp-memo').value=''; 
   const today = new Date().toISOString().slice(0,10); document.getElementById('inp-date').value = today;
   const pts = today.split('-'); document.getElementById('inp-date-year').value = pts[0]; document.getElementById('inp-date-month').value = pts[1]; document.getElementById('inp-date-day').value = pts[2];
 }
 function closeUpload() { document.getElementById('modal-upload').classList.remove('open'); }
-function previewUploadFiles(inp) { document.getElementById('file-preview-name').innerHTML = inp.files.length?`✅ <b>${inp.files.length}개</b> 파일 선택됨`:'선택 안됨'; }
+
+function previewUploadFiles(inp) { 
+  if(inp.files && inp.files.length > 0) {
+    document.getElementById('file-preview-name').innerHTML = `✅ <b>${inp.files.length}개</b> 파일 선택됨`; 
+    
+    // 💡 첫 번째 이미지의 EXIF 날짜 추출 분석 작동
+    const firstFile = inp.files[0];
+    if(firstFile && firstFile.type.startsWith('image/')) {
+      EXIF.getData(firstFile, function() {
+        const originalDate = EXIF.getTag(this, "DateTimeOriginal");
+        if(originalDate) {
+          // EXIF 포맷 규격 "YYYY:MM:DD HH:MM:SS" -> "YYYY-MM-DD" 변환
+          const detectedDate = originalDate.split(' ')[0].replace(/:/g, '-');
+          
+          // 💡 촬영 일자가 감지되면 사용자 확인 유도 창을 띄움
+          if(confirm(`📸 사진 촬영 정보 분석 완료!\n\n해당 사진의 메타데이터에서 진짜 촬영일자 [${detectedDate}]를 성공적으로 감지했습니다.\n이 날짜를 기록 날짜로 자동 적용할까요?`)) {
+            document.getElementById('inp-date').value = detectedDate;
+            syncUploadDate('cal');
+          }
+        }
+      });
+    }
+  } else {
+    document.getElementById('file-preview-name').textContent = '선택 안됨';
+  }
+}
 
 async function saveRecord() {
   const t=document.getElementById('inp-title').value.trim(), m=document.getElementById('inp-memo').value.trim(), f=document.getElementById('inp-file'); if(!t)return showToast('제목을 입력하세요.',true); if(!f.files.length)return showToast('파일을 선택하세요.',true);
@@ -757,7 +829,7 @@ async function saveRecord() {
   try {
     for(let i=0; i<tot; i++){
       showLoading(true, `저장 중 ${i+1}/${tot}`); const fl=fs[i]; const isVid = fl.type.startsWith('video/') || fl.name.match(/\.(mp4|mov|webm|avi)$/i);
-      const rf=firebase.storage().ref('photos/'+Date.now()+'_'+fl.name); await rf.put(fl); const u=await rf.getDownloadURL();
+      const rf=storage.ref('photos/'+Date.now()+'_'+fl.name); await rf.put(fl); const u=await rf.getDownloadURL();
       await db.collection('records').add({ title:tot>1?`${t} (${i+1})`:t, memo:m, imgUrl:u, fileType:isVid?'video':'image', date:document.getElementById('inp-date').value, event:document.getElementById('inp-event').value, person:[...document.getElementById('inp-person').selectedOptions].map(o=>o.value).join(', '), rotation:0, author:CURRENT_USER.name, created:new Date().toISOString() });
     } closeUpload(); await loadData(); showToast('저장 성공!');
   }catch(e){} showLoading(false);
@@ -770,11 +842,80 @@ function openEditModal(id, ev) {
 }
 function closeEditModal() { document.getElementById('modal-edit').classList.remove('open'); }
 async function updateRecord() { if(!currentEditId)return; const t=document.getElementById('edit-title').value.trim(); if(!t)return; showLoading(true); try{ await db.collection('records').doc(currentEditId).update({title:t, date:document.getElementById('edit-date').value, memo:document.getElementById('edit-memo').value.trim(), event:document.getElementById('edit-event').value, person:[...document.getElementById('edit-person').selectedOptions].map(o=>o.value).join(', ')}); closeEditModal(); await loadData(); showToast('수정 완료!'); }catch(e){} showLoading(false); }
-async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await firebase.storage().refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
+async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await storage.refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
 
+// ════════ 📜 가족 역사 및 족보 아카이브 시스템 구축 파트 ════════
+function openHistoryModal() {
+  document.getElementById('his-title').value = ''; document.getElementById('his-period').value = '';
+  document.getElementById('his-content').value = ''; document.getElementById('his-file').value = '';
+  document.getElementById('his-file-name').textContent = '선택된 파일 없음'; tempHisFile = null;
+  document.getElementById('modal-history').classList.add('open');
+}
+function closeHistoryModal() { document.getElementById('modal-history').classList.remove('open'); }
+function previewHistoryFile(inp) { if(inp.files && inp.files[0]) { tempHisFile = inp.files[0]; document.getElementById('his-file-name').innerHTML = `✅ <b>${tempHisFile.name}</b> 준비됨`; } }
+
+async function saveHistory() {
+  const t = document.getElementById('his-title').value.trim();
+  const p = document.getElementById('his-period').value.trim();
+  const c = document.getElementById('his-content').value.trim();
+  if(!t || !c) return showToast('제목과 내용을 적어주세요.', true);
+  showLoading(true, '가문 역사 보존 데이터 기록 중...');
+  try {
+    let fUrl = '', fName = '';
+    if(tempHisFile) {
+      const ref = storage.ref('history_docs/' + Date.now() + '_' + tempHisFile.name);
+      await ref.put(tempHisFile); fUrl = await ref.getDownloadURL(); fName = tempHisFile.name;
+    }
+    await db.collection('family_history').add({ title: t, period: p, content: c, fileUrl: fUrl, fileName: fName, author: CURRENT_USER.name, created: new Date().toISOString() });
+    showToast('📜 가족 역사가 클라우드 연대기에 기록되었습니다.'); closeHistoryModal(); loadData();
+  } catch(e) { showToast('기록 오류', true); }
+  showLoading(false);
+}
+
+async function renderHistoryList() {
+  const el = document.getElementById('history-list'); if(!el) return;
+  try {
+    const snap = await db.collection('family_history').orderBy('created', 'desc').get();
+    if(snap.empty) { el.innerHTML = '<p style="text-align:center; padding:40px; color:#888;">등록된 가족 역사나 족보 스토리가 없습니다. 우측 상단의 버튼을 눌러 문중 기록을 연재해 보세요.</p>'; return; }
+    let html = '';
+    snap.forEach(doc => {
+      const h = doc.data();
+      const fileLink = h.fileUrl ? `<div style="margin-top:12px;"><a href="${h.fileUrl}" target="_blank" style="background:var(--brown-deep); color:var(--gold-light); text-decoration:none; padding:6px 12px; border-radius:6px; font-size:0.8rem; display:inline-block; font-weight:600;">💾 첨부 문헌/족보 다운로드 (${h.fileName})</a></div>` : '';
+      const delBtn = (CURRENT_USER.isAdmin) ? `<button onclick="deleteHistory('${doc.id}', '${h.fileUrl}')" style="background:none; border:none; color:var(--rust); cursor:pointer; font-size:0.8rem; float:right; font-weight:600;">🗑️ 기록 말소</button>` : '';
+      
+      html += `
+      <div style="background:#fff; border:1px solid rgba(44,26,14,0.08); padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.02);">
+        ${delBtn}
+        <h3 style="color:var(--brown-deep); font-family:'Noto Serif KR', serif; margin-bottom:4px;">${h.title}</h3>
+        <span style="font-size:0.8rem; color:var(--brown-light); font-weight:600; display:block; margin-bottom:12px;">⏱️ 역사적 시기: ${h.period || '미지정'}</span>
+        <p style="font-size:0.92rem; line-height:1.6; white-space:pre-wrap; color:var(--text-main); font-family:inherit;">${h.content}</p>
+        ${fileLink}
+        <small style="display:block; text-align:right; color:#999; margin-top:12px;">사관(기록자): ${h.author || '가족'} / 등재일: ${h.created.slice(0,10)}</small>
+      </div>`;
+    });
+    el.innerHTML = html;
+  } catch(e) { el.innerHTML = '<p>데이터 판독 오류</p>'; }
+}
+
+async function deleteHistory(id, fileUrl) {
+  if(!confirm('이 가문 역사 기록물을 역사서에서 완전히 삭제하시겠습니까?')) return;
+  showLoading(true);
+  try {
+    await db.collection('family_history').doc(id).delete();
+    if(fileUrl && fileUrl.includes('firebase')) await storage.refFromURL(fileUrl).delete().catch(()=>{});
+    showToast('삭제가 완료되었습니다.'); loadData();
+  } catch(e){} showLoading(false);
+}
+
+// 가입 승인 대기열
 async function loadAdminList() { const e=document.getElementById('admin-user-list'), s=await db.collection('auth_users').where('status','==','pending').get(); if(s.empty)return e.innerHTML='<p style="padding:20px; text-align:center;">신청자 없음</p>'; e.innerHTML=s.docs.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;border:1px solid #eee;"><div><b>${d.data().name}</b> [<span style="color:var(--brown-light);">${d.data().role}</span>]</div><button class="topbar-btn" onclick="approveUser('${d.id}')">승인하기</button></div>`).join(''); }
 async function approveUser(id) { await db.collection('auth_users').doc(id).update({status:'approved'}); showToast('승인 완료!'); loadData(); }
-function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active'); const m={'dashboard':'대시보드', 'gallery':'전체 갤러리', 'timeline':'연대 타임라인', 'events':'이벤트 파일', 'admin':'가족 승인 관리'}; document.getElementById('bc-current').textContent = m[id]||''; if(window.innerWidth<=768 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar(); }
+
+function showPage(id) { 
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active'); 
+  const m={'dashboard':'대시보드', 'gallery':'전체 갤러리', 'timeline':'연대 타임라인', 'events':'이벤트 파일', 'admin':'가족 승인 관리', 'history':'가족 역사 및 족보'}; document.getElementById('bc-current').textContent = m[id]||''; 
+  if(window.innerWidth<=768 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar(); 
+}
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 function closeModal(e, id) { if(e.target.id===id) document.getElementById(id).classList.remove('open'); }
 
