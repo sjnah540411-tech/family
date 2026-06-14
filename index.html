@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>우리가족 아카이브</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
@@ -52,7 +52,7 @@ body {
 .auth-form-group input, .auth-form-group select, .auth-form-group textarea { width: 100%; padding: 12px; border: 1px solid rgba(44,26,14,0.2); border-radius: 8px; font-size: 0.9rem; font-family: inherit; }
 .auth-btn { width: 100%; padding: 14px; background: var(--brown-mid); color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
 
-/* ───────── 라이트박스 (확대보기 & 슬라이드쇼) ───────── */
+/* ───────── 라이트박스 (확대보기) ───────── */
 #lightbox-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000;
   display: none; align-items: center; justify-content: center; flex-direction: column;
@@ -62,14 +62,7 @@ body {
 #lightbox-media { max-width: 95vw; max-height: 85vh; display: flex; justify-content: center; align-items: center; position: relative; }
 #lightbox-caption { color: #fff; margin-top: 20px; font-size: 1.1rem; text-align: center; max-width: 80%; line-height: 1.6; }
 
-/* 좌우 이동 버튼 (신규) */
-.lb-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: rgba(0,0,0,0.5); color: white; border: none;
-  font-size: 2rem; padding: 16px; cursor: pointer; z-index: 6010;
-  border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
-  transition: background 0.3s;
-}
+.lb-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; font-size: 2rem; padding: 16px; cursor: pointer; z-index: 6010; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
 .lb-nav:hover { background: rgba(0,0,0,0.8); }
 .lb-prev { left: 20px; }
 .lb-next { right: 20px; }
@@ -80,7 +73,10 @@ body {
 #splash h1 { font-family: 'Noto Serif KR', serif; color: var(--gold-light); font-size: clamp(2rem, 6vw, 3.5rem); letter-spacing: 0.15em; animation: fadeUp 1s ease forwards; }
 #splash p { color: var(--brown-light); font-size: 1rem; letter-spacing: 0.1em; animation: fadeUp 1s ease 0.3s both; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
-#app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; display: none; }
+
+/* 💡 화면 찌그러짐 해결의 핵심: 모바일 충돌 방지 구조 */
+#app { display: none; grid-template-columns: 260px 1fr; min-height: 100vh; }
+#app.loaded { display: grid; }
 
 /* ───────── SIDEBAR ───────── */
 #sidebar { background: var(--brown-deep); padding: 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--brown-mid) transparent; z-index: 1000; }
@@ -98,20 +94,19 @@ body {
 .submenu-wrap .nav-item:hover { color: var(--gold-light); }
 
 /* ───────── TOP BAR & CONTENT ───────── */
-#main { display: flex; flex-direction: column; background: var(--warm-white); overflow: hidden; width:100%; }
+#main { display: flex; flex-direction: column; background: var(--warm-white); width:100%; min-width: 0; }
 #topbar { background: var(--warm-white); border-bottom: 1px solid rgba(44,26,14,0.08); padding: 16px 32px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
-.breadcrumb { color: var(--text-sub); font-size: 0.82rem; }
+.breadcrumb { color: var(--text-sub); font-size: 0.82rem; white-space: nowrap; }
 .breadcrumb span { color: var(--brown-light); margin: 0 6px; }
 .breadcrumb b { color: var(--text-main); font-weight: 500; }
-#search-box { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--cream); border: 1px solid rgba(44,26,14,0.12); border-radius: 24px; padding: 8px 16px; min-width: 180px; }
-#search-box input { border: none; background: transparent; font-family: 'Noto Sans KR', sans-serif; font-size: 0.85rem; color: var(--text-main); outline: none; width: 100%; }
-.topbar-btn { background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 9px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.topbar-right { margin-left: auto; display:flex; gap:10px; align-items:center; }
+.topbar-btn { background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 9px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.1); white-space: nowrap; }
 .topbar-btn:hover { background: var(--brown-mid); transform: translateY(-1px); }
-.topbar-btn.logout { background: transparent; color: var(--text-sub); border: 1px solid rgba(44,26,14,0.2); box-shadow: none; }
+.topbar-btn.logout { background: transparent; color: var(--text-sub); border: 1px solid rgba(44,26,14,0.2); box-shadow: none; margin-left: 4px; }
 .topbar-btn.logout:hover { background: var(--cream); color: var(--text-main); }
 
 /* ───────── PAGES ───────── */
-.page { display: none; padding: 24px; flex: 1; animation: pageIn 0.4s ease; }
+.page { display: none; padding: 24px; flex: 1; animation: pageIn 0.4s ease; width: 100%; box-sizing: border-box; }
 .page.active { display: block; }
 @keyframes pageIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 .page-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px; }
@@ -119,13 +114,8 @@ body {
 .page-header p { font-size: 0.85rem; color: var(--text-sub); margin-top: 4px; }
 
 /* ───────── DASHBOARD UI ───────── */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 16px; margin-bottom: 32px; }
-.stat-card { background: var(--cream); border: 1px solid rgba(44,26,14,0.08); border-radius: var(--radius); padding: 20px; text-align: center; }
-.stat-card .num { font-family: 'Noto Serif KR', serif; font-size: 2rem; color: var(--brown-mid); font-weight: 700; }
-.stat-card .label { font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; }
-
 .section-title { font-family: 'Noto Serif KR', serif; font-size: 1.1rem; color: var(--brown-deep); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--gold-light); display: flex; align-items: center; gap: 8px; }
-.add-member-btn { font-size: 0.75rem; background: var(--cream); border: 1px solid var(--brown-light); color: var(--brown-deep); padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; margin-left: auto; }
+.add-member-btn { font-size: 0.75rem; background: var(--cream); border: 1px solid var(--brown-light); color: var(--brown-deep); padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; margin-left: auto; white-space: nowrap; }
 .add-member-btn:hover { background: var(--gold-light); }
 
 .family-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px,1fr)); gap: 10px; margin-bottom: 32px; }
@@ -150,7 +140,6 @@ body {
 .photo-info { padding: 12px; flex: 1; }
 .photo-info h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; font-weight:600; cursor:pointer;}
 .photo-info p.memo-text { font-size: 0.8rem; color: var(--brown-mid); margin-bottom: 6px; line-height: 1.4; word-break: break-all; }
-.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
 .card-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; z-index: 10; }
 .card-actions button { background: rgba(255,255,255,0.9); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 4px; cursor: pointer; font-size: 0.8rem; }
 
@@ -186,7 +175,7 @@ body {
 .form-group label { display: block; font-size: 0.82rem; color: var(--text-sub); margin-bottom: 6px; font-weight: 600; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-/* ───────── 동적 행 버튼 (+) ───────── */
+/* 동적 행 버튼 (+) */
 .add-row-btn { width: 100%; padding: 8px; background: rgba(212,168,83,0.1); color: var(--brown-deep); border: 1px dashed var(--gold); border-radius: 8px; cursor: pointer; font-size: 0.85rem; margin-top: 4px; font-weight: 500; transition: 0.2s; }
 .add-row-btn:hover { background: rgba(212,168,83,0.2); }
 .dyn-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-start; }
@@ -198,26 +187,36 @@ body {
 .spinner { border: 4px solid rgba(212,168,83,0.3); border-left-color: var(--brown-deep); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 16px; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* ───────── MOBILE RESPONSIVE ───────── */
+/* 💡 일반 스마트폰 직사각형 화면 최적화 (폭 100% 꽉 채우기) */
+#hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
+.desktop-only { display: block; }
+
 @media (max-width: 768px) {
-  #app { display: block; }
+  /* 그리드 시스템 해제 및 100% 확장 */
+  #app.loaded { display: block !important; }
+  #hamburger { display: block; }
   #sidebar { position: fixed; left: -280px; width: 260px; z-index: 9000; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
   #sidebar.open { left: 0; }
-  #main { padding-top: 54px; width:100%; } 
-  #topbar { padding: 12px 16px; }
-  .page { padding: 16px 14px; }
-  .photo-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-  .family-preview { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; }
-  .event-list { grid-template-columns: 1fr; }
   
-  /* 모바일 환경 슬라이드쇼 버튼 크기 최적화 */
+  /* 메인 콘텐츠 영역 여백 최적화 */
+  #main { padding-top: 0; width: 100%; min-width: 100vw; box-sizing: border-box; } 
+  #topbar { padding: 12px 12px 12px 60px; gap: 8px; }
+  .desktop-only { display: none !important; }
+  
+  .page { padding: 16px 12px; }
+  
+  /* 모바일 화면 요소 압축 */
+  .topbar-btn { padding: 6px 10px; font-size: 0.75rem; }
+  .family-preview { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-bottom: 24px; }
+  .family-card { padding: 10px 6px; }
+  .family-card .avatar { width: 50px; height: 50px; font-size: 1.2rem; }
+  .photo-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  
+  /* 모바일 슬라이드쇼 화살표 크기 조정 */
   .lb-nav { font-size: 1.5rem; width: 45px; height: 45px; padding: 10px; }
   .lb-prev { left: 10px; }
   .lb-next { right: 10px; }
 }
-
-#hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
-@media (max-width: 768px) { #hamburger { display: block; } }
 
 .member-list-item { display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 14px; border-radius:8px; border:1px solid #eee; margin-bottom:8px; }
 .member-list-actions button { background:var(--cream); border:1px solid #ccc; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:0.75rem; margin-left:4px; }
@@ -273,10 +272,8 @@ body {
 
 <div id="lightbox-overlay" onclick="closeLightbox(event)">
   <button class="lightbox-close" onclick="closeLightbox(event)">✕</button>
-  
   <button id="lb-prev" class="lb-nav lb-prev" onclick="navigateLightbox(-1, event)">&#10094;</button>
   <button id="lb-next" class="lb-nav lb-next" onclick="navigateLightbox(1, event)">&#10095;</button>
-  
   <div id="lightbox-media"></div>
   <div id="lightbox-caption"></div>
 </div>
@@ -355,8 +352,8 @@ body {
 <div id="main">
   <div id="topbar">
     <div class="breadcrumb">🏠 <span>›</span> <b id="bc-current">대시보드</b></div>
-    <div style="margin-left: auto; display:flex; gap:10px; align-items:center;">
-      <div id="topbar-user-info" style="font-size:0.85rem; color:var(--brown-mid); font-weight:600; margin-right:8px;"></div>
+    <div class="topbar-right">
+      <div id="topbar-user-info" class="desktop-only" style="font-size:0.85rem; color:var(--brown-mid); font-weight:600;"></div>
       <button class="topbar-btn" onclick="openUpload()" style="box-shadow: 0 4px 12px rgba(212,168,83,0.4);">➕ 기록 추가</button>
       <button class="topbar-btn logout" onclick="logout()">로그아웃</button>
     </div>
@@ -394,7 +391,7 @@ body {
     </div>
 
     <div class="section-title">🕐 최근 업데이트 기록</div>
-    <div class="event-list" id="recent-events" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:16px;"></div>
+    <div class="event-list" id="recent-events"></div>
   </div>
 
   <div class="page" id="page-gallery">
@@ -518,7 +515,7 @@ body {
       <div class="form-row">
         <div class="form-group"><label>제목</label><input type="text" id="inp-title" placeholder="제목"></div>
         <div class="form-group">
-          <label>촬영일자 (사진 촬영시 정보 자동 분석 탑재)</label>
+          <label>촬영일자 (EXIF 날짜 자동 판독 탑재)</label>
           <div style="display:flex; flex-direction:column; gap:4px;">
             <input type="date" id="inp-date" onchange="syncUploadDate('cal')">
             <div style="display:flex; gap:4px;">
@@ -568,7 +565,6 @@ body {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
@@ -597,7 +593,6 @@ let tempHisFile = null;
 const DECADES = [{id:'before1954',label:'1954년 이전'},{id:'1950s',label:'1950년대'},{id:'1960s',label:'1960년대'},{id:'1970s',label:'1970년대'},{id:'1980s',label:'1980년대'},{id:'1990s',label:'1990년대'},{id:'2000s',label:'2000년대'},{id:'2010s',label:'2010년대'},{id:'2020s',label:'2020년대'},{id:'2030s',label:'2030년대'}];
 const EVENT_TYPES = [{id:'travel',label:'✈️ 가족여행'},{id:'wedding',label:'💍 결혼식'},{id:'graduation',label:'🎓 졸업/입학'},{id:'special',label:'⭐ 특별한 날'},{id:'daily',label:'☀️ 소소한 일상'}];
 
-// 유틸리티
 function showLoading(show, text='처리 중...') { document.getElementById('loading-text').textContent = text; document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
 function showToast(msg, isErr=false){ let t=document.getElementById('tst'); if(!t){t=document.createElement('div');t.id='tst';t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:20px;color:#fff;z-index:9999;transition:0.3s;font-size:0.85rem;';document.body.appendChild(t);} t.style.background=isErr?'var(--rust)':'var(--brown-deep)'; t.textContent=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0', 3500); }
 function getDecade(dStr) { if(!dStr) return '2020s'; const y = parseInt(dStr.split('-')[0]); if(y<=1954) return 'before1954'; if(y<1960) return '1950s'; if(y<1970) return '1960s'; if(y<1980) return '1970s'; if(y<1990) return '1980s'; if(y<2000) return '1990s'; if(y<2010) return '2000s'; if(y<2020) return '2010s'; if(y<2030) return '2020s'; return '2030s'; }
@@ -649,14 +644,12 @@ function syncEditDate(src) {
   }
 }
 
-// 가족별 접이식 서브메뉴 제어 기능
 function toggleSubMenu(id) {
   const sub = document.getElementById(id); const arrow = document.getElementById('submenu-arrow');
   if(sub.style.display === 'block') { sub.style.display = 'none'; arrow.textContent = '▼'; } 
   else { sub.style.display = 'block'; arrow.textContent = '▲'; }
 }
 
-// 로그인 제어
 function switchAuthTab(t) { document.getElementById('tab-login').classList.remove('active'); document.getElementById('tab-signup').classList.remove('active'); document.getElementById('tab-'+t).classList.add('active'); document.getElementById('form-login').style.display = t==='login'?'block':'none'; document.getElementById('form-signup').style.display = t==='signup'?'block':'none'; }
 async function handleSignup() {
   const n=document.getElementById('signup-name').value.trim(), r=document.getElementById('signup-role').value, p=document.getElementById('signup-pw').value, pc=document.getElementById('signup-pw-confirm').value;
@@ -667,18 +660,25 @@ async function handleSignup() {
 async function handleLogin() {
   const n=document.getElementById('login-name').value.trim(), p=document.getElementById('login-pw').value; if(!n||!p)return showToast('입력 확인 요망',true); showLoading(true);
   try{
-    if(n==='나상진'&&p==='0000'){ let o={name:'나상진',role:'아버지',pw:btoa('0000'),status:'approved',isAdmin:true}; const s=await db.collection('auth_users').where('name','==','나상진').get(); if(s.empty){const a=await db.collection('auth_users').add(o);o.id=a.id;}else{o.id=s.docs[0].id;await db.collection('auth_users').doc(o.id).update(o);} localStorage.setItem('fa_session',JSON.stringify(o)); startApp(o); return; }
+    if(n==='나상진'&&p==='0000'){ let o={name:'나상진',role:'아버지',pw:btoa('0000'),status:'approved',isAdmin:true}; const s=await db.collection('auth_users').where('name','==','나상진').get(); if(s.empty){const a=await db.collection('auth_users').add(o);o.id=a.id;}else{o.id=s.docs[0].id;await db.collection('auth_users').doc(o.id).update(o);} localStorage.setItem('fa_session',JSON.stringify(o)); document.getElementById('app').classList.add('loaded'); startApp(o); return; }
     const s=await db.collection('auth_users').where('name','==',n).where('pw','==',btoa(p)).get(); if(s.empty){showToast('정보 오류',true);showLoading(false);return;}
-    const u={id:s.docs[0].id,...s.docs[0].data()}; if(u.status==='pending')showToast('승인 대기중',true); else{localStorage.setItem('fa_session',JSON.stringify(u));startApp(u);}
+    const u={id:s.docs[0].id,...s.docs[0].data()}; if(u.status==='pending')showToast('승인 대기중',true); else{localStorage.setItem('fa_session',JSON.stringify(u)); document.getElementById('app').classList.add('loaded'); startApp(u);}
   }catch(e){} showLoading(false);
 }
 function logout() { localStorage.removeItem('fa_session'); location.reload(); }
 async function checkAuth() {
   try { const c = await db.collection('auth_users').where('isAdmin','==',true).get(); if(c.empty) await db.collection('auth_users').add({name:'나상진',role:'아버지',pw:btoa('0000'),status:'approved',isAdmin:true}); } catch(e) {}
-  const s = localStorage.getItem('fa_session'); if(s) { const u=JSON.parse(s); startApp(u); db.collection('auth_users').doc(u.id).get().then(v=>{if(!v.exists||v.data().status!=='approved')logout();}); return; }
+  const s = localStorage.getItem('fa_session'); 
+  if(s) { 
+    const u=JSON.parse(s); 
+    document.getElementById('app').classList.add('loaded');
+    startApp(u); 
+    db.collection('auth_users').doc(u.id).get().then(v=>{if(!v.exists||v.data().status!=='approved')logout();}); 
+    return; 
+  }
   document.getElementById('splash').classList.add('hidden'); document.getElementById('auth-overlay').style.display='flex';
 }
-function startApp(u) { CURRENT_USER=u; document.getElementById('auth-overlay').style.display='none'; document.getElementById('app').style.display='grid'; document.getElementById('splash').classList.add('hidden'); document.getElementById('topbar-user-info').innerHTML=`👤 ${u.name}님`; if(u.isAdmin) document.getElementById('menu-admin-wrap').style.display='block'; initDateSelects(); loadData(); }
+function startApp(u) { CURRENT_USER=u; document.getElementById('auth-overlay').style.display='none'; document.getElementById('splash').classList.add('hidden'); document.getElementById('topbar-user-info').innerHTML=`👤 ${u.name}님`; if(u.isAdmin) document.getElementById('menu-admin-wrap').style.display='block'; initDateSelects(); loadData(); }
 
 function parseMarkdownLinks(str) { return str.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color:#2c1a0e; background:#e8c98a; padding:4px 8px; border-radius:6px; text-decoration:none; font-size:0.8rem; display:inline-block; margin-top:4px;">📎 $1</a>'); }
 function renderProfileList(raw) {
@@ -767,19 +767,16 @@ function renderEvents() {
   document.getElementById('events-container').innerHTML = html;
 }
 
-// 💡 라이트박스 및 좌우 내비게이션(슬라이드쇼) 기능
+// 💡 라이트박스 및 좌우 내비게이션(슬라이드쇼)
 let lightboxIds = [];
 let lightboxIndex = 0;
 
 function openLightbox(id) {
-  // 현재 보고 있는 화면(active page)에서 사진들을 모두 추출하여 슬라이드쇼 배열 생성
   const activePage = document.querySelector('.page.active');
   if(activePage) {
     const thumbs = activePage.querySelectorAll('.photo-thumb');
-    lightboxIds = Array.from(thumbs).map(t => {
-      const match = t.getAttribute('onclick').match(/'([^']+)'/); return match ? match[1] : null;
-    }).filter(Boolean);
-    lightboxIds = [...new Set(lightboxIds)]; // 중복 제거
+    lightboxIds = Array.from(thumbs).map(t => { const match = t.getAttribute('onclick').match(/'([^']+)'/); return match ? match[1] : null; }).filter(Boolean);
+    lightboxIds = [...new Set(lightboxIds)];
   } else { lightboxIds = [id]; }
 
   lightboxIndex = lightboxIds.indexOf(id);
@@ -790,31 +787,19 @@ function openLightbox(id) {
 }
 
 function showLightboxImage() {
-  const id = lightboxIds[lightboxIndex];
-  const r = GLOBAL_RECORDS.find(x=>x.id===id); if(!r) return;
+  const id = lightboxIds[lightboxIndex]; const r = GLOBAL_RECORDS.find(x=>x.id===id); if(!r) return;
   const rot=r.rotation||0; const tr=`transform:rotate(${rot}deg);`;
   let m = r.fileType==='video'?`<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`:`<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
   
   document.getElementById('lightbox-media').innerHTML=m; 
   document.getElementById('lightbox-caption').innerHTML=`<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small style="color:#aaa;">날짜: ${r.date||''} / 작성자: ${r.author||''}</small>`;
   
-  // 첫 사진/마지막 사진에서는 화살표 감추기
   document.getElementById('lb-prev').style.display = lightboxIndex > 0 ? 'flex' : 'none';
   document.getElementById('lb-next').style.display = lightboxIndex < lightboxIds.length - 1 ? 'flex' : 'none';
 }
 
-function navigateLightbox(step, ev) {
-  ev.stopPropagation(); // 클릭 시 라이트박스가 닫히지 않도록 막음
-  lightboxIndex += step;
-  showLightboxImage();
-}
-
-function closeLightbox(e) { 
-  if(e.target.id==='lightbox-overlay' || e.target.classList.contains('lightbox-close')){
-    document.getElementById('lightbox-media').innerHTML=''; 
-    document.getElementById('lightbox-overlay').classList.remove('open');
-  } 
-}
+function navigateLightbox(step, ev) { ev.stopPropagation(); lightboxIndex += step; showLightboxImage(); }
+function closeLightbox(e) { if(e.target.id==='lightbox-overlay' || e.target.classList.contains('lightbox-close')){ document.getElementById('lightbox-media').innerHTML=''; document.getElementById('lightbox-overlay').classList.remove('open'); } }
 
 function openProfile(id) {
   const m = GLOBAL_MEMBERS.find(x => x.id === id); if(!m) return;
@@ -925,6 +910,7 @@ function openEditModal(id, ev) {
 function closeEditModal() { document.getElementById('modal-edit').classList.remove('open'); }
 async function updateRecord() { if(!currentEditId)return; const t=document.getElementById('edit-title').value.trim(); if(!t)return; showLoading(true); try{ await db.collection('records').doc(currentEditId).update({title:t, date:document.getElementById('edit-date').value, memo:document.getElementById('edit-memo').value.trim(), event:document.getElementById('edit-event').value, person:[...document.getElementById('edit-person').selectedOptions].map(o=>o.value).join(', ')}); closeEditModal(); await loadData(); showToast('수정 완료!'); }catch(e){} showLoading(false); }
 async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await storage.refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
+async function rotateImg(id, cur, btn, ev) { ev.stopPropagation(); const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name) { return showToast('🚫 권한이 없습니다.', true); } const n=(cur+90)%360; btn.closest('.photo-card').querySelector('img, video').style.transform=`rotate(${n}deg) scale(${n%180!==0?1.35:1})`; btn.setAttribute('onclick',`rotateImg('${id}',${n},this,event)`); db.collection('records').doc(id).update({rotation:n}); }
 
 function openHistoryModal() { document.getElementById('his-title').value = ''; document.getElementById('his-period').value = ''; document.getElementById('his-content').value = ''; document.getElementById('his-file').value = ''; document.getElementById('his-file-name').textContent = '선택된 파일 없음'; tempHisFile = null; document.getElementById('modal-history').classList.add('open'); }
 function closeHistoryModal() { document.getElementById('modal-history').classList.remove('open'); }
@@ -943,6 +929,7 @@ async function deleteHistory(id, fileUrl) { if(!confirm('기록을 완전히 삭
 
 async function loadAdminList() { const e=document.getElementById('admin-user-list'), s=await db.collection('auth_users').where('status','==','pending').get(); if(s.empty)return e.innerHTML='<p style="padding:20px; text-align:center;">신청자 없음</p>'; e.innerHTML=s.docs.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;border:1px solid #eee;"><div><b>${d.data().name}</b> [<span style="color:var(--brown-light);">${d.data().role}</span>]</div><button class="topbar-btn" onclick="approveUser('${d.id}')">승인하기</button></div>`).join(''); }
 async function approveUser(id) { await db.collection('auth_users').doc(id).update({status:'approved'}); showToast('승인 완료!'); loadData(); }
+
 function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active'); const m={'dashboard':'대시보드', 'gallery':'전체 갤러리', 'timeline':'연대 타임라인', 'events':'이벤트 파일', 'admin':'가족 승인 관리', 'history':'가족 역사 및 족보'}; document.getElementById('bc-current').textContent = m[id]||''; if(window.innerWidth<=768 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar(); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 function closeModal(e, id) { if(e.target.id===id) document.getElementById(id).classList.remove('open'); }
