@@ -1,4 +1,3 @@
-HTML
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -53,7 +52,7 @@ body {
 .auth-form-group input, .auth-form-group select, .auth-form-group textarea { width: 100%; padding: 12px; border: 1px solid rgba(44,26,14,0.2); border-radius: 8px; font-size: 0.9rem; font-family: inherit; }
 .auth-btn { width: 100%; padding: 14px; background: var(--brown-mid); color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
 
-/* ───────── 라이트박스 (확대보기) ───────── */
+/* ───────── 라이트박스 (확대보기 & 슬라이드쇼) ───────── */
 #lightbox-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000;
   display: none; align-items: center; justify-content: center; flex-direction: column;
@@ -62,6 +61,18 @@ body {
 .lightbox-close { position: absolute; top: 20px; right: 24px; font-size: 2.5rem; color: #fff; background: none; border: none; cursor: pointer; z-index: 6010; }
 #lightbox-media { max-width: 95vw; max-height: 85vh; display: flex; justify-content: center; align-items: center; position: relative; }
 #lightbox-caption { color: #fff; margin-top: 20px; font-size: 1.1rem; text-align: center; max-width: 80%; line-height: 1.6; }
+
+/* 좌우 이동 버튼 (신규) */
+.lb-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.5); color: white; border: none;
+  font-size: 2rem; padding: 16px; cursor: pointer; z-index: 6010;
+  border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s;
+}
+.lb-nav:hover { background: rgba(0,0,0,0.8); }
+.lb-prev { left: 20px; }
+.lb-next { right: 20px; }
 
 /* ───────── SPLASH & LAYOUT ───────── */
 #splash { position: fixed; inset: 0; background: var(--brown-deep); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s; }
@@ -82,7 +93,6 @@ body {
 .nav-item:hover { color: var(--gold-light); background: rgba(212,168,83,0.06); }
 .nav-item.active { color: var(--gold-light); border-left-color: var(--gold); background: rgba(212,168,83,0.10); }
 
-/* 💡 가족별 접이식 서브메뉴 스타일 */
 .submenu-wrap { display: none; background: rgba(0,0,0,0.15); padding-left: 12px; transition: max-height 0.3s ease; }
 .submenu-wrap .nav-item { font-size: 0.82rem; padding: 8px 24px 8px 16px; color: rgba(245,240,232,0.6); }
 .submenu-wrap .nav-item:hover { color: var(--gold-light); }
@@ -127,7 +137,6 @@ body {
 .family-card .name { font-size: 0.85rem; font-weight: 600; color: var(--text-main); white-space: nowrap; }
 .family-card .role { font-size: 0.7rem; color: var(--text-sub); margin-top: 2px; white-space: nowrap; }
 
-/* 💡 상단 필터 단추 디자인 고도화 */
 .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; padding: 10px; background: var(--cream); border-radius: var(--radius); }
 .filter-btn { background: #fff; border: 1px solid rgba(44,26,14,0.15); border-radius: 16px; padding: 6px 14px; font-size: 0.82rem; color: var(--text-sub); cursor: pointer; font-family: inherit; font-weight: 500; transition: var(--transition); }
 .filter-btn:hover, .filter-btn.active { background: var(--brown-deep); color: var(--gold-light); border-color: var(--brown-deep); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
@@ -141,6 +150,7 @@ body {
 .photo-info { padding: 12px; flex: 1; }
 .photo-info h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; font-weight:600; cursor:pointer;}
 .photo-info p.memo-text { font-size: 0.8rem; color: var(--brown-mid); margin-bottom: 6px; line-height: 1.4; word-break: break-all; }
+.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
 .card-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; z-index: 10; }
 .card-actions button { background: rgba(255,255,255,0.9); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 4px; cursor: pointer; font-size: 0.8rem; }
 
@@ -155,7 +165,7 @@ body {
 .event-body p { font-size: 0.75rem; color: var(--brown-mid); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .event-date { font-size: 0.7rem; color: var(--brown-light); }
 
-/* ───────── TIMELINE & EVENTS FOLDERS (ACCORDION) ───────── */
+/* ───────── TIMELINE & EVENTS FOLDERS ───────── */
 .folder-card { background: var(--cream); border-radius: var(--radius); border: 1px solid rgba(44,26,14,0.08); margin-bottom: 14px; overflow: hidden; transition: 0.3s; }
 .folder-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #fff; }
 .folder-header:hover { background: var(--warm-white); }
@@ -183,11 +193,14 @@ body {
 .dyn-val { flex: 1; padding: 10px; border: 1px solid rgba(44,26,14,0.2); border-radius: 6px; font-size: 0.85rem; font-family: inherit; }
 .dyn-del { background: var(--rust); color: #fff; border: none; border-radius: 6px; padding: 8px 10px; cursor: pointer; font-size: 0.8rem; }
 
-/* ───────── RESPONSIVE ───────── */
-#hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
+/* ───────── LOADING ───────── */
+#loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.spinner { border: 4px solid rgba(212,168,83,0.3); border-left-color: var(--brown-deep); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 16px; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ───────── MOBILE RESPONSIVE ───────── */
 @media (max-width: 768px) {
   #app { display: block; }
-  #hamburger { display: block; }
   #sidebar { position: fixed; left: -280px; width: 260px; z-index: 9000; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
   #sidebar.open { left: 0; }
   #main { padding-top: 54px; width:100%; } 
@@ -196,7 +209,15 @@ body {
   .photo-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
   .family-preview { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; }
   .event-list { grid-template-columns: 1fr; }
+  
+  /* 모바일 환경 슬라이드쇼 버튼 크기 최적화 */
+  .lb-nav { font-size: 1.5rem; width: 45px; height: 45px; padding: 10px; }
+  .lb-prev { left: 10px; }
+  .lb-next { right: 10px; }
 }
+
+#hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
+@media (max-width: 768px) { #hamburger { display: block; } }
 
 .member-list-item { display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 14px; border-radius:8px; border:1px solid #eee; margin-bottom:8px; }
 .member-list-actions button { background:var(--cream); border:1px solid #ccc; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:0.75rem; margin-left:4px; }
@@ -252,6 +273,10 @@ body {
 
 <div id="lightbox-overlay" onclick="closeLightbox(event)">
   <button class="lightbox-close" onclick="closeLightbox(event)">✕</button>
+  
+  <button id="lb-prev" class="lb-nav lb-prev" onclick="navigateLightbox(-1, event)">&#10094;</button>
+  <button id="lb-next" class="lb-nav lb-next" onclick="navigateLightbox(1, event)">&#10095;</button>
+  
   <div id="lightbox-media"></div>
   <div id="lightbox-caption"></div>
 </div>
@@ -319,7 +344,7 @@ body {
     <div class="nav-section-title">분류별 보기</div>
     <div class="nav-item" onclick="showPage('timeline')"><span class="icon">⏳</span> 10년 주기 타임라인</div>
     <div class="nav-item" onclick="showPage('events')"><span class="icon">🎉</span> 이벤트 파일</div>
-    <div class="nav-item" onclick="showPage('history')"><span class="icon">📜</span> 가족 역사 및 족보</div>
+    <div class="nav-item" id="menu-history" onclick="showPage('history')"><span class="icon">📜</span> 가족 역사 및 족보</div>
   </div>
   <div class="nav-section" id="menu-admin-wrap" style="display:none;">
     <div class="nav-section-title">관리자 메뉴</div>
@@ -332,7 +357,7 @@ body {
     <div class="breadcrumb">🏠 <span>›</span> <b id="bc-current">대시보드</b></div>
     <div style="margin-left: auto; display:flex; gap:10px; align-items:center;">
       <div id="topbar-user-info" style="font-size:0.85rem; color:var(--brown-mid); font-weight:600; margin-right:8px;"></div>
-      <button class="topbar-btn" onclick="openUpload()">➕ 기록 추가</button>
+      <button class="topbar-btn" onclick="openUpload()" style="box-shadow: 0 4px 12px rgba(212,168,83,0.4);">➕ 기록 추가</button>
       <button class="topbar-btn logout" onclick="logout()">로그아웃</button>
     </div>
   </div>
@@ -406,7 +431,10 @@ body {
 
 <div id="modal-member" class="modal-overlay" onclick="closeModal(event, 'modal-member')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-header"><h3>👤 가족 프로필 상세 기록</h3><button class="modal-close" onclick="closeMemberModal()">✕</button></div>
+    <div class="modal-header">
+      <h3>👤 가족 프로필 상세 기록</h3>
+      <button class="modal-close" onclick="closeMemberModal()">✕</button>
+    </div>
     <div class="modal-body">
       <input type="hidden" id="mem-edit-id">
       <div class="form-group" style="text-align:center; margin-bottom:20px;">
@@ -470,7 +498,7 @@ body {
 
 <div id="modal-manage-members" class="modal-overlay" onclick="closeModal(event, 'modal-manage-members')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-header"><h3>⚙️ 가족 관리 목록</h3><button class="modal-close" onclick="document.getElementById('modal-manage-members').classList.remove('open')">✕</button></div>
+    <div class="modal-header"><h3>⚙️ 등록된 가족 관리</h3><button class="modal-close" onclick="document.getElementById('modal-manage-members').classList.remove('open')">✕</button></div>
     <div class="modal-body" id="manage-members-list"></div>
   </div>
 </div>
@@ -490,7 +518,7 @@ body {
       <div class="form-row">
         <div class="form-group"><label>제목</label><input type="text" id="inp-title" placeholder="제목"></div>
         <div class="form-group">
-          <label>날짜 (달력 또는 직접 스크롤)</label>
+          <label>촬영일자 (사진 촬영시 정보 자동 분석 탑재)</label>
           <div style="display:flex; flex-direction:column; gap:4px;">
             <input type="date" id="inp-date" onchange="syncUploadDate('cal')">
             <div style="display:flex; gap:4px;">
@@ -556,7 +584,6 @@ const firebaseConfig = {
   appId: "1:261921694732:web:df25fe595538969b743a29",
   measurementId: "G-GJ6WXTS7Y7"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -570,6 +597,7 @@ let tempHisFile = null;
 const DECADES = [{id:'before1954',label:'1954년 이전'},{id:'1950s',label:'1950년대'},{id:'1960s',label:'1960년대'},{id:'1970s',label:'1970년대'},{id:'1980s',label:'1980년대'},{id:'1990s',label:'1990년대'},{id:'2000s',label:'2000년대'},{id:'2010s',label:'2010년대'},{id:'2020s',label:'2020년대'},{id:'2030s',label:'2030년대'}];
 const EVENT_TYPES = [{id:'travel',label:'✈️ 가족여행'},{id:'wedding',label:'💍 결혼식'},{id:'graduation',label:'🎓 졸업/입학'},{id:'special',label:'⭐ 특별한 날'},{id:'daily',label:'☀️ 소소한 일상'}];
 
+// 유틸리티
 function showLoading(show, text='처리 중...') { document.getElementById('loading-text').textContent = text; document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
 function showToast(msg, isErr=false){ let t=document.getElementById('tst'); if(!t){t=document.createElement('div');t.id='tst';t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:20px;color:#fff;z-index:9999;transition:0.3s;font-size:0.85rem;';document.body.appendChild(t);} t.style.background=isErr?'var(--rust)':'var(--brown-deep)'; t.textContent=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0', 3500); }
 function getDecade(dStr) { if(!dStr) return '2020s'; const y = parseInt(dStr.split('-')[0]); if(y<=1954) return 'before1954'; if(y<1960) return '1950s'; if(y<1970) return '1960s'; if(y<1980) return '1970s'; if(y<1990) return '1980s'; if(y<2000) return '1990s'; if(y<2010) return '2000s'; if(y<2020) return '2010s'; if(y<2030) return '2020s'; return '2030s'; }
@@ -621,15 +649,11 @@ function syncEditDate(src) {
   }
 }
 
-// 💡 가족별 접이식 서브메뉴 제어 기능 추가
+// 가족별 접이식 서브메뉴 제어 기능
 function toggleSubMenu(id) {
-  const sub = document.getElementById(id);
-  const arrow = document.getElementById('submenu-arrow');
-  if(sub.style.display === 'block') {
-    sub.style.display = 'none'; arrow.textContent = '▼';
-  } else {
-    sub.style.display = 'block'; arrow.textContent = '▲';
-  }
+  const sub = document.getElementById(id); const arrow = document.getElementById('submenu-arrow');
+  if(sub.style.display === 'block') { sub.style.display = 'none'; arrow.textContent = '▼'; } 
+  else { sub.style.display = 'block'; arrow.textContent = '▲'; }
 }
 
 // 로그인 제어
@@ -678,23 +702,18 @@ async function loadData() {
   try {
     const [rs, ms] = await Promise.all([db.collection('records').get(), db.collection('family_members').get()]);
     GLOBAL_RECORDS = rs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(b.created)-new Date(a.created));
-    GLOBAL_MEMBERS = ms.docs.map(d=>({id:d.id,...d.data()}));
+    GLOBAL_MEMBERS = ms.docs.map(d=>({id:d.id,...d.data()})).sort((a,b) => getOrderScore(a) - getOrderScore(b));
     
     updateMemberSelects(); renderDashMembers(); renderGalleryFilters(); renderGallery('all'); renderRecent(); renderTimeline(); renderEvents(); renderHistoryList(); if(CURRENT_USER.isAdmin) loadAdminList();
   } catch(e) {} showLoading(false);
 }
 
 function updateMemberSelects() { const h = GLOBAL_MEMBERS.map(m=>`<option value="${m.name}">${m.name} (${m.role})</option>`).join(''); document.getElementById('inp-person').innerHTML=h; document.getElementById('edit-person').innerHTML=h; }
-
-// 💡 상단 필터 단추 동적 랜더링 및 명칭 최적화
 function renderGalleryFilters() {
   let b = `<button class="filter-btn active" id="fbtn-all" onclick="filterGallery('all', this)">✨ 전체보기</button>`;
   let set = new Set();
   GLOBAL_MEMBERS.forEach(m => { 
-    if(!set.has(m.name)){ 
-      b+=`<button class="filter-btn" id="fbtn-${m.name}" onclick="filterGallery('${m.name}', this)">${m.name}</button>`; 
-      set.add(m.name); 
-    }
+    if(!set.has(m.name)){ b+=`<button class="filter-btn" id="fbtn-${m.name}" onclick="filterGallery('${m.name}', this)">${m.name}</button>`; set.add(m.name); }
   });
   document.getElementById('gallery-filters').innerHTML = b;
 }
@@ -703,23 +722,12 @@ function renderDashMembers() {
   document.getElementById('dash-direct').innerHTML = ''; document.getElementById('dash-paternal').innerHTML = ''; document.getElementById('dash-maternal').innerHTML = '';
   
   let directFamily = GLOBAL_MEMBERS.filter(m => m.group === '직계가족').sort((a,b) => getOrderScore(a) - getOrderScore(b));
-  let paternalFamily = GLOBAL_MEMBERS.filter(m => m.group === '친가').sort((a,b) => {
-    if(!a.birthDate) return 1; if(!b.birthDate) return -1; return new Date(a.birthDate) - new Date(b.birthDate);
-  });
-  let maternalFamily = GLOBAL_MEMBERS.filter(m => m.group === '처가').sort((a,b) => {
-    if(!a.birthDate) return 1; if(!b.birthDate) return -1; return new Date(a.birthDate) - new Date(b.birthDate);
-  });
+  let paternalFamily = GLOBAL_MEMBERS.filter(m => m.group === '친가').sort((a,b) => { if(!a.birthDate) return 1; if(!b.birthDate) return -1; return new Date(a.birthDate) - new Date(b.birthDate); });
+  let maternalFamily = GLOBAL_MEMBERS.filter(m => m.group === '처가').sort((a,b) => { if(!a.birthDate) return 1; if(!b.birthDate) return -1; return new Date(a.birthDate) - new Date(b.birthDate); });
 
-  directFamily.forEach(x => {
-    let img = x.photoUrl ? `<img src="${x.photoUrl}">` : '👤';
-    document.getElementById('dash-direct').innerHTML+=`<div class="family-card direct" onclick="openProfile('${x.id}')"><div class="avatar">${img}</div><div class="name">${x.name}</div><div class="role">${x.role}</div></div>`;
-  });
-  paternalFamily.forEach(x => {
-    document.getElementById('dash-paternal').innerHTML+=`<span style="background:rgba(107,63,42,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;margin-bottom:4px;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
-  });
-  maternalFamily.forEach(x => {
-    document.getElementById('dash-maternal').innerHTML+=`<span style="background:rgba(122,140,110,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;margin-bottom:4px;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`;
-  });
+  directFamily.forEach(x => { let img = x.photoUrl ? `<img src="${x.photoUrl}">` : '👤'; document.getElementById('dash-direct').innerHTML+=`<div class="family-card direct" onclick="openProfile('${x.id}')"><div class="avatar">${img}</div><div class="name">${x.name}</div><div class="role">${x.role}</div></div>`; });
+  paternalFamily.forEach(x => { document.getElementById('dash-paternal').innerHTML+=`<span style="background:rgba(107,63,42,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;margin-bottom:4px;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`; });
+  maternalFamily.forEach(x => { document.getElementById('dash-maternal').innerHTML+=`<span style="background:rgba(122,140,110,0.1);padding:8px 14px;border-radius:16px;font-size:0.85rem;cursor:pointer;display:inline-block;margin-bottom:4px;" onclick="openProfile('${x.id}')"><b>${x.name}</b> <small>${x.role}</small></span>`; });
 }
 function renderRecent() { document.getElementById('recent-events').innerHTML = GLOBAL_RECORDS.slice(0,6).map(generatePhotoHTML).join(''); }
 
@@ -730,37 +738,24 @@ function generatePhotoHTML(r) {
   return `<div class="photo-card"><div class="card-actions">${act}</div><div class="photo-thumb" onclick="openLightbox('${r.id}')">${tag}</div><div class="photo-info" onclick="openLightbox('${r.id}')"><h4>${r.title}</h4><p class="memo-text">${r.memo||''}</p><div style="font-size:0.7rem;color:#888;">등록: ${r.author||'가족'}</div></div></div>`;
 }
 
-// 💡 지능형 이중 필터링 코딩 교정 (이름/직함 상호 완벽 대조 감지)
 function renderGallery(target = 'all') {
   let arr = GLOBAL_RECORDS;
   if(target !== 'all') {
     if(target === '직계가족' || target === '친가' || target === '처가') {
-      const nms = GLOBAL_MEMBERS.filter(m=>m.group===target).map(m=>m.name);
-      arr = GLOBAL_RECORDS.filter(r=>nms.some(n=>r.person&&r.person.includes(n)));
+      const nms = GLOBAL_MEMBERS.filter(m=>m.group===target).map(m=>m.name); arr = GLOBAL_RECORDS.filter(r=>nms.some(n=>r.person&&r.person.includes(n)));
     } else {
-      // 역할칭호(아내, 아들 등)를 이름(김찬숙, 나지엽)과 치환하여 매칭
       const matched = GLOBAL_MEMBERS.filter(m => m.name === target || m.role.includes(target) || target.includes(m.name));
-      const targetNames = matched.map(m => m.name);
-      if(!targetNames.includes(target)) targetNames.push(target);
-      
+      const targetNames = matched.map(m => m.name); if(!targetNames.includes(target)) targetNames.push(target);
       arr = GLOBAL_RECORDS.filter(r => targetNames.some(n => r.person && r.person.includes(n)));
     }
   }
   document.getElementById('photo-grid').innerHTML = arr.map(generatePhotoHTML).join('');
 }
-
 function filterGallery(target, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  if(btn) {
-    btn.classList.add('active');
-  } else {
-    // 서이드바 메뉴 클릭 시 상단 버튼들도 연동 동기화 불 들어오게 처리
-    const upperBtn = document.getElementById(`fbtn-${target}`) || document.getElementById('fbtn-all');
-    if(upperBtn) upperBtn.classList.add('active');
-  }
+  if(btn) { btn.classList.add('active'); } else { const upperBtn = document.getElementById(`fbtn-${target}`) || document.getElementById('fbtn-all'); if(upperBtn) upperBtn.classList.add('active'); }
   renderGallery(target);
 }
-
 function searchRecords(v) { const q = v.toLowerCase(); document.getElementById('photo-grid').innerHTML = GLOBAL_RECORDS.filter(r=>(r.title||'').toLowerCase().includes(q)||(r.memo||'').toLowerCase().includes(q)).map(generatePhotoHTML).join(''); }
 
 function renderTimeline() {
@@ -772,13 +767,54 @@ function renderEvents() {
   document.getElementById('events-container').innerHTML = html;
 }
 
+// 💡 라이트박스 및 좌우 내비게이션(슬라이드쇼) 기능
+let lightboxIds = [];
+let lightboxIndex = 0;
+
 function openLightbox(id) {
-  const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; const rot=r.rotation||0; const tr=`transform:rotate(${rot}deg);`;
-  let m = r.fileType==='video'?`<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`:`<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
-  document.getElementById('lightbox-media').innerHTML=m; document.getElementById('lightbox-caption').innerHTML=`<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small style="color:#aaa;">날짜: ${r.date||''} / 작성자: ${r.author||''}</small>`;
+  // 현재 보고 있는 화면(active page)에서 사진들을 모두 추출하여 슬라이드쇼 배열 생성
+  const activePage = document.querySelector('.page.active');
+  if(activePage) {
+    const thumbs = activePage.querySelectorAll('.photo-thumb');
+    lightboxIds = Array.from(thumbs).map(t => {
+      const match = t.getAttribute('onclick').match(/'([^']+)'/); return match ? match[1] : null;
+    }).filter(Boolean);
+    lightboxIds = [...new Set(lightboxIds)]; // 중복 제거
+  } else { lightboxIds = [id]; }
+
+  lightboxIndex = lightboxIds.indexOf(id);
+  if(lightboxIndex === -1) { lightboxIds = [id]; lightboxIndex = 0; }
+  
+  showLightboxImage();
   document.getElementById('lightbox-overlay').classList.add('open');
 }
-function closeLightbox(e) { if(e.target.id==='lightbox-overlay'||e.target.classList.contains('lightbox-close')){document.getElementById('lightbox-media').innerHTML=''; document.getElementById('lightbox-overlay').classList.remove('open');} }
+
+function showLightboxImage() {
+  const id = lightboxIds[lightboxIndex];
+  const r = GLOBAL_RECORDS.find(x=>x.id===id); if(!r) return;
+  const rot=r.rotation||0; const tr=`transform:rotate(${rot}deg);`;
+  let m = r.fileType==='video'?`<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`:`<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
+  
+  document.getElementById('lightbox-media').innerHTML=m; 
+  document.getElementById('lightbox-caption').innerHTML=`<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small style="color:#aaa;">날짜: ${r.date||''} / 작성자: ${r.author||''}</small>`;
+  
+  // 첫 사진/마지막 사진에서는 화살표 감추기
+  document.getElementById('lb-prev').style.display = lightboxIndex > 0 ? 'flex' : 'none';
+  document.getElementById('lb-next').style.display = lightboxIndex < lightboxIds.length - 1 ? 'flex' : 'none';
+}
+
+function navigateLightbox(step, ev) {
+  ev.stopPropagation(); // 클릭 시 라이트박스가 닫히지 않도록 막음
+  lightboxIndex += step;
+  showLightboxImage();
+}
+
+function closeLightbox(e) { 
+  if(e.target.id==='lightbox-overlay' || e.target.classList.contains('lightbox-close')){
+    document.getElementById('lightbox-media').innerHTML=''; 
+    document.getElementById('lightbox-overlay').classList.remove('open');
+  } 
+}
 
 function openProfile(id) {
   const m = GLOBAL_MEMBERS.find(x => x.id === id); if(!m) return;
@@ -845,7 +881,6 @@ function editMember(id) {
 }
 async function deleteMember(id) { if(!confirm('삭제하시겠습니까?')) return; showLoading(true); try{ await db.collection('family_members').doc(id).delete(); showToast('삭제 완료'); await loadData(); openManageMembersModal(); }catch(e){} showLoading(false); }
 
-// 기록 제어 및 EXIF 연동
 function openUpload() { 
   document.getElementById('modal-upload').classList.add('open'); document.getElementById('inp-file').value=''; document.getElementById('file-preview-name').textContent='선택 안됨'; document.getElementById('inp-title').value=''; document.getElementById('inp-memo').value=''; 
   const today = new Date().toISOString().slice(0,10); document.getElementById('inp-date').value = today;
@@ -861,7 +896,7 @@ function previewUploadFiles(inp) {
         const originalDate = EXIF.getTag(this, "DateTimeOriginal");
         if(originalDate) {
           const detectedDate = originalDate.split(' ')[0].replace(/:/g, '-');
-          if(confirm(`📸 사진 촬영 정보 분석 완료!\n\n해당 사진의 메타데이터에서 진짜 촬영일자 [${detectedDate}]를 성공적으로 감지했습니다.\n이 날짜를 기록 날짜로 자동 적용할까요?`)) {
+          if(confirm(`📸 사진 촬영 정보 분석 완료!\n\n해당 사진의 메타데이터에서 진짜 촬영일자 [${detectedDate}]를 감지했습니다.\n이 날짜를 기록 날짜로 자동 적용할까요?`)) {
             document.getElementById('inp-date').value = detectedDate; syncUploadDate('cal');
           }
         }
@@ -891,42 +926,24 @@ function closeEditModal() { document.getElementById('modal-edit').classList.remo
 async function updateRecord() { if(!currentEditId)return; const t=document.getElementById('edit-title').value.trim(); if(!t)return; showLoading(true); try{ await db.collection('records').doc(currentEditId).update({title:t, date:document.getElementById('edit-date').value, memo:document.getElementById('edit-memo').value.trim(), event:document.getElementById('edit-event').value, person:[...document.getElementById('edit-person').selectedOptions].map(o=>o.value).join(', ')}); closeEditModal(); await loadData(); showToast('수정 완료!'); }catch(e){} showLoading(false); }
 async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await storage.refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
 
-// 역사관 파트
 function openHistoryModal() { document.getElementById('his-title').value = ''; document.getElementById('his-period').value = ''; document.getElementById('his-content').value = ''; document.getElementById('his-file').value = ''; document.getElementById('his-file-name').textContent = '선택된 파일 없음'; tempHisFile = null; document.getElementById('modal-history').classList.add('open'); }
 function closeHistoryModal() { document.getElementById('modal-history').classList.remove('open'); }
 function previewHistoryFile(inp) { if(inp.files && inp.files[0]) { tempHisFile = inp.files[0]; document.getElementById('his-file-name').innerHTML = `✅ <b>${tempHisFile.name}</b> 준비됨`; } }
 async function saveHistory() {
   const t = document.getElementById('his-title').value.trim(), p = document.getElementById('his-period').value.trim(), c = document.getElementById('his-content').value.trim(); if(!t || !c) return showToast('내용 누락', true); showLoading(true, '역사 보존 중...');
-  try {
-    let fUrl = '', fName = ''; if(tempHisFile) { const ref = storage.ref('history_docs/' + Date.now() + '_' + tempHisFile.name); await ref.put(tempHisFile); fUrl = await ref.getDownloadURL(); fName = tempHisFile.name; }
-    await db.collection('family_history').add({ title: t, period: p, content: c, fileUrl: fUrl, fileName: fName, author: CURRENT_USER.name, created: new Date().toISOString() });
-    showToast('📜 역사관 기록 완료'); closeHistoryModal(); loadData();
-  } catch(e) {} showLoading(false);
+  try { let fUrl = '', fName = ''; if(tempHisFile) { const ref = storage.ref('history_docs/' + Date.now() + '_' + tempHisFile.name); await ref.put(tempHisFile); fUrl = await ref.getDownloadURL(); fName = tempHisFile.name; } await db.collection('family_history').add({ title: t, period: p, content: c, fileUrl: fUrl, fileName: fName, author: CURRENT_USER.name, created: new Date().toISOString() }); showToast('📜 역사관 기록 완료'); closeHistoryModal(); loadData(); } catch(e) {} showLoading(false);
 }
 async function renderHistoryList() {
   const el = document.getElementById('history-list'); if(!el) return;
-  try {
-    const snap = await db.collection('family_history').orderBy('created', 'desc').get();
-    if(snap.empty) { el.innerHTML = '<p style="text-align:center; padding:40px; color:#888;">역사 기록이 없습니다.</p>'; return; }
-    let html = '';
-    snap.forEach(doc => {
-      const h = doc.data(); const fileLink = h.fileUrl ? `<div style="margin-top:12px;"><a href="${h.fileUrl}" target="_blank" style="background:var(--brown-deep); color:var(--gold-light); text-decoration:none; padding:6px 12px; border-radius:6px; font-size:0.8rem; display:inline-block; font-weight:600;">💾 첨부 문헌/족보 다운로드 (${h.fileName})</a></div>` : '';
-      const delBtn = (CURRENT_USER.isAdmin) ? `<button onclick="deleteHistory('${doc.id}', '${h.fileUrl}')" style="background:none; border:none; color:var(--rust); cursor:pointer; font-size:0.8rem; float:right; font-weight:600;">🗑️ 삭제</button>` : '';
-      html += `<div style="background:#fff; border:1px solid rgba(44,26,14,0.08); padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.02);">${delBtn}<h3 style="color:var(--brown-deep); font-family:'Noto Serif KR', serif; margin-bottom:4px;">${h.title}</h3><span style="font-size:0.8rem; color:var(--brown-light); font-weight:600; display:block; margin-bottom:12px;">⏱️ 역사적 시기: ${h.period || '미지정'}</span><p style="font-size:0.92rem; line-height:1.6; white-space:pre-wrap; color:var(--text-main);">${h.content}</p>${fileLink}<small style="display:block; text-align:right; color:#999; margin-top:12px;">사관(기록자): ${h.author} / 등재일: ${h.created.slice(0,10)}</small></div>`;
-    }); el.innerHTML = html;
+  try { const snap = await db.collection('family_history').orderBy('created', 'desc').get(); if(snap.empty) { el.innerHTML = '<p style="text-align:center; padding:40px; color:#888;">역사 기록이 없습니다.</p>'; return; }
+    let html = ''; snap.forEach(doc => { const h = doc.data(); const fileLink = h.fileUrl ? `<div style="margin-top:12px;"><a href="${h.fileUrl}" target="_blank" style="background:var(--brown-deep); color:var(--gold-light); text-decoration:none; padding:6px 12px; border-radius:6px; font-size:0.8rem; display:inline-block; font-weight:600;">💾 첨부 문헌/족보 다운로드 (${h.fileName})</a></div>` : ''; const delBtn = (CURRENT_USER.isAdmin) ? `<button onclick="deleteHistory('${doc.id}', '${h.fileUrl}')" style="background:none; border:none; color:var(--rust); cursor:pointer; font-size:0.8rem; float:right; font-weight:600;">🗑️ 삭제</button>` : ''; html += `<div style="background:#fff; border:1px solid rgba(44,26,14,0.08); padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.02);">${delBtn}<h3 style="color:var(--brown-deep); font-family:'Noto Serif KR', serif; margin-bottom:4px;">${h.title}</h3><span style="font-size:0.8rem; color:var(--brown-light); font-weight:600; display:block; margin-bottom:12px;">⏱️ 역사적 시기: ${h.period || '미지정'}</span><p style="font-size:0.92rem; line-height:1.6; white-space:pre-wrap; color:var(--text-main);">${h.content}</p>${fileLink}<small style="display:block; text-align:right; color:#999; margin-top:12px;">사관(기록자): ${h.author} / 등재일: ${h.created.slice(0,10)}</small></div>`; }); el.innerHTML = html;
   } catch(e) {}
 }
 async function deleteHistory(id, fileUrl) { if(!confirm('기록을 완전히 삭제하시겠습니까?')) return; showLoading(true); try { await db.collection('family_history').doc(id).delete(); if(fileUrl && fileUrl.includes('firebase')) await storage.refFromURL(fileUrl).delete().catch(()=>{}); showToast('삭제 완료'); loadData(); } catch(e){} showLoading(false); }
 
-// 가입 승인
 async function loadAdminList() { const e=document.getElementById('admin-user-list'), s=await db.collection('auth_users').where('status','==','pending').get(); if(s.empty)return e.innerHTML='<p style="padding:20px; text-align:center;">신청자 없음</p>'; e.innerHTML=s.docs.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;border:1px solid #eee;"><div><b>${d.data().name}</b> [<span style="color:var(--brown-light);">${d.data().role}</span>]</div><button class="topbar-btn" onclick="approveUser('${d.id}')">승인하기</button></div>`).join(''); }
 async function approveUser(id) { await db.collection('auth_users').doc(id).update({status:'approved'}); showToast('승인 완료!'); loadData(); }
-
-function showPage(id) { 
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active'); 
-  const m={'dashboard':'대시보드', 'gallery':'전체 갤러리', 'timeline':'연대 타임라인', 'events':'이벤트 파일', 'admin':'가족 승인 관리', 'history':'가족 역사 및 족보'}; document.getElementById('bc-current').textContent = m[id]||''; 
-  if(window.innerWidth<=768 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar(); 
-}
+function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+id).classList.add('active'); const m={'dashboard':'대시보드', 'gallery':'전체 갤러리', 'timeline':'연대 타임라인', 'events':'이벤트 파일', 'admin':'가족 승인 관리', 'history':'가족 역사 및 족보'}; document.getElementById('bc-current').textContent = m[id]||''; if(window.innerWidth<=768 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar(); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 function closeModal(e, id) { if(e.target.id===id) document.getElementById(id).classList.remove('open'); }
 
