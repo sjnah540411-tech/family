@@ -74,7 +74,6 @@ body {
 #splash p { color: var(--brown-light); font-size: 1rem; letter-spacing: 0.1em; animation: fadeUp 1s ease 0.3s both; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
 
-/* 💡 화면 찌그러짐 해결의 핵심: 모바일 충돌 방지 구조 */
 #app { display: none; grid-template-columns: 260px 1fr; min-height: 100vh; }
 #app.loaded { display: grid; }
 
@@ -140,10 +139,11 @@ body {
 .photo-info { padding: 12px; flex: 1; }
 .photo-info h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; font-weight:600; cursor:pointer;}
 .photo-info p.memo-text { font-size: 0.8rem; color: var(--brown-mid); margin-bottom: 6px; line-height: 1.4; word-break: break-all; }
+.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
 .card-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; z-index: 10; }
-.card-actions button { background: rgba(255,255,255,0.9); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 4px; cursor: pointer; font-size: 0.8rem; }
+.card-actions button { background: rgba(255,255,255,0.95); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 4px; cursor: pointer; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-/* ───────── RECENT EVENTS (LIST) ───────── */
+/* ───────── RECENT EVENTS ───────── */
 .event-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 .event-item { display: flex; align-items: flex-start; gap: 12px; background: var(--cream); border-radius: var(--radius); padding: 12px; border: 1px solid rgba(44,26,14,0.08); cursor: pointer; transition: 0.2s; }
 .event-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
@@ -152,9 +152,8 @@ body {
 .event-body { flex: 1; overflow: hidden; }
 .event-body h4 { font-size: 0.9rem; font-weight:600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .event-body p { font-size: 0.75rem; color: var(--brown-mid); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.event-date { font-size: 0.7rem; color: var(--brown-light); }
 
-/* ───────── TIMELINE & EVENTS FOLDERS ───────── */
+/* ───────── FOLDERS ───────── */
 .folder-card { background: var(--cream); border-radius: var(--radius); border: 1px solid rgba(44,26,14,0.08); margin-bottom: 14px; overflow: hidden; transition: 0.3s; }
 .folder-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #fff; }
 .folder-header:hover { background: var(--warm-white); }
@@ -182,42 +181,40 @@ body {
 .dyn-val { flex: 1; padding: 10px; border: 1px solid rgba(44,26,14,0.2); border-radius: 6px; font-size: 0.85rem; font-family: inherit; }
 .dyn-del { background: var(--rust); color: #fff; border: none; border-radius: 6px; padding: 8px 10px; cursor: pointer; font-size: 0.8rem; }
 
-/* ───────── LOADING ───────── */
+/* ───────── COMMENTS (댓글) 영역 UI ───────── */
+.comment-item { padding: 12px 0; border-bottom: 1px solid rgba(44,26,14,0.08); }
+.comment-item.reply { margin-left: 24px; padding-left: 12px; border-left: 3px solid var(--gold-light); background: rgba(212,168,83,0.03); border-bottom: none; border-radius: 0 8px 8px 0; margin-top: 8px; }
+.comment-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.comment-author { font-size: 0.85rem; font-weight: 600; color: var(--brown-deep); }
+.comment-date { font-size: 0.7rem; color: #999; }
+.comment-text { font-size: 0.9rem; color: var(--text-main); white-space: pre-wrap; margin-bottom: 8px; line-height: 1.4; }
+.comment-actions button { background: none; border: none; font-size: 0.75rem; cursor: pointer; padding: 0; }
+.comment-reply-btn { color: var(--brown-light); margin-right: 12px; }
+.comment-del-btn { color: var(--rust); }
+
 #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
 .spinner { border: 4px solid rgba(212,168,83,0.3); border-left-color: var(--brown-deep); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 16px; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* 💡 일반 스마트폰 직사각형 화면 최적화 (폭 100% 꽉 채우기) */
-#hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
-.desktop-only { display: block; }
-
+/* ───────── MOBILE RESPONSIVE ───────── */
 @media (max-width: 768px) {
-  /* 그리드 시스템 해제 및 100% 확장 */
-  #app.loaded { display: block !important; }
-  #hamburger { display: block; }
+  #app { display: block; }
   #sidebar { position: fixed; left: -280px; width: 260px; z-index: 9000; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
   #sidebar.open { left: 0; }
-  
-  /* 메인 콘텐츠 영역 여백 최적화 */
-  #main { padding-top: 0; width: 100%; min-width: 100vw; box-sizing: border-box; } 
-  #topbar { padding: 12px 12px 12px 60px; gap: 8px; }
-  .desktop-only { display: none !important; }
-  
-  .page { padding: 16px 12px; }
-  
-  /* 모바일 화면 요소 압축 */
-  .topbar-btn { padding: 6px 10px; font-size: 0.75rem; }
-  .family-preview { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-bottom: 24px; }
-  .family-card { padding: 10px 6px; }
-  .family-card .avatar { width: 50px; height: 50px; font-size: 1.2rem; }
+  #main { padding-top: 54px; width:100%; } 
+  #topbar { padding: 12px 16px; }
+  .page { padding: 16px 14px; }
   .photo-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .family-preview { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; }
+  .event-list { grid-template-columns: 1fr; }
   
-  /* 모바일 슬라이드쇼 화살표 크기 조정 */
   .lb-nav { font-size: 1.5rem; width: 45px; height: 45px; padding: 10px; }
   .lb-prev { left: 10px; }
   .lb-next { right: 10px; }
 }
 
+#hamburger { display: none; position: fixed; top: 10px; left: 12px; z-index: 9999; background: var(--brown-deep); color: var(--gold-light); border: none; border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; }
+@media (max-width: 768px) { #hamburger { display: block; } .desktop-only { display: none !important; } }
 .member-list-item { display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 14px; border-radius:8px; border:1px solid #eee; margin-bottom:8px; }
 .member-list-actions button { background:var(--cream); border:1px solid #ccc; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:0.75rem; margin-left:4px; }
 </style>
@@ -290,8 +287,9 @@ body {
 
 <div id="modal-history" class="modal-overlay" onclick="closeModal(event, 'modal-history')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-header"><h3>📜 가문 역사 / 족보 이야기 추가</h3><button class="modal-close" onclick="closeHistoryModal()">✕</button></div>
+    <div class="modal-header"><h3>📜 가문 역사 / 족보 이야기 등록 및 수정</h3><button class="modal-close" onclick="closeHistoryModal()">✕</button></div>
     <div class="modal-body">
+      <input type="hidden" id="his-edit-id">
       <div class="form-group"><label>기록 제목</label><input type="text" id="his-title" placeholder="예: 파평윤씨 전서공파 대동보 유래"></div>
       <div class="form-row">
         <div class="form-group"><label>관련 시기 / 연대</label><input type="text" id="his-period" placeholder="예: 조선 중기, 1970년대 등"></div>
@@ -309,6 +307,24 @@ body {
         <div id="his-file-name" style="margin-top:8px; font-size:0.8rem; color:var(--brown-mid); font-weight:600;">선택된 파일 없음</div>
       </div>
       <button class="btn-primary" onclick="saveHistory()">💾 역사 창고에 안전하게 보관</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-comments" class="modal-overlay" onclick="closeModal(event, 'modal-comments')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>💬 추억에 남겨진 댓글</h3>
+      <button class="modal-close" onclick="closeCommentsModal()">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex; flex-direction:column; max-height:60vh;">
+      <div id="comments-list" style="flex:1; overflow-y:auto; padding-right:8px; margin-bottom:16px; min-height:150px;">
+        </div>
+      <div style="border-top:1px solid rgba(44,26,14,0.1); padding-top:16px;">
+        <div id="comment-reply-indicator" style="display:none; justify-content:space-between; align-items:center; background:rgba(212,168,83,0.15); padding:6px 12px; border-radius:6px; margin-bottom:8px;"></div>
+        <textarea id="comment-input" rows="2" style="width:100%; border:1px solid #ccc; border-radius:8px; padding:10px; font-size:0.9rem; resize:vertical; font-family:inherit;" placeholder="따뜻한 댓글을 남겨주세요..."></textarea>
+        <button class="btn-primary" onclick="saveComment()" style="margin-top:8px; padding:10px;">댓글 달기</button>
+      </div>
     </div>
   </div>
 </div>
@@ -580,12 +596,14 @@ const firebaseConfig = {
   appId: "1:261921694732:web:df25fe595538969b743a29",
   measurementId: "G-GJ6WXTS7Y7"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 
 let GLOBAL_RECORDS = [];
 let GLOBAL_MEMBERS = [];
+let GLOBAL_HISTORY = [];
 let CURRENT_USER = null;
 let currentEditId = null;
 let tempHisFile = null;
@@ -670,9 +688,7 @@ async function checkAuth() {
   try { const c = await db.collection('auth_users').where('isAdmin','==',true).get(); if(c.empty) await db.collection('auth_users').add({name:'나상진',role:'아버지',pw:btoa('0000'),status:'approved',isAdmin:true}); } catch(e) {}
   const s = localStorage.getItem('fa_session'); 
   if(s) { 
-    const u=JSON.parse(s); 
-    document.getElementById('app').classList.add('loaded');
-    startApp(u); 
+    const u=JSON.parse(s); document.getElementById('app').classList.add('loaded'); startApp(u); 
     db.collection('auth_users').doc(u.id).get().then(v=>{if(!v.exists||v.data().status!=='approved')logout();}); 
     return; 
   }
@@ -731,11 +747,20 @@ function renderDashMembers() {
 }
 function renderRecent() { document.getElementById('recent-events').innerHTML = GLOBAL_RECORDS.slice(0,6).map(generatePhotoHTML).join(''); }
 
+// 💡 사진 타일 렌더링에 '댓글(💬)' 버튼 추가
 function generatePhotoHTML(r) {
   const rot = r.rotation||0; const scale = (rot%180!==0)?1.35:1; let tag='';
   if(r.fileType==='video') tag=`<video src="${r.imgUrl}#t=0.1" style="transform:rotate(${rot}deg) scale(${scale});"></video><div class="video-badge">▶️</div>`; else tag=`<img src="${r.imgUrl}" style="transform:rotate(${rot}deg) scale(${scale});">`;
-  const act = (CURRENT_USER.isAdmin || r.author === CURRENT_USER.name) ? `<button onclick="rotateImg('${r.id}',${rot},this,event)">🔄</button><button onclick="openEditModal('${r.id}', event)">✏️</button><button onclick="deleteRecord('${r.id}','${r.imgUrl}',event)">🗑️</button>` : '';
-  return `<div class="photo-card"><div class="card-actions">${act}</div><div class="photo-thumb" onclick="openLightbox('${r.id}')">${tag}</div><div class="photo-info" onclick="openLightbox('${r.id}')"><h4>${r.title}</h4><p class="memo-text">${r.memo||''}</p><div style="font-size:0.7rem;color:#888;">등록: ${r.author||'가족'}</div></div></div>`;
+  
+  const hasPermission = (CURRENT_USER.isAdmin || r.author === CURRENT_USER.name);
+  const act = hasPermission ? `<button onclick="rotateImg('${r.id}',${rot},this,event)">🔄</button><button onclick="openEditModal('${r.id}', event)">✏️</button><button onclick="deleteRecord('${r.id}','${r.imgUrl}',event)">🗑️</button>` : '';
+  const commentBtn = `<button onclick="openCommentsModal('${r.id}', event)" style="background:rgba(212,168,83,0.95); border:none; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.8rem; color:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.2);">💬 댓글</button>`;
+
+  return `<div class="photo-card">
+    <div class="card-actions" style="display:flex; gap:4px; z-index:10; position:absolute; top:6px; right:6px;">${commentBtn}${act}</div>
+    <div class="photo-thumb" onclick="openLightbox('${r.id}')">${tag}</div>
+    <div class="photo-info" onclick="openLightbox('${r.id}')"><h4>${r.title}</h4><p class="memo-text">${r.memo||''}</p><div style="font-size:0.7rem;color:#888;">등록: ${r.author||'가족'}</div></div>
+  </div>`;
 }
 
 function renderGallery(target = 'all') {
@@ -767,7 +792,7 @@ function renderEvents() {
   document.getElementById('events-container').innerHTML = html;
 }
 
-// 💡 라이트박스 및 좌우 내비게이션(슬라이드쇼)
+// 라이트박스 연동
 let lightboxIds = [];
 let lightboxIndex = 0;
 
@@ -792,7 +817,10 @@ function showLightboxImage() {
   let m = r.fileType==='video'?`<video src="${r.imgUrl}" controls autoplay style="${tr} max-width:100%;max-height:85vh;"></video>`:`<img src="${r.imgUrl}" style="${tr} max-width:100%;max-height:85vh;object-fit:contain;">`;
   
   document.getElementById('lightbox-media').innerHTML=m; 
-  document.getElementById('lightbox-caption').innerHTML=`<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small style="color:#aaa;">날짜: ${r.date||''} / 작성자: ${r.author||''}</small>`;
+  
+  // 💡 라이트박스 하단에 댓글 보기 버튼 추가
+  document.getElementById('lightbox-caption').innerHTML=`<b>${r.title}</b><br><span style="color:#ccc;">${r.memo||''}</span><br><small style="color:#aaa;">날짜: ${r.date||''} / 등록: ${r.author||''}</small><br>
+  <button onclick="openCommentsModal('${id}', event)" style="margin-top:12px; padding:6px 18px; border-radius:20px; border:none; background:var(--gold); color:var(--brown-deep); font-weight:600; cursor:pointer;">💬 댓글 확인 / 쓰기</button>`;
   
   document.getElementById('lb-prev').style.display = lightboxIndex > 0 ? 'flex' : 'none';
   document.getElementById('lb-next').style.display = lightboxIndex < lightboxIds.length - 1 ? 'flex' : 'none';
@@ -801,6 +829,114 @@ function showLightboxImage() {
 function navigateLightbox(step, ev) { ev.stopPropagation(); lightboxIndex += step; showLightboxImage(); }
 function closeLightbox(e) { if(e.target.id==='lightbox-overlay' || e.target.classList.contains('lightbox-close')){ document.getElementById('lightbox-media').innerHTML=''; document.getElementById('lightbox-overlay').classList.remove('open'); } }
 
+// ════════ 💬 댓글 및 대댓글(답글) 독립 관리 시스템 (신규) ════════
+let currentRecordForComment = null;
+let currentReplyTarget = null; // {id, author}
+
+async function openCommentsModal(recordId, ev) {
+  if(ev) ev.stopPropagation();
+  currentRecordForComment = recordId;
+  currentReplyTarget = null;
+  document.getElementById('comment-reply-indicator').style.display = 'none';
+  document.getElementById('comment-input').value = '';
+  document.getElementById('modal-comments').classList.add('open');
+  await loadComments();
+}
+
+function closeCommentsModal() {
+  document.getElementById('modal-comments').classList.remove('open');
+}
+
+async function loadComments() {
+  if(!currentRecordForComment) return;
+  const container = document.getElementById('comments-list');
+  container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">불러오는 중...</div>';
+  try {
+    const snap = await db.collection('comments').where('recordId', '==', currentRecordForComment).get();
+    let comments = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    comments.sort((a, b) => new Date(a.created) - new Date(b.created)); // 시간순 정렬
+    
+    const parents = comments.filter(c => !c.replyTo);
+    const replies = comments.filter(c => c.replyTo);
+
+    let html = '';
+    if(parents.length === 0) {
+      html = '<div style="text-align:center;padding:20px;color:#888;">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</div>';
+    } else {
+      parents.forEach(p => {
+        html += buildCommentHTML(p);
+        const childReps = replies.filter(r => r.replyTo === p.id);
+        childReps.forEach(cr => { html += buildCommentHTML(cr, true); });
+      });
+    }
+    container.innerHTML = html;
+  } catch(e) { container.innerHTML = '<div style="text-align:center;padding:20px;color:red;">오류가 발생했습니다.</div>'; }
+}
+
+function buildCommentHTML(c, isReply=false) {
+  const marginClass = isReply ? 'comment-item reply' : 'comment-item';
+  const delBtn = (CURRENT_USER.isAdmin || CURRENT_USER.name === c.author) ? `<button class="comment-del-btn" onclick="deleteComment('${c.id}')">삭제</button>` : '';
+  const replyBtn = !isReply ? `<button class="comment-reply-btn" onclick="prepareReply('${c.id}', '${c.author}')">↳ 답글 달기</button>` : '';
+
+  return `
+  <div class="${marginClass}">
+    <div class="comment-header">
+      <span class="comment-author">${isReply ? '↳ ' : ''}${c.author}</span>
+      <span class="comment-date">${c.created.replace('T', ' ').slice(0, 16)}</span>
+    </div>
+    <div class="comment-text">${c.text}</div>
+    <div class="comment-actions">${replyBtn} ${delBtn}</div>
+  </div>`;
+}
+
+async function saveComment() {
+  const text = document.getElementById('comment-input').value.trim();
+  if(!text) return showToast('댓글 내용을 입력하세요.', true);
+  showLoading(true);
+  try {
+    await db.collection('comments').add({
+      recordId: currentRecordForComment,
+      author: CURRENT_USER.name,
+      text: text,
+      created: new Date().toISOString(),
+      replyTo: currentReplyTarget ? currentReplyTarget.id : null
+    });
+    document.getElementById('comment-input').value = '';
+    cancelReply();
+    await loadComments();
+  } catch(e) { showToast('댓글 저장 실패', true); }
+  showLoading(false);
+}
+
+function prepareReply(id, author) {
+  currentReplyTarget = {id, author};
+  const ind = document.getElementById('comment-reply-indicator');
+  ind.style.display = 'flex';
+  ind.innerHTML = `<span style="font-size:0.8rem;color:var(--brown-mid);"><b>${author}</b>님의 댓글에 답글을 씁니다.</span> <button onclick="cancelReply()" style="background:none;border:none;color:var(--rust);cursor:pointer;font-size:0.8rem;">✕ 취소</button>`;
+  document.getElementById('comment-input').focus();
+}
+
+function cancelReply() {
+  currentReplyTarget = null;
+  document.getElementById('comment-reply-indicator').style.display = 'none';
+}
+
+async function deleteComment(id) {
+  if(!confirm('이 댓글을 삭제하시겠습니까?')) return;
+  showLoading(true);
+  try {
+    await db.collection('comments').doc(id).delete();
+    // 부모 댓글 삭제 시, 거기에 달린 답글들도 모두 삭제
+    const replies = await db.collection('comments').where('replyTo', '==', id).get();
+    const batch = db.batch();
+    replies.forEach(r => batch.delete(r.ref));
+    await batch.commit();
+    await loadComments();
+  } catch(e) { showToast('삭제 실패', true); }
+  showLoading(false);
+}
+
+// 👤 가족 상세 프로필 팝업
 function openProfile(id) {
   const m = GLOBAL_MEMBERS.find(x => x.id === id); if(!m) return;
   const imgHtml = m.photoUrl ? `<img src="${m.photoUrl}" style="width:110px;height:110px;border-radius:50%;object-fit:cover;margin:0 auto 15px;display:block;box-shadow:0 4px 10px rgba(0,0,0,0.2);">` : `<div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--brown-light),var(--gold));margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#fff;">👤</div>`;
@@ -912,19 +1048,71 @@ async function updateRecord() { if(!currentEditId)return; const t=document.getEl
 async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await storage.refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
 async function rotateImg(id, cur, btn, ev) { ev.stopPropagation(); const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name) { return showToast('🚫 권한이 없습니다.', true); } const n=(cur+90)%360; btn.closest('.photo-card').querySelector('img, video').style.transform=`rotate(${n}deg) scale(${n%180!==0?1.35:1})`; btn.setAttribute('onclick',`rotateImg('${id}',${n},this,event)`); db.collection('records').doc(id).update({rotation:n}); }
 
-function openHistoryModal() { document.getElementById('his-title').value = ''; document.getElementById('his-period').value = ''; document.getElementById('his-content').value = ''; document.getElementById('his-file').value = ''; document.getElementById('his-file-name').textContent = '선택된 파일 없음'; tempHisFile = null; document.getElementById('modal-history').classList.add('open'); }
+// 📜 가문 역사 / 족보 이야기 처리 로직
+function openHistoryModal() { document.getElementById('his-edit-id').value = ''; document.getElementById('his-title').value = ''; document.getElementById('his-period').value = ''; document.getElementById('his-content').value = ''; document.getElementById('his-file').value = ''; document.getElementById('his-file-name').textContent = '선택된 파일 없음'; tempHisFile = null; document.getElementById('modal-history').classList.add('open'); }
 function closeHistoryModal() { document.getElementById('modal-history').classList.remove('open'); }
 function previewHistoryFile(inp) { if(inp.files && inp.files[0]) { tempHisFile = inp.files[0]; document.getElementById('his-file-name').innerHTML = `✅ <b>${tempHisFile.name}</b> 준비됨`; } }
+
+// 💡 새 역사 추가 및 수정 완료 함수
 async function saveHistory() {
-  const t = document.getElementById('his-title').value.trim(), p = document.getElementById('his-period').value.trim(), c = document.getElementById('his-content').value.trim(); if(!t || !c) return showToast('내용 누락', true); showLoading(true, '역사 보존 중...');
-  try { let fUrl = '', fName = ''; if(tempHisFile) { const ref = storage.ref('history_docs/' + Date.now() + '_' + tempHisFile.name); await ref.put(tempHisFile); fUrl = await ref.getDownloadURL(); fName = tempHisFile.name; } await db.collection('family_history').add({ title: t, period: p, content: c, fileUrl: fUrl, fileName: fName, author: CURRENT_USER.name, created: new Date().toISOString() }); showToast('📜 역사관 기록 완료'); closeHistoryModal(); loadData(); } catch(e) {} showLoading(false);
+  const id = document.getElementById('his-edit-id').value;
+  const t = document.getElementById('his-title').value.trim(), p = document.getElementById('his-period').value.trim(), c = document.getElementById('his-content').value.trim(); 
+  if(!t || !c) return showToast('내용 누락', true); showLoading(true, '역사 보존 중...');
+  try { 
+    let obj = { title: t, period: p, content: c };
+    if(tempHisFile) { 
+      const ref = storage.ref('history_docs/' + Date.now() + '_' + tempHisFile.name); 
+      await ref.put(tempHisFile); 
+      obj.fileUrl = await ref.getDownloadURL(); 
+      obj.fileName = tempHisFile.name; 
+    } 
+    if(id) {
+      await db.collection('family_history').doc(id).update(obj);
+      showToast('📜 역사관 기록 수정 완료');
+    } else {
+      obj.author = CURRENT_USER.name;
+      obj.created = new Date().toISOString();
+      await db.collection('family_history').add(obj); 
+      showToast('📜 역사관 기록 등록 완료');
+    }
+    closeHistoryModal(); loadData(); 
+  } catch(e) {} showLoading(false);
 }
+
+// 💡 역사 수정 모달 열기
+function editHistory(id) {
+  const h = GLOBAL_HISTORY.find(x => x.id === id); if(!h) return;
+  document.getElementById('his-edit-id').value = id;
+  document.getElementById('his-title').value = h.title || '';
+  document.getElementById('his-period').value = h.period || '';
+  document.getElementById('his-content').value = h.content || '';
+  document.getElementById('his-file-name').innerHTML = h.fileName ? `기존 파일: <b>${h.fileName}</b> (새로 첨부 시 교체)` : '선택된 파일 없음';
+  tempHisFile = null;
+  document.getElementById('modal-history').classList.add('open');
+}
+
 async function renderHistoryList() {
   const el = document.getElementById('history-list'); if(!el) return;
-  try { const snap = await db.collection('family_history').orderBy('created', 'desc').get(); if(snap.empty) { el.innerHTML = '<p style="text-align:center; padding:40px; color:#888;">역사 기록이 없습니다.</p>'; return; }
-    let html = ''; snap.forEach(doc => { const h = doc.data(); const fileLink = h.fileUrl ? `<div style="margin-top:12px;"><a href="${h.fileUrl}" target="_blank" style="background:var(--brown-deep); color:var(--gold-light); text-decoration:none; padding:6px 12px; border-radius:6px; font-size:0.8rem; display:inline-block; font-weight:600;">💾 첨부 문헌/족보 다운로드 (${h.fileName})</a></div>` : ''; const delBtn = (CURRENT_USER.isAdmin) ? `<button onclick="deleteHistory('${doc.id}', '${h.fileUrl}')" style="background:none; border:none; color:var(--rust); cursor:pointer; font-size:0.8rem; float:right; font-weight:600;">🗑️ 삭제</button>` : ''; html += `<div style="background:#fff; border:1px solid rgba(44,26,14,0.08); padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.02);">${delBtn}<h3 style="color:var(--brown-deep); font-family:'Noto Serif KR', serif; margin-bottom:4px;">${h.title}</h3><span style="font-size:0.8rem; color:var(--brown-light); font-weight:600; display:block; margin-bottom:12px;">⏱️ 역사적 시기: ${h.period || '미지정'}</span><p style="font-size:0.92rem; line-height:1.6; white-space:pre-wrap; color:var(--text-main);">${h.content}</p>${fileLink}<small style="display:block; text-align:right; color:#999; margin-top:12px;">사관(기록자): ${h.author} / 등재일: ${h.created.slice(0,10)}</small></div>`; }); el.innerHTML = html;
+  try { 
+    const snap = await db.collection('family_history').orderBy('created', 'desc').get(); 
+    GLOBAL_HISTORY = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    
+    if(snap.empty) { el.innerHTML = '<p style="text-align:center; padding:40px; color:#888;">역사 기록이 없습니다.</p>'; return; }
+    let html = ''; snap.forEach(doc => { 
+      const h = doc.data(); 
+      const fileLink = h.fileUrl ? `<div style="margin-top:12px;"><a href="${h.fileUrl}" target="_blank" style="background:var(--brown-deep); color:var(--gold-light); text-decoration:none; padding:6px 12px; border-radius:6px; font-size:0.8rem; display:inline-block; font-weight:600;">💾 첨부 문헌/족보 다운로드 (${h.fileName})</a></div>` : ''; 
+      
+      const actBtns = (CURRENT_USER.isAdmin || CURRENT_USER.name === h.author) 
+        ? `<div style="float:right; display:flex; gap:8px;">
+             <button onclick="editHistory('${doc.id}')" style="background:none; border:none; color:var(--brown-mid); cursor:pointer; font-size:0.8rem; font-weight:600;">✏️ 수정</button>
+             <button onclick="deleteHistory('${doc.id}', '${h.fileUrl}')" style="background:none; border:none; color:var(--rust); cursor:pointer; font-size:0.8rem; font-weight:600;">🗑️ 삭제</button>
+           </div>` : ''; 
+           
+      html += `<div style="background:#fff; border:1px solid rgba(44,26,14,0.08); padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.02);">${actBtns}<h3 style="color:var(--brown-deep); font-family:'Noto Serif KR', serif; margin-bottom:4px;">${h.title}</h3><span style="font-size:0.8rem; color:var(--brown-light); font-weight:600; display:block; margin-bottom:12px;">⏱️ 역사적 시기: ${h.period || '미지정'}</span><p style="font-size:0.92rem; line-height:1.6; white-space:pre-wrap; color:var(--text-main);">${h.content}</p>${fileLink}<small style="display:block; text-align:right; color:#999; margin-top:12px;">사관(기록자): ${h.author} / 등재일: ${h.created.slice(0,10)}</small></div>`; 
+    }); el.innerHTML = html;
   } catch(e) {}
 }
+
 async function deleteHistory(id, fileUrl) { if(!confirm('기록을 완전히 삭제하시겠습니까?')) return; showLoading(true); try { await db.collection('family_history').doc(id).delete(); if(fileUrl && fileUrl.includes('firebase')) await storage.refFromURL(fileUrl).delete().catch(()=>{}); showToast('삭제 완료'); loadData(); } catch(e){} showLoading(false); }
 
 async function loadAdminList() { const e=document.getElementById('admin-user-list'), s=await db.collection('auth_users').where('status','==','pending').get(); if(s.empty)return e.innerHTML='<p style="padding:20px; text-align:center;">신청자 없음</p>'; e.innerHTML=s.docs.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;border:1px solid #eee;"><div><b>${d.data().name}</b> [<span style="color:var(--brown-light);">${d.data().role}</span>]</div><button class="topbar-btn" onclick="approveUser('${d.id}')">승인하기</button></div>`).join(''); }
