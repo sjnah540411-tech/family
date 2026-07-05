@@ -139,11 +139,10 @@ body {
 .photo-info { padding: 12px; flex: 1; }
 .photo-info h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; font-weight:600; cursor:pointer;}
 .photo-info p.memo-text { font-size: 0.8rem; color: var(--brown-mid); margin-bottom: 6px; line-height: 1.4; word-break: break-all; }
-.photo-info .meta { font-size: 0.75rem; color: var(--text-sub); }
 .card-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; z-index: 10; }
 .card-actions button { background: rgba(255,255,255,0.95); border: 1px solid rgba(44,26,14,0.1); border-radius: 6px; padding: 4px; cursor: pointer; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-/* ───────── RECENT EVENTS ───────── */
+/* ───────── RECENT EVENTS (LIST) ───────── */
 .event-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 .event-item { display: flex; align-items: flex-start; gap: 12px; background: var(--cream); border-radius: var(--radius); padding: 12px; border: 1px solid rgba(44,26,14,0.08); cursor: pointer; transition: 0.2s; }
 .event-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
@@ -544,7 +543,16 @@ body {
       </div>
       <div class="form-row">
         <div class="form-group"><label>등장 가족</label><select id="inp-person" multiple style="height:80px;"></select></div>
-        <div class="form-group"><label>이벤트</label><select id="inp-event"><option value="travel">✈️ 가족여행</option><option value="wedding">💍 결혼식</option><option value="graduation">🎓 졸업/입학</option><option value="special">⭐ 특별한 날</option><option value="daily">☀️ 소소한 일상</option></select></div>
+        <div class="form-group"><label>이벤트</label>
+          <select id="inp-event">
+            <option value="travel">✈️ 여행</option>
+            <option value="wedding">💍 결혼식</option>
+            <option value="graduation">🎓 졸업/입학</option>
+            <option value="special">⭐ 특별한 날</option>
+            <option value="daily">☀️ 소소한 일상</option>
+            <option value="etc">📌 기타</option>
+          </select>
+        </div>
       </div>
       <div class="form-group"><label>설명 · 메모</label><textarea id="inp-memo" rows="2"></textarea></div>
       <button class="btn-primary" onclick="saveRecord()">올리기</button>
@@ -572,7 +580,16 @@ body {
       </div>
       <div class="form-row">
         <div class="form-group"><label>등장 가족</label><select id="edit-person" multiple style="height:80px;"></select></div>
-        <div class="form-group"><label>이벤트</label><select id="edit-event"><option value="travel">✈️ 가족여행</option><option value="wedding">💍 결혼식</option><option value="graduation">🎓 졸업/입학</option><option value="special">⭐ 특별한 날</option><option value="daily">☀️ 일상</option></select></div>
+        <div class="form-group"><label>이벤트</label>
+          <select id="edit-event">
+            <option value="travel">✈️ 여행</option>
+            <option value="wedding">💍 결혼식</option>
+            <option value="graduation">🎓 졸업/입학</option>
+            <option value="special">⭐ 특별한 날</option>
+            <option value="daily">☀️ 소소한 일상</option>
+            <option value="etc">📌 기타</option>
+          </select>
+        </div>
       </div>
       <div class="form-group"><label>메모</label><textarea id="edit-memo" rows="2"></textarea></div>
       <button class="btn-primary" onclick="updateRecord()">저장하기</button>
@@ -588,13 +605,12 @@ body {
 <script>
 // ▼▼ 파이어베이스 진짜 암호 6줄을 여기에 덮어쓰세요 ▼▼
 const firebaseConfig = {
-  apiKey: "AIzaSyCzvwa5Q88RIjYUieWkh_RydWyfrZoPqXA",
+  apiKey: "여기에_선생님의_진짜_apiKey를_넣으세요",
   authDomain: "family-a19f9.firebaseapp.com",
   projectId: "family-a19f9",
   storageBucket: "family-a19f9.firebasestorage.app",
-  messagingSenderId: "261921694732",
-  appId: "1:261921694732:web:df25fe595538969b743a29",
-  measurementId: "G-GJ6WXTS7Y7"
+  messagingSenderId: "여기에_선생님의_진짜_숫자를_넣으세요",
+  appId: "여기에_선생님의_진짜_appId를_넣으세요"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -609,7 +625,8 @@ let currentEditId = null;
 let tempHisFile = null;
 
 const DECADES = [{id:'before1954',label:'1954년 이전'},{id:'1950s',label:'1950년대'},{id:'1960s',label:'1960년대'},{id:'1970s',label:'1970년대'},{id:'1980s',label:'1980년대'},{id:'1990s',label:'1990년대'},{id:'2000s',label:'2000년대'},{id:'2010s',label:'2010년대'},{id:'2020s',label:'2020년대'},{id:'2030s',label:'2030년대'}];
-const EVENT_TYPES = [{id:'travel',label:'✈️ 가족여행'},{id:'wedding',label:'💍 결혼식'},{id:'graduation',label:'🎓 졸업/입학'},{id:'special',label:'⭐ 특별한 날'},{id:'daily',label:'☀️ 소소한 일상'}];
+// 이벤트 카테고리 업데이트 반영
+const EVENT_TYPES = [{id:'travel',label:'✈️ 여행'},{id:'wedding',label:'💍 결혼식'},{id:'graduation',label:'🎓 졸업/입학'},{id:'special',label:'⭐ 특별한 날'},{id:'daily',label:'☀️ 소소한 일상'},{id:'etc',label:'📌 기타'}];
 
 function showLoading(show, text='처리 중...') { document.getElementById('loading-text').textContent = text; document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
 function showToast(msg, isErr=false){ let t=document.getElementById('tst'); if(!t){t=document.createElement('div');t.id='tst';t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:20px;color:#fff;z-index:9999;transition:0.3s;font-size:0.85rem;';document.body.appendChild(t);} t.style.background=isErr?'var(--rust)':'var(--brown-deep)'; t.textContent=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0', 3500); }
@@ -747,7 +764,6 @@ function renderDashMembers() {
 }
 function renderRecent() { document.getElementById('recent-events').innerHTML = GLOBAL_RECORDS.slice(0,6).map(generatePhotoHTML).join(''); }
 
-// 💡 사진 타일 렌더링에 '댓글(💬)' 버튼 추가
 function generatePhotoHTML(r) {
   const rot = r.rotation||0; const scale = (rot%180!==0)?1.35:1; let tag='';
   if(r.fileType==='video') tag=`<video src="${r.imgUrl}#t=0.1" style="transform:rotate(${rot}deg) scale(${scale});"></video><div class="video-badge">▶️</div>`; else tag=`<img src="${r.imgUrl}" style="transform:rotate(${rot}deg) scale(${scale});">`;
@@ -829,12 +845,17 @@ function showLightboxImage() {
 function navigateLightbox(step, ev) { ev.stopPropagation(); lightboxIndex += step; showLightboxImage(); }
 function closeLightbox(e) { if(e.target.id==='lightbox-overlay' || e.target.classList.contains('lightbox-close')){ document.getElementById('lightbox-media').innerHTML=''; document.getElementById('lightbox-overlay').classList.remove('open'); } }
 
-// ════════ 💬 댓글 및 대댓글(답글) 독립 관리 시스템 (신규) ════════
+// ════════ 💬 댓글 및 대댓글(답글) 시스템 (라이트박스 닫기 기능 추가) ════════
 let currentRecordForComment = null;
 let currentReplyTarget = null; // {id, author}
 
 async function openCommentsModal(recordId, ev) {
   if(ev) ev.stopPropagation();
+  
+  // 💡 댓글 모달을 열 때 겹치지 않게 뒷배경의 라이트박스를 닫아줍니다.
+  document.getElementById('lightbox-overlay').classList.remove('open');
+  document.getElementById('lightbox-media').innerHTML = ''; 
+  
   currentRecordForComment = recordId;
   currentReplyTarget = null;
   document.getElementById('comment-reply-indicator').style.display = 'none';
@@ -854,7 +875,7 @@ async function loadComments() {
   try {
     const snap = await db.collection('comments').where('recordId', '==', currentRecordForComment).get();
     let comments = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    comments.sort((a, b) => new Date(a.created) - new Date(b.created)); // 시간순 정렬
+    comments.sort((a, b) => new Date(a.created) - new Date(b.created)); 
     
     const parents = comments.filter(c => !c.replyTo);
     const replies = comments.filter(c => c.replyTo);
@@ -926,7 +947,6 @@ async function deleteComment(id) {
   showLoading(true);
   try {
     await db.collection('comments').doc(id).delete();
-    // 부모 댓글 삭제 시, 거기에 달린 답글들도 모두 삭제
     const replies = await db.collection('comments').where('replyTo', '==', id).get();
     const batch = db.batch();
     replies.forEach(r => batch.delete(r.ref));
@@ -1048,12 +1068,11 @@ async function updateRecord() { if(!currentEditId)return; const t=document.getEl
 async function deleteRecord(id, url, ev) { ev.stopPropagation(); const r=GLOBAL_RECORDS.find(x=>x.id===id); if(!r)return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name)return showToast('권한 없음',true); if(!confirm("삭제하시겠습니까?"))return; showLoading(true); try{ await db.collection('records').doc(id).delete(); if(url&&url.includes('firebase'))await storage.refFromURL(url).delete(); await loadData(); showToast('삭제 완료'); }catch(e){} showLoading(false); }
 async function rotateImg(id, cur, btn, ev) { ev.stopPropagation(); const r = GLOBAL_RECORDS.find(x => x.id === id); if(!r) return; if(!CURRENT_USER.isAdmin && r.author !== CURRENT_USER.name) { return showToast('🚫 권한이 없습니다.', true); } const n=(cur+90)%360; btn.closest('.photo-card').querySelector('img, video').style.transform=`rotate(${n}deg) scale(${n%180!==0?1.35:1})`; btn.setAttribute('onclick',`rotateImg('${id}',${n},this,event)`); db.collection('records').doc(id).update({rotation:n}); }
 
-// 📜 가문 역사 / 족보 이야기 처리 로직
+// 📜 가문 역사 / 족보 이야기 처리 로직 (수정 기능 완벽 연동)
 function openHistoryModal() { document.getElementById('his-edit-id').value = ''; document.getElementById('his-title').value = ''; document.getElementById('his-period').value = ''; document.getElementById('his-content').value = ''; document.getElementById('his-file').value = ''; document.getElementById('his-file-name').textContent = '선택된 파일 없음'; tempHisFile = null; document.getElementById('modal-history').classList.add('open'); }
 function closeHistoryModal() { document.getElementById('modal-history').classList.remove('open'); }
 function previewHistoryFile(inp) { if(inp.files && inp.files[0]) { tempHisFile = inp.files[0]; document.getElementById('his-file-name').innerHTML = `✅ <b>${tempHisFile.name}</b> 준비됨`; } }
 
-// 💡 새 역사 추가 및 수정 완료 함수
 async function saveHistory() {
   const id = document.getElementById('his-edit-id').value;
   const t = document.getElementById('his-title').value.trim(), p = document.getElementById('his-period').value.trim(), c = document.getElementById('his-content').value.trim(); 
@@ -1079,7 +1098,6 @@ async function saveHistory() {
   } catch(e) {} showLoading(false);
 }
 
-// 💡 역사 수정 모달 열기
 function editHistory(id) {
   const h = GLOBAL_HISTORY.find(x => x.id === id); if(!h) return;
   document.getElementById('his-edit-id').value = id;
